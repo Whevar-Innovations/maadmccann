@@ -96,3 +96,12 @@ export const REVEAL = {
   workHoverDuration: 0.8,
   magneticMaxPx: 8,
 } as const;
+
+export const TRANSITION = {
+  coverDur: 0.6,
+  revealDur: 0.6,
+  layerLead: 0.04,
+  pageRecedeY: -24,
+  pageEnterY: 24,
+  pageScale: 0.985,
+} as const;

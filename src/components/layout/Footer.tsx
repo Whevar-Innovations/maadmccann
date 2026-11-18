@@ -119,6 +119,7 @@ export function Footer({ settings }: FooterProps) {
 
   return (
     <footer
+      id="footer"
       ref={footerRef}
       data-site-footer
       className="relative z-10 px-4 pb-0 sm:px-8 lg:px-14"

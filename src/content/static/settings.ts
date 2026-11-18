@@ -11,7 +11,7 @@ export const settings: SiteSettings = {
     { label: 'Blog', href: '/blog' },
     { label: 'Awards', href: '/awards' },
   ],
-  navCta: { label: 'Talk To Us', href: '/contact' },
+  navCta: { label: 'Talk To Us', href: '#footer' },
   footer: {
     navigation: [
       { label: 'The MAADness', href: '/the-maadness' },

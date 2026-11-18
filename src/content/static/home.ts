@@ -12,7 +12,7 @@ type RawProject = Omit<Project, 'href'>;
 
 const withProjectHref = (project: RawProject): Project => ({
   ...project,
-  href: `/work/${project.slug}`,
+  href: '#work',
 });
 
 const rawProjects: RawProject[] = [
@@ -69,7 +69,7 @@ export const home: HomePage = {
     headlineLines: ['IDEAS', 'THAT MOVE', 'THE WORLD.'],
     subheading:
       'We’re a 360° creative agency bringing together strategy, creativity, digital and culture to create work that gets people talking, brands moving and change happening.',
-    cta: { label: 'VIEW OUR WORK', href: '/work' },
+    cta: { label: 'VIEW OUR WORK', href: '#work' },
     ghostText: 'TRUTH WELL TOLD',
     awards: [
       {
@@ -159,6 +159,6 @@ export const home: HomePage = {
   cta: {
     headlineLines: ['Got something in mind?', 'Let’s make something MAAD.'],
     body: 'Bring us the brief, the challenge or even the “we know something needs to change but we’re not quite sure what.” We’ll take it from there.',
-    button: { label: 'Let’s Talk', href: '/contact' },
+    button: { label: 'Let’s Talk', href: '#footer' },
   },
 };
