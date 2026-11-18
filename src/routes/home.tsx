@@ -1,7 +1,6 @@
 import { useLoaderData } from 'react-router';
 import { getHomePage } from '@/content/api';
 import { ClientsRow } from '@/components/home/ClientsRow';
-import { CtaBand } from '@/components/home/CtaBand';
 import { Hero } from '@/components/home/Hero';
 import { Impact } from '@/components/home/Impact';
 import { Showreel } from '@/components/home/Showreel';
@@ -12,8 +11,9 @@ export const homeLoader = async () => ({
 });
 
 /**
- * Homepage route (SPEC §7 & §10 Step 3).
- * Passes loader data down as props to dumb section components.
+ * Homepage route (SPEC §7).
+ * Note: CtaBand is rendered inside RootLayout's shared FooterMotifStage right above Footer
+ * so the two share a single continuous animated SVG motif stage with zero seam.
  */
 export function HomeRoute() {
   const { home } = useLoaderData<typeof homeLoader>();
@@ -25,7 +25,6 @@ export function HomeRoute() {
       <ClientsRow clients={home.clients} />
       <WorkGrid projects={home.featuredProjects} />
       <Impact impact={home.impact} />
-      <CtaBand cta={home.cta} />
     </>
   );
 }

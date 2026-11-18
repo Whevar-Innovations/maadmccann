@@ -14,6 +14,7 @@ export const router = createBrowserRouter([
     HydrateFallback: BootFallback,
     children: [
       {
+        id: 'home',
         index: true,
         loader: homeLoader,
         Component: HomeRoute,

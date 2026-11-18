@@ -9,16 +9,14 @@ export type WorkCardProps = {
 };
 
 /**
- * Individual work tile (SPEC §7 #5 & §8.6).
- * Full-bleed image, bottom gradient, label bottom-left (`Client: Title`) and `View work ——` with a line.
+ * Individual work tile (SPEC §7 #5 & §8.6, matching Screenshots 14-01-26 to 14-01-37).
+ * Full-bleed image, bottom gradient, label bottom-left (`Client: Title`) and `View work ——>` with a line.
  */
 export function WorkCard({ project, slotIndex, className = '' }: WorkCardProps) {
   const isBanner = slotIndex === 4;
   const isTall = slotIndex === 0;
 
-  const sizes = isBanner
-    ? '100vw'
-    : '(min-width: 768px) 50vw, 100vw';
+  const sizes = isBanner ? '100vw' : '(min-width: 768px) 50vw, 100vw';
 
   return (
     <article
@@ -36,7 +34,7 @@ export function WorkCard({ project, slotIndex, className = '' }: WorkCardProps) 
             isTall
               ? 'aspect-[3/4] md:aspect-auto md:h-full'
               : isBanner
-                ? 'aspect-[16/9] md:aspect-[21/9]'
+                ? 'aspect-[16/9] md:aspect-[2.38/1]'
                 : 'aspect-[16/9]'
           }`}
         >
@@ -49,35 +47,35 @@ export function WorkCard({ project, slotIndex, className = '' }: WorkCardProps) 
           {/* Bottom dark gradient overlay */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent transition-opacity duration-500"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent transition-opacity duration-500"
           />
         </div>
 
-        {/* Bottom-left caption: Client: Title + View work —— */}
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 p-6 sm:p-8 lg:p-10">
+        {/* Bottom-left caption: Client: Title + View work ——> */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 p-6 sm:p-8 lg:px-10 lg:py-9">
           <h3 className="text-tile-label leading-tight font-semibold text-paper">
             {project.client}: {project.title}
           </h3>
-          <div className="mt-2 inline-flex items-center gap-3 text-sub font-regular text-paper/90">
+          <div className="mt-2.5 inline-flex items-center gap-3 text-sub font-regular text-paper/95">
             <span>View work</span>
             <span
               data-work-line
               aria-hidden="true"
               className="inline-flex items-center"
             >
-              <span className="inline-block h-[1.5px] w-6 bg-paper/90 transition-all duration-500 group-hover:w-12" />
+              <span className="inline-block h-[1px] w-7 bg-paper/90 transition-all duration-500 group-hover:w-12" />
               <svg
                 width="10"
                 height="10"
                 viewBox="0 0 12 12"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="1.75"
+                strokeWidth="1.4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="-ml-1"
+                className="-ml-1.5"
               >
-                <path d="m4 2 4 4-4 4" />
+                <path d="m4 2 4.5 4L4 10" />
               </svg>
             </span>
           </div>

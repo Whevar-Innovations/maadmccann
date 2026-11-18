@@ -14,7 +14,6 @@ export const settings: SiteSettings = {
   navCta: { label: 'Talk To Us', href: '/contact' },
   footer: {
     navigation: [
-      { label: 'Let’s Talk', href: '/contact' },
       { label: 'The MAADness', href: '/the-maadness' },
       { label: 'What We Do', href: '/what-we-do' },
       { label: 'Our Work', href: '/work' },
@@ -48,6 +47,6 @@ export const settings: SiteSettings = {
       { platform: 'linkedin', url: '#' },
       { platform: 'instagram', url: '#' },
     ],
-    copyright: '© 2026 MAAD McCANN. All rights reserved.',
+    copyright: '©2026 MAAD McCANN. All rights reserved.',
   },
 };
