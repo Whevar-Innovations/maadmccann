@@ -126,7 +126,7 @@ export function Header({ settings }: HeaderProps) {
       <header
         ref={headerRef}
         data-site-header
-        className={`fixed inset-x-0 top-0 z-40 transition-all duration-200 will-change-transform ${
+        className={`fixed inset-x-0 top-0 z-40 transition-[background-color,backdrop-filter,opacity] duration-300 will-change-transform ${
           menuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
         } ${
           scrolledPastThreshold && !menuOpen

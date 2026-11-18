@@ -19,10 +19,12 @@ const MOTIF_V_PATH =
 
 /**
  * Hero section (SPEC §7 #2, §8.3, §8.4, matching Screenshot From 2026-11-18 14-54-05.png).
+ * Zero-FOUC background motif: initial JSX has fillOpacity={0} and strokeOpacity={0}
+ * so the motif never flashes on refresh before GSAP takes control.
  */
 export function Hero({ hero }: HeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const { isHeroReady } = useLoaderState();
+  const { isHeroReady, skippedLoader } = useLoaderState();
 
   useGSAP(
     () => {
@@ -50,8 +52,16 @@ export function Hero({ hero }: HeroProps) {
 
       const mm = gsap.matchMedia();
 
-      // Reduced motion: simple 0.4s fade, no loops or parallax (SPEC §8.9)
+      // Reduced motion: immediate resting state, no loops or parallax (SPEC §8.9)
       mm.add(MEDIA_QUERIES.reducedMotion, () => {
+        if (motifA && motifV) {
+          gsap.set([motifA, motifV], {
+            fillOpacity: 0.36,
+            strokeOpacity: 0,
+            x: 0,
+            y: 0,
+          });
+        }
         gsap.fromTo(
           [lines, subheading, cta, trophyEntrances, ghost],
           { opacity: 0 },
@@ -59,7 +69,7 @@ export function Hero({ hero }: HeroProps) {
         );
       });
 
-      // Normal motion: Master Hero Timeline (SPEC §8.3, §8.4 & Motion Lab #mA/#mV)
+      // Normal motion: Master Hero Timeline or Refresh Settle
       mm.add(
         {
           isDesktop: MEDIA_QUERIES.desktop,
@@ -72,149 +82,9 @@ export function Hero({ hero }: HeroProps) {
           if (!motionOk) return;
 
           const distFactor = isMobile ? 0.5 : 1;
-          const tl = gsap.timeline({ defaults: { ease: EASE.out } });
 
-          // t = 0.0: Background scale 1.08 -> 1 (1.8s)
-          if (bg) {
-            tl.fromTo(
-              bg,
-              { scale: 1.08 },
-              { scale: 1, duration: HERO_TIMELINE.idleStart },
-              HERO_TIMELINE.bgStart,
-            );
-          }
-
-          // t = 0.1: Upright A (#mA) & Inverted A (#mV) from Motion Lab
-          if (motifA && motifV) {
-            const av = [motifA, motifV];
-            gsap.set(av, {
-              fillOpacity: 0,
-              stroke: '#ffffff',
-              strokeOpacity: 0.4,
-              strokeWidth: 2.5,
-              strokeDasharray: '1 1',
-              strokeDashoffset: 1,
-            });
-            tl.fromTo(
-              motifA,
-              { x: -160 * distFactor },
-              { x: 0, duration: 2.2 },
-              HERO_TIMELINE.motifStart,
-            )
-              .fromTo(
-                motifV,
-                { y: -120 * distFactor },
-                { y: 0, duration: 2.2 },
-                HERO_TIMELINE.motifStart + 0.15,
-              )
-              .to(
-                av,
-                {
-                  strokeDashoffset: 0,
-                  duration: 1.8,
-                  ease: EASE.SineInOut,
-                },
-                HERO_TIMELINE.motifStart,
-              )
-              .to(
-                av,
-                {
-                  fillOpacity: 0.36,
-                  strokeOpacity: 0,
-                  duration: DUR.text,
-                  ease: EASE.soft,
-                },
-                HERO_TIMELINE.motifStart + 1.3,
-              );
-          }
-
-          // t = 0.15: Headline lines (xPercent 40 -> 0, stagger 0.1, dur 1.2)
-          if (lines.length > 0) {
-            tl.fromTo(
-              lines,
-              { xPercent: 40 * distFactor, opacity: 0 },
-              {
-                xPercent: 0,
-                opacity: 1,
-                duration: DUR.hero,
-                stagger: STAGGER.lines,
-              },
-              HERO_TIMELINE.headlineStart,
-            );
-          }
-
-          // t = 0.2: Ghost text TRUTH WELL TOLD rises from bottom (yPercent 100 -> 8, power4.out, dur 1.5)
-          if (ghost) {
-            tl.fromTo(
-              ghost,
-              { yPercent: DIST.maskFrom },
-              {
-                yPercent: 8,
-                duration: DUR.heroGhost,
-                ease: EASE.ghostOut,
-              },
-              HERO_TIMELINE.ghostStart,
-            );
-          }
-
-          // t = 0.4: Trophies entrance [back-left, back-right, front], stagger 0.18, dur 1.2
-          trophyEntrances.forEach((el, index) => {
-            const isFront = index === 2;
-            tl.fromTo(
-              el,
-              {
-                y: DIST.trophyRise * distFactor,
-                scale: 0.94,
-                opacity: 0,
-              },
-              {
-                y: 0,
-                scale: 1,
-                opacity: 1,
-                duration: DUR.hero,
-                ease: isFront ? EASE.pop : EASE.out,
-              },
-              HERO_TIMELINE.trophiesStart + index * STAGGER.trophies,
-            );
-          });
-
-          // t = 0.5: Subheading (x 60 -> 0, opacity 0 -> 1, dur 1.0)
-          if (subheading) {
-            tl.fromTo(
-              subheading,
-              { x: DIST.slide * distFactor, opacity: 0 },
-              { x: 0, opacity: 1, duration: DUR.text },
-              HERO_TIMELINE.subheadingStart,
-            );
-          }
-
-          // t = 0.65: VIEW OUR WORK (y 16 -> 0, opacity 0 -> 1, dur 0.8)
-          if (cta) {
-            tl.fromTo(
-              cta,
-              { y: (DIST.rise / 2) * distFactor, opacity: 0 },
-              { y: 0, opacity: 1, duration: DUR.heroCta },
-              HERO_TIMELINE.ctaStart,
-            );
-          }
-
-          // t = 0.8: Header (logo, links, button) y -12 -> 0, opacity 0 -> 1, stagger 0.05, dur 0.8
-          if (headerItems.length > 0) {
-            tl.fromTo(
-              headerItems,
-              { y: -12, opacity: 0 },
-              {
-                y: 0,
-                opacity: 1,
-                duration: DUR.headerIn,
-                stagger: STAGGER.header,
-              },
-              HERO_TIMELINE.headerStart,
-            );
-          }
-
-          // t = 1.8: Subtle natural idle loops start (vertical-only float, no rotation/shimmer)
-          tl.add(() => {
+          // Helper to trigger natural idle loops
+          const startIdleLoops = () => {
             trophyFloats.forEach((floatEl, index) => {
               const dur = HERO_TIMELINE.trophyFloatDurs[index] ?? 3.8;
               const delay = HERO_TIMELINE.trophyFloatDelays[index] ?? 0;
@@ -276,7 +146,221 @@ export function Hero({ hero }: HeroProps) {
                 },
               );
             }
-          }, HERO_TIMELINE.idleStart);
+          };
+
+          // --- REFRESH SCENARIO (loader already shown in session) ---
+          // Smooth 0.5s settle into resting state with zero jump/flash
+          if (skippedLoader) {
+            if (bg) gsap.set(bg, { scale: 1 });
+
+            if (motifA && motifV) {
+              gsap.fromTo(
+                [motifA, motifV],
+                { fillOpacity: 0, strokeOpacity: 0, x: 0, y: 0 },
+                {
+                  fillOpacity: 0.36,
+                  strokeOpacity: 0,
+                  duration: 0.6,
+                  ease: EASE.soft,
+                },
+              );
+            }
+
+            if (lines.length > 0) {
+              gsap.fromTo(
+                lines,
+                { opacity: 0, y: 12 },
+                { opacity: 1, y: 0, duration: 0.5, stagger: 0.04, ease: EASE.soft },
+              );
+            }
+
+            if (ghost) {
+              gsap.fromTo(
+                ghost,
+                { yPercent: 8, opacity: 0 },
+                { opacity: 1, duration: 0.6, ease: EASE.soft },
+              );
+            }
+
+            trophyEntrances.forEach((el) => {
+              gsap.fromTo(
+                el,
+                { opacity: 0, y: 16 },
+                { opacity: 1, y: 0, duration: 0.5, ease: EASE.soft },
+              );
+            });
+
+            if (subheading) {
+              gsap.fromTo(
+                subheading,
+                { opacity: 0 },
+                { opacity: 1, duration: 0.5, ease: EASE.soft },
+              );
+            }
+
+            if (cta) {
+              gsap.fromTo(
+                cta,
+                { opacity: 0 },
+                { opacity: 1, duration: 0.5, ease: EASE.soft },
+              );
+            }
+
+            if (headerItems.length > 0) {
+              gsap.fromTo(
+                headerItems,
+                { opacity: 0, y: -8 },
+                { opacity: 1, y: 0, duration: 0.4, ease: EASE.soft },
+              );
+            }
+
+            startIdleLoops();
+          } else {
+            // --- FIRST VISIT SCENARIO (plays timed with loader exit) ---
+            const tl = gsap.timeline({ defaults: { ease: EASE.out } });
+
+            // t = 0.0: Background scale 1.08 -> 1 (1.8s)
+            if (bg) {
+              tl.fromTo(
+                bg,
+                { scale: 1.08 },
+                { scale: 1, duration: HERO_TIMELINE.idleStart },
+                HERO_TIMELINE.bgStart,
+              );
+            }
+
+            // t = 0.1: Upright A (#mA) & Inverted A (#mV) from Motion Lab
+            if (motifA && motifV) {
+              const av = [motifA, motifV];
+              gsap.set(av, {
+                fillOpacity: 0,
+                stroke: '#ffffff',
+                strokeOpacity: 0.4,
+                strokeWidth: 2.5,
+                strokeDasharray: '1 1',
+                strokeDashoffset: 1,
+              });
+              tl.fromTo(
+                motifA,
+                { x: -160 * distFactor },
+                { x: 0, duration: 2.2 },
+                HERO_TIMELINE.motifStart,
+              )
+                .fromTo(
+                  motifV,
+                  { y: -120 * distFactor },
+                  { y: 0, duration: 2.2 },
+                  HERO_TIMELINE.motifStart + 0.15,
+                )
+                .to(
+                  av,
+                  {
+                    strokeDashoffset: 0,
+                    duration: 1.8,
+                    ease: EASE.SineInOut,
+                  },
+                  HERO_TIMELINE.motifStart,
+                )
+                .to(
+                  av,
+                  {
+                    fillOpacity: 0.36,
+                    strokeOpacity: 0,
+                    duration: DUR.text,
+                    ease: EASE.soft,
+                  },
+                  HERO_TIMELINE.motifStart + 1.3,
+                );
+            }
+
+            // t = 0.15: Headline lines (xPercent 40 -> 0, stagger 0.1, dur 1.2)
+            if (lines.length > 0) {
+              tl.fromTo(
+                lines,
+                { xPercent: 40 * distFactor, opacity: 0 },
+                {
+                  xPercent: 0,
+                  opacity: 1,
+                  duration: DUR.hero,
+                  stagger: STAGGER.lines,
+                },
+                HERO_TIMELINE.headlineStart,
+              );
+            }
+
+            // t = 0.2: Ghost text TRUTH WELL TOLD rises from bottom (yPercent 100 -> 8, power4.out, dur 1.5)
+            if (ghost) {
+              tl.fromTo(
+                ghost,
+                { yPercent: DIST.maskFrom },
+                {
+                  yPercent: 8,
+                  duration: DUR.heroGhost,
+                  ease: EASE.ghostOut,
+                },
+                HERO_TIMELINE.ghostStart,
+              );
+            }
+
+            // t = 0.4: Trophies entrance [back-left, back-right, front], stagger 0.18, dur 1.2
+            trophyEntrances.forEach((el, index) => {
+              const isFront = index === 2;
+              tl.fromTo(
+                el,
+                {
+                  y: DIST.trophyRise * distFactor,
+                  scale: 0.94,
+                  opacity: 0,
+                },
+                {
+                  y: 0,
+                  scale: 1,
+                  opacity: 1,
+                  duration: DUR.hero,
+                  ease: isFront ? EASE.pop : EASE.out,
+                },
+                HERO_TIMELINE.trophiesStart + index * STAGGER.trophies,
+              );
+            });
+
+            // t = 0.5: Subheading (x 60 -> 0, opacity 0 -> 1, dur 1.0)
+            if (subheading) {
+              tl.fromTo(
+                subheading,
+                { x: DIST.slide * distFactor, opacity: 0 },
+                { x: 0, opacity: 1, duration: DUR.text },
+                HERO_TIMELINE.subheadingStart,
+              );
+            }
+
+            // t = 0.65: VIEW OUR WORK (y 16 -> 0, opacity 0 -> 1, dur 0.8)
+            if (cta) {
+              tl.fromTo(
+                cta,
+                { y: (DIST.rise / 2) * distFactor, opacity: 0 },
+                { y: 0, opacity: 1, duration: DUR.heroCta },
+                HERO_TIMELINE.ctaStart,
+              );
+            }
+
+            // t = 0.8: Header (logo, links, button) y -12 -> 0, opacity 0 -> 1, stagger 0.05, dur 0.8
+            if (headerItems.length > 0) {
+              tl.fromTo(
+                headerItems,
+                { y: -12, opacity: 0 },
+                {
+                  y: 0,
+                  opacity: 1,
+                  duration: DUR.headerIn,
+                  stagger: STAGGER.header,
+                },
+                HERO_TIMELINE.headerStart,
+              );
+            }
+
+            // t = 1.8: Start idle loops
+            tl.add(startIdleLoops, HERO_TIMELINE.idleStart);
+          }
 
           // Desktop fine-pointer parallax: trophies move opposite to cursor (back +-8px, front +-14px)
           if (isFinePointer && !isMobile && trophyParallaxes.length > 0) {
@@ -316,7 +400,7 @@ export function Hero({ hero }: HeroProps) {
         },
       );
     },
-    { scope: sectionRef, dependencies: [isHeroReady] },
+    { scope: sectionRef, dependencies: [isHeroReady, skippedLoader] },
   );
 
   return (
@@ -338,7 +422,7 @@ export function Hero({ hero }: HeroProps) {
         className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center will-change-transform"
       />
 
-      {/* Upright A (#mA) and Inverted A (#mV) motif from Motion Lab, positioned in the upper-right above TRUTH WELL TOLD */}
+      {/* Upright A (#mA) and Inverted A (#mV) motif from Motion Lab (Zero FOUC initial attributes) */}
       <svg
         id="avsvg"
         data-hero-motif
@@ -351,14 +435,24 @@ export function Hero({ hero }: HeroProps) {
           id="mA"
           pathLength={1}
           fill="#0f0f0f"
-          fillOpacity={0.36}
+          fillOpacity={0}
+          stroke="#ffffff"
+          strokeOpacity={0}
+          strokeWidth={2.5}
+          strokeDasharray="1 1"
+          strokeDashoffset={1}
           d={MOTIF_A_PATH}
         />
         <path
           id="mV"
           pathLength={1}
           fill="#0f0f0f"
-          fillOpacity={0.36}
+          fillOpacity={0}
+          stroke="#ffffff"
+          strokeOpacity={0}
+          strokeWidth={2.5}
+          strokeDasharray="1 1"
+          strokeDashoffset={1}
           d={MOTIF_V_PATH}
         />
       </svg>
@@ -386,58 +480,56 @@ export function Hero({ hero }: HeroProps) {
 
           <p
             data-hero-subheading
-            className="max-w-[44ch] text-body leading-[1.45] font-medium text-paper/95 will-change-transform"
+            className="max-w-[32rem] text-body font-medium text-paper/85 will-change-transform"
           >
             {hero.subheading}
           </p>
 
-          <div data-hero-cta className="pt-4 lg:pt-8 will-change-transform">
+          <div data-hero-cta className="pt-1 will-change-transform">
             <Link
               href={hero.cta.href}
-              external={hero.cta.external}
-              className="group inline-flex items-center gap-3.5 font-accent text-accent font-medium tracking-[0.06em] text-paper uppercase"
+              className="inline-flex items-center gap-3 text-accent font-semibold tracking-wider text-paper uppercase transition-opacity hover:opacity-80"
             >
               <span>{hero.cta.label}</span>
               <span
                 aria-hidden="true"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-paper/85 transition-transform duration-300 group-hover:translate-x-1"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-paper/40 transition-transform hover:translate-x-1"
               >
                 <svg
-                  width="15"
-                  height="15"
-                  viewBox="0 0 24 24"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 16 16"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.6"
+                  strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <path d="M5 12h14" />
-                  <path d="m13 7 5 5-5 5" />
+                  <path d="M5 12l6-6-6-6" />
                 </svg>
               </span>
             </Link>
           </div>
         </div>
 
-        {/* Right column: Three Silverback Awards trophies */}
-        <div className="md:col-span-6 lg:col-span-7 lg:translate-y-8">
+        {/* Right column: 3 Silverback Awards trophies in triangle formation */}
+        <div className="flex justify-center md:col-span-6 lg:col-span-7 lg:justify-end">
           <Trophies awards={hero.awards} />
         </div>
       </div>
 
-      {/* Bottom ghosted text: TRUTH WELL TOLD — ~90% visible, cropped slightly by the bottom edge (matching 14-54-05.png) */}
+      {/* Oversized background ghost typography TRUTH WELL TOLD */}
       <div
         aria-hidden="true"
-        className="pointer-events-none relative z-10 mt-2 w-full overflow-hidden px-[3.5%] select-none sm:mt-0 lg:-mt-8"
+        className="pointer-events-none relative z-10 w-full select-none overflow-hidden text-center"
       >
-        <p
+        <span
           data-hero-ghost
           style={{ transform: 'translateY(8%)' }}
-          className="mx-auto w-full max-w-[1780px] text-center font-display text-[clamp(2.8rem,9.5vw,11.6rem)] leading-[0.84] font-bold tracking-[-0.025em] whitespace-nowrap text-[#0f0f0f]/45 uppercase mix-blend-multiply will-change-transform"
+          className="mx-auto w-full max-w-[1780px] text-center font-display text-[clamp(2.8rem,9.5vw,11.6rem)] leading-[0.84] font-bold tracking-[-0.025em] whitespace-nowrap text-[#19060c]/45 uppercase mix-blend-multiply will-change-transform"
         >
           {hero.ghostText}
-        </p>
+        </span>
       </div>
     </section>
   );

@@ -1,0 +1,147 @@
+# MAAD McCANN Kampala — Web Platform
+
+> **"Truth Well Told"** • 360° Creative Advertising & Communications Agency  
+> Plot 2436, Ntinda (off Bukoto–Ntinda Road), Kampala, Uganda
+
+---
+
+## 1. Overview
+
+This repository contains the web experience for **MAAD McCANN Kampala**, Uganda's premier 360° creative agency. Built with a bespoke design system, tactile GSAP motion choreography, Lenis smooth scrolling, and a decoupled content architecture, the platform showcases the agency's award-winning campaigns, brand philosophy, culture, and client impact.
+
+The application is engineered strictly to official agency design packages stored in `MAAD WEBSITE FILES/`, adhering to a zero-magic-number motion contract and a headless CMS interface contract.
+
+---
+
+## 2. Design Package & Source Mapping (`MAAD WEBSITE FILES/`)
+
+All digital assets, layouts, typography, and motifs are derived directly from the source design packages in `MAAD WEBSITE FILES/`. The table below outlines how each design package maps to the platform's architectural modules:
+
+| Folder / Package | Design Source Files | Digital Implementation | Content & Components |
+|---|---|---|---|
+| **`The MAADness/`** | `MAAD McCANN Website Homepage.ai`<br>• `Homepage Awards/` (Gorilla trophies)<br>• `Ka Weekie/` (GOtv TVC & posters)<br>• `PrideBank/` (Campaign posters & TVC)<br>• `CCBU/` (Coca-Cola Beverages Uganda)<br>• `Showreel/` (`MAAD REEL.mp4`) | **Homepage Core**<br>• Hero master timeline<br>• 3D-float awards trophies<br>• Fullscreen Showreel video modal<br>• Continuous footer motif stage | • `src/routes/home.tsx`<br>• `src/components/home/Hero.tsx`<br>• `src/components/home/Trophies.tsx`<br>• `src/components/home/Showreel.tsx`<br>• `src/components/home/Impact.tsx`<br>• `src/components/home/CtaBand.tsx` |
+| **`What We Do/`** | `MAAD McCANN Website Services.ai`<br>• `Services Motif.png`<br>• Font packages | **Services & Capabilities**<br>• Brand Strategy & Development<br>• Creative & Art Direction<br>• PR & Reputation Management<br>• Experiential & Events<br>• Media Planning & Buying<br>• Production, Digital & SBCC | • `src/content/types.ts` (`Service`)<br>• `src/content/static/settings.ts`<br>• Footer services grid in `Footer.tsx` |
+| **`Our Work/`** | `MAAD McCANN Website Our Work.ai`<br>• High-res campaign key visuals | **Portfolio Grid**<br>• Zero-gap modular card layout<br>• Parallax image clipping<br>• Magnetic line-stretch hover interaction | • `src/components/home/WorkGrid.tsx`<br>• `src/components/home/WorkCard.tsx`<br>• `src/assets/img/work/*` |
+| **`CSR/`** | `MAAD McCANN CSR.ai`<br>• `Run For The Nile/`<br>• `Iron Sharpens Iron/`<br>• `CSR Motif.png` | **Corporate Social Responsibility**<br>• Purpose-driven campaigns<br>• Master dark line-art motif backdrop | • `src/assets/img/dark-motif-bg.webp`<br>• Mobile header menu backdrop<br>• Transition curtain styling |
+| **`Our Partners/`** | `MAAD McCANN Website Our Clients.ai`<br>• Partner brand marks | **Client Roster**<br>• Dual-tier trust display<br>• Staggered fade-up reveal | • `src/components/home/ClientsRow.tsx`<br>• `src/assets/img/clients/*` |
+| **`The Maad Ones/`** | `The MAAD Ones.ai`<br>• `People Page.docx`<br>• Leadership portraits | **Agency Team & Culture**<br>• Creative leadership<br>• Department heads & culture | • `src/content/types.ts` (`TeamMember`)<br>• Agency bio & ethos records |
+| **`Blog/`** | `MAAD McCANN Website BLOG.ai`<br>• Gayaza High School workshop assets | **Insights & Thought Leadership**<br>• Creative masterclasses<br>• Community engagement articles | • `src/content/types.ts` (`Article`) |
+| **`Awards/`** | `MAAD McCANN Website Awards.ai`<br>• Silverback Awards photo archive | **Awards & Recognition**<br>• Grand Prix, Agency of the Year<br>• Category plaques & certificates | • `src/components/home/Trophies.tsx`<br>• `public/trophies/*` |
+| **`Talk To Us/`** | `MAAD McCANN Website Contact Us.ai`<br>• `Contact Us Motif.png` | **Contact & Location**<br>• Ntinda headquarters details<br>• Interactive contact pill CTA | • `src/components/layout/Footer.tsx`<br>• Desktop & mobile nav CTAs |
+| **`Motif Images/`** | Master high-res motif library:<br>• `CSR Motif.png`<br>• `Contact Us Motif.png`<br>• `Our Blog Motif.png`<br>• `Our Clients Motif.png`<br>• `Our Work Motif.png`<br>• `Services Motif.png` | **Brand Design System**<br>• Distinct vector motifs for each vertical<br>• Optimized WebP asset delivery | • `src/assets/img/dark-motif-bg.webp`<br>• `FooterMotifStage.tsx` |
+
+---
+
+## 3. Technology Stack
+
+- **Framework:** [React 19](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) (Strict Mode)
+- **Bundler:** [Vite](https://vitejs.dev/) with Rolldown asset pipeline
+- **Styling:** [Tailwind CSS v4](https://tailwindcss.com/) with brand CSS variables (`globals.css`)
+- **Routing:** [React Router v7](https://reactrouter.com/) (Data Router with async loaders)
+- **Motion Engine:** [GSAP 3.14+](https://gsap.com/) (`useGSAP`, `ScrollTrigger`, `SplitText`)
+- **Smooth Scroll:** [Lenis 1.1+](https://github.com/darkroomengineering/lenis) (synchronized to GSAP ticker)
+- **Video:** [Mux Player](https://docs.mux.com/guides/player) embedding with Lenis scroll lock
+
+---
+
+## 4. Architectural Highlights
+
+### A. Decoupled Content Layer (Zero-Static-Import Rule)
+Components and routes **never** import static mock files directly. All content flows through an async data-fetching contract (`src/content/api.ts`) consumed by React Router data loaders (`rootLoader`, `homeLoader`).
+- **Production Mode:** Fetches from the headless CMS endpoint.
+- **Mock Mode (`VITE_CONTENT_SOURCE=mock`):** Uses an asynchronous in-memory clone of `mock/source.ts` to simulate CMS latency and verify zero build regressions.
+
+### B. Sticky Desktop Header & Mobile Drawer
+- **Desktop Header:** Fixed at `top: 0` (`h-20 lg:h-28`), transitioning from transparent to ink blur (`bg-ink/80 backdrop-blur-md`) past `80px` scroll. Smoothly hides on downward scroll past `120px` (`yPercent: -100`) and reveals instantly on upward scroll (`yPercent: 0`).
+- **Viewport Anchoring:** The `<Header>` is placed directly under the root container outside any CSS `transform` or `will-change` wrappers, ensuring its containing block is always the browser viewport.
+- **Mobile Menu Drawer:** Portaled directly to `document.body` (`fixed inset-0 z-[9950]`). Uses a 100% solid, fully opaque dark blackish background (`#0E0E10`) with an embossed line-art motif overlay from `CSR Motif.png`. When open, the main desktop header is hidden to prevent double-logo/button ghosting.
+
+### C. Continuous Footer Motif Stage
+A unified red metallic texture stage (`src/components/layout/FooterMotifStage.tsx`) spans both the `CtaBand` and `Footer` sections seamlessly, eliminating horizontal seams. An interactive SVG motif bloom runs on scroll entry, with a pointer-tracking radial spotlight.
+
+### D. Motion System & Accessibility
+- All motion values (durations, staggers, eases, distances) are centralized in `src/motion/tokens.ts`.
+- Only `transform`, `opacity`, and `clip-path` are animated for 60fps GPU performance.
+- Honors `prefers-reduced-motion: reduce`: instantly skips loader timeouts, replaces curtain wipes with 0.2s crossfades, and cancels floating trophy idle loops.
+
+---
+
+## 5. Repository Structure
+
+```
+├── MAAD WEBSITE FILES/           # Original agency design packages (AI, PDF, fonts, motifs)
+├── public/
+│   ├── fonts/                    # Self-hosted brand webfonts (Inter, Neue Haas Grotesk)
+│   └── trophies/                 # Optimized responsive trophy WebPs
+├── src/
+│   ├── assets/
+│   │   ├── img/                  # Optimized WebP campaign & motif assets
+│   │   └── svg/                  # Cleaned vector logos & marks
+│   ├── components/
+│   │   ├── home/                 # Homepage sections (Hero, Showreel, WorkGrid, etc.)
+│   │   ├── layout/               # Shell layout (Header, Footer, FooterMotifStage, RootLayout)
+│   │   └── ui/                   # Shared UI primitives (Button, Link, Img)
+│   ├── content/
+│   │   ├── api.ts                # Content fetcher interface
+│   │   ├── types.ts              # CMS schema type definitions
+│   │   ├── static/               # Source content definitions (settings, home)
+│   │   └── mock/                 # Mock CMS source adapter
+│   ├── motion/
+│   │   ├── tokens.ts             # Centralized motion constants (DUR, EASE, STAGGER)
+│   │   ├── gsap-setup.ts         # GSAP plugin registration & media queries
+│   │   ├── SmoothScroll.tsx      # Lenis smooth scroll provider
+│   │   ├── LoaderProvider.tsx    # Session-aware initial asset/font preloader
+│   │   ├── PageTransition.tsx    # Dual-layer curtain page transition system
+│   │   ├── RevealText.tsx        # SplitText masked line reveal
+│   │   ├── RevealImage.tsx       # Clip-path & scale-in image reveal
+│   │   ├── FadeUp.tsx            # Fluid translateY fade-up primitive
+│   │   ├── Counter.tsx           # Layout-stable numerical metric counter
+│   │   └── Magnetic.tsx          # Cursor-attraction spring physics primitive
+│   ├── routes/
+│   │   ├── home.tsx              # Homepage data loader & route view
+│   │   └── RouteError.tsx        # Top-level error boundary
+│   ├── styles/
+│   │   └── globals.css           # Tailwind v4 theme & typography tokens
+│   ├── main.tsx                  # App bootstrapper
+│   └── router.tsx                # React Router v7 configuration
+├── docs/
+│   └── spec.md                   # Complete architectural specification
+└── package.json
+```
+
+---
+
+## 6. Development & Build Commands
+
+```bash
+# Install dependencies
+npm install
+
+# Start local development server (runs on http://localhost:5173)
+npm run dev
+
+# Run strict TypeScript typechecking
+npm run typecheck
+
+# Build for production
+npm run build
+
+# Build with mock CMS source (verifies CMS decoupling)
+VITE_CONTENT_SOURCE=mock npm run build
+
+# Preview production build locally
+npm run preview
+```
+
+---
+
+## 7. Performance & Quality Standards
+
+- **Core Web Vitals:** Targeted LCP < 2.0s, CLS < 0.05, FID/INP < 100ms.
+- **Zero CLS Image Rule:** All images use explicit width/height ratios or aspect-ratio wrappers to prevent layout shifts.
+- **Asset Formats:** All bitmap imagery is served in modern WebP format with responsive source sets.
+- **Font Preloading:** Critical font weights are preloaded in `index.html` to eliminate FOIT/FOUT.
+
+---
+
+© 2026 MAAD McCANN. All rights reserved.

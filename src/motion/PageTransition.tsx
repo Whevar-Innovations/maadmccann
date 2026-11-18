@@ -347,7 +347,7 @@ export function PageTransition({ children }: PageTransitionProps) {
       <div
         ref={stageRef}
         data-page-stage
-        className="w-full will-change-[transform,opacity]"
+        className={`w-full ${isTransitioning ? 'will-change-[transform,opacity]' : ''}`}
       >
         {children}
       </div>

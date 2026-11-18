@@ -16,8 +16,9 @@ export const rootLoader = async () => ({
 /**
  * App shell (SPEC §4, §7 & §8).
  * Wraps the site in Lenis SmoothScroll, LoaderProvider, and PageTransition.
- * CtaBand and Footer share a single continuous FooterMotifStage so the red metallic
- * texture and animated SVG motif span both sections with zero seam (Screenshot 14-36-34.png).
+ * Header sits directly at the root level outside transformed wrappers, ensuring its
+ * fixed/sticky positioning stays anchored to the viewport across all scroll states.
+ * CtaBand and Footer share a single continuous FooterMotifStage with zero seam.
  */
 export function RootLayout() {
   const { settings } = useLoaderData<typeof rootLoader>();
@@ -28,17 +29,19 @@ export function RootLayout() {
   return (
     <SmoothScroll>
       <LoaderProvider>
-        <PageTransition>
-          <div className="min-h-svh bg-paper text-ink">
-            <a
-              href="#main"
-              className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-full focus:bg-paper focus:px-5 focus:py-2.5 focus:text-small focus:font-semibold focus:text-ink"
-            >
-              Skip to content
-            </a>
+        <div className="min-h-svh bg-paper text-ink">
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-full focus:bg-paper focus:px-5 focus:py-2.5 focus:text-small focus:font-semibold focus:text-ink"
+          >
+            Skip to content
+          </a>
 
-            <Header settings={settings} />
+          {/* Persistent site header anchored to viewport */}
+          <Header settings={settings} />
 
+          {/* Page transition wraps dynamic page content & footer */}
+          <PageTransition>
             <main id="main">
               <Outlet />
             </main>
@@ -47,8 +50,8 @@ export function RootLayout() {
               {homeData?.home.cta && <CtaBand cta={homeData.home.cta} />}
               <Footer settings={settings} />
             </FooterMotifStage>
-          </div>
-        </PageTransition>
+          </PageTransition>
+        </div>
       </LoaderProvider>
     </SmoothScroll>
   );
