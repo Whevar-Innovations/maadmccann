@@ -3,8 +3,9 @@ import type { SiteSettings } from '@/content/types';
 import { Button } from '@/components/ui/Button';
 import { ContentLink, Link } from '@/components/ui/Link';
 import { gsap, MEDIA_QUERIES, ScrollTrigger, useGSAP } from '@/motion/gsap-setup';
+import { Magnetic } from '@/motion/Magnetic';
 import { useSmoothScroll } from '@/motion/SmoothScroll';
-import { DUR, EASE } from '@/motion/tokens';
+import { DIST, DUR, EASE, STAGGER } from '@/motion/tokens';
 import maadLogoWhiteSrc from '@/assets/svg/maad-logo-white.svg';
 
 export type HeaderProps = {
@@ -12,15 +13,17 @@ export type HeaderProps = {
 };
 
 /**
- * Site header (SPEC §7 #1 & §8.6, matching Screenshot From 2026-11-18 14-36-17.png).
- * - Logo left, 8 nav links centered, white pill "Talk To Us" button right.
+ * Site header (SPEC §7 #1 & §8.6, matching Screenshot From 2026-11-18 14-54-05.png).
+ * - Logo left, 8 nav links centered (with left-to-right underline wipe), white pill "Talk To Us" button right.
  * - Transparent at top, then ink at 80% blur after 80px scroll.
  * - Hides on scroll down, shows on scroll up (0.4s power3.out).
+ * - Mobile full-screen menu with staggered links.
  */
 export function Header({ settings }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolledPastThreshold, setScrolledPastThreshold] = useState(false);
   const headerRef = useRef<HTMLElement | null>(null);
+  const drawerRef = useRef<HTMLDivElement | null>(null);
   const hiddenRef = useRef(false);
   const { stopScroll, startScroll } = useSmoothScroll();
 
@@ -73,6 +76,31 @@ export function Header({ settings }: HeaderProps) {
     { scope: headerRef, dependencies: [menuOpen] },
   );
 
+  // Mobile drawer staggered link reveal (SPEC §7 #1)
+  useGSAP(
+    () => {
+      if (!menuOpen || !drawerRef.current) return;
+      const items = drawerRef.current.querySelectorAll<HTMLElement>(
+        '[data-mobile-nav-item]',
+      );
+      if (items.length === 0) return;
+
+      const reduced = window.matchMedia(MEDIA_QUERIES.reducedMotion).matches;
+      gsap.fromTo(
+        items,
+        { y: reduced ? 0 : DIST.rise * 0.5, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: reduced ? DUR.ui : DUR.text * 0.7,
+          stagger: reduced ? 0 : STAGGER.items,
+          ease: EASE.out,
+        },
+      );
+    },
+    { scope: drawerRef, dependencies: [menuOpen] },
+  );
+
   return (
     <header
       ref={headerRef}
@@ -101,28 +129,34 @@ export function Header({ settings }: HeaderProps) {
         </Link>
 
         {/* Desktop navigation */}
-        <nav
-          aria-label="Primary"
-          className="hidden items-center lg:flex"
-        >
+        <nav aria-label="Primary" className="hidden items-center lg:flex">
           <ul className="flex items-center gap-6 xl:gap-8">
             {settings.nav.map((item) => (
               <li key={item.href} data-header-item>
                 <ContentLink
                   link={item}
-                  className="text-small font-medium text-paper/95 transition-opacity hover:opacity-75"
-                />
+                  className="group relative inline-block py-1 text-small font-medium text-paper/95"
+                >
+                  <span>{item.label}</span>
+                  {/* Left-to-right underline wipe (0.4s, transform only, SPEC §8.6) */}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 bg-paper transition-transform duration-400 group-hover:scale-x-100"
+                  />
+                </ContentLink>
               </li>
             ))}
           </ul>
         </nav>
 
         <div data-header-item className="hidden lg:block">
-          <Button
-            link={settings.navCta}
-            size="sm"
-            className="px-7 py-2.5 font-bold text-ink"
-          />
+          <Magnetic>
+            <Button
+              link={settings.navCta}
+              size="sm"
+              className="px-7 py-2.5 font-bold text-ink"
+            />
+          </Magnetic>
         </div>
 
         {/* Mobile menu button */}
@@ -164,6 +198,7 @@ export function Header({ settings }: HeaderProps) {
       {/* Mobile full-screen navigation overlay */}
       {menuOpen && (
         <div
+          ref={drawerRef}
           id="mobile-nav-drawer"
           role="dialog"
           aria-modal="true"
@@ -173,7 +208,7 @@ export function Header({ settings }: HeaderProps) {
           <nav aria-label="Mobile Primary">
             <ul className="space-y-4">
               {settings.nav.map((item) => (
-                <li key={item.href}>
+                <li key={item.href} data-mobile-nav-item>
                   <ContentLink
                     link={item}
                     onClick={() => setMenuOpen(false)}
@@ -184,7 +219,7 @@ export function Header({ settings }: HeaderProps) {
             </ul>
           </nav>
 
-          <div>
+          <div data-mobile-nav-item>
             <Button
               link={settings.navCta}
               size="md"

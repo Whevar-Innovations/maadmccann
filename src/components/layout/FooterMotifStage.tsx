@@ -1,6 +1,6 @@
 import { useRef, type CSSProperties, type ReactNode } from 'react';
 import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
-import { DUR, EASE, MOTIF_LAB, SCROLL } from '@/motion/tokens';
+import { DUR, EASE, MOTIF_LAB, REVEAL, SCROLL } from '@/motion/tokens';
 import {
   FOOTER_MOTIF_H,
   FOOTER_MOTIF_PATHS,
@@ -62,9 +62,28 @@ export function FooterMotifStage({ children }: FooterMotifStageProps) {
         gsap.set(base, { opacity: MOTIF_LAB.restOpacity });
       });
 
-      // Normal motion: Bloom on scroll-enter + Spotlight on pointermove
+      // Normal motion: Bloom on scroll-enter + CTA bg parallax scrub + Spotlight on pointermove
       mm.add(MEDIA_QUERIES.motionOk, () => {
         gsap.set(base, { opacity: MOTIF_LAB.restOpacity });
+
+        const ctaBg = stage.querySelector<HTMLElement>('[data-cta-bg]');
+        if (ctaBg && window.matchMedia(MEDIA_QUERIES.desktop).matches) {
+          gsap.fromTo(
+            ctaBg,
+            { yPercent: -REVEAL.ctaParallaxPercent, scale: 1.12 },
+            {
+              yPercent: REVEAL.ctaParallaxPercent,
+              scale: 1.12,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: stage,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true,
+              },
+            },
+          );
+        }
 
         const st = gsap.timeline({
           scrollTrigger: {
@@ -199,7 +218,7 @@ export function FooterMotifStage({ children }: FooterMotifStageProps) {
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
         style={brightMaskStyle}
-        className="pointer-events-none absolute inset-0 h-full w-full text-paper opacity-0"
+        className="pointer-events-none absolute inset-0 h-full w-full text-[#ffccd8] opacity-0"
       >
         <use href="#footer-motif-pattern" />
       </svg>

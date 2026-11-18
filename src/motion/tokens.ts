@@ -2,7 +2,8 @@ export const EASE = {
   out: 'expo.out',
   soft: 'power3.out',
   inOut: 'expo.inOut',
-   SineInOut: 'power2.inOut',
+  SineInOut: 'power2.inOut',
+  counterOut: 'power2.out',
   float: 'sine.inOut',
   pop: 'back.out(1.2)',
   loaderLogoOut: 'power2.in',
@@ -74,10 +75,24 @@ export const HERO_TIMELINE = {
 } as const;
 
 export const MOTIF_LAB = {
-  restOpacity: 0.13,
-  bloomPeakOpacity: 0.38,
+  restOpacity: 0.14,
+  bloomPeakOpacity: 0.34,
   bloomDistanceDelayFactor: 1.6,
   bloomSettleDelay: 1.5,
-  spotOpacity: 0.48,
+  spotOpacity: 0.24,
   spotRadiusPx: 240,
+} as const;
+
+export const REVEAL = {
+  imageClipDuration: 1.2,
+  imageScaleDuration: 1.6,
+  imageScaleFrom: 1.15,
+  parallaxPercent: 8,
+  ctaParallaxPercent: 6,
+  counterDuration: 1.6,
+  counterStart: 'top 80%',
+  clientsStagger: 0.05,
+  workHoverScale: 1.05,
+  workHoverDuration: 0.8,
+  magneticMaxPx: 8,
 } as const;

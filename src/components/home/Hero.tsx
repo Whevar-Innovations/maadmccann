@@ -18,7 +18,7 @@ const MOTIF_V_PATH =
   'M 1617.21,212.42 L 1240.48,212.42 L 1142.47,-1.31 L 999.43,-1.31 L 1434.85,933.89 L 1854.88,-1.31 L 1709.53,-1.31 L 1617.21,212.42 M 1563.08,337.21 L 1432.56,636.43 L 1295.78,337.21 L 1563.08,337.21';
 
 /**
- * Hero section (SPEC §7 #2, §8.3, §8.4, matching Screenshot From 2026-11-18 14-36-17.png).
+ * Hero section (SPEC §7 #2, §8.3, §8.4, matching Screenshot From 2026-11-18 14-54-05.png).
  */
 export function Hero({ hero }: HeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
@@ -46,8 +46,6 @@ export function Hero({ hero }: HeroProps) {
         section.querySelectorAll<HTMLElement>('[data-trophy-float]');
       const trophyShadows =
         section.querySelectorAll<HTMLElement>('[data-trophy-shadow]');
-      const trophyShines =
-        section.querySelectorAll<HTMLElement>('[data-trophy-shine]');
       const glow = section.querySelector<HTMLElement>('[data-trophies-glow]');
 
       const mm = gsap.matchMedia();
@@ -92,7 +90,7 @@ export function Hero({ hero }: HeroProps) {
             gsap.set(av, {
               fillOpacity: 0,
               stroke: '#ffffff',
-              strokeOpacity: 0.45,
+              strokeOpacity: 0.4,
               strokeWidth: 2.5,
               strokeDasharray: '1 1',
               strokeDashoffset: 1,
@@ -145,13 +143,13 @@ export function Hero({ hero }: HeroProps) {
             );
           }
 
-          // t = 0.2: Ghost text TRUTH WELL TOLD (yPercent 100 -> 24, power4.out, dur 1.5)
+          // t = 0.2: Ghost text TRUTH WELL TOLD rises from bottom (yPercent 100 -> 8, power4.out, dur 1.5)
           if (ghost) {
             tl.fromTo(
               ghost,
               { yPercent: DIST.maskFrom },
               {
-                yPercent: 24,
+                yPercent: 8,
                 duration: DUR.heroGhost,
                 ease: EASE.ghostOut,
               },
@@ -166,7 +164,7 @@ export function Hero({ hero }: HeroProps) {
               el,
               {
                 y: DIST.trophyRise * distFactor,
-                scale: 0.92,
+                scale: 0.94,
                 opacity: 0,
               },
               {
@@ -215,17 +213,14 @@ export function Hero({ hero }: HeroProps) {
             );
           }
 
-          // t = 1.8: Idle loops start (SPEC §8.3 & §8.4)
+          // t = 1.8: Subtle natural idle loops start (vertical-only float, no rotation/shimmer)
           tl.add(() => {
-            // 1. Trophy idle float (3.2s / 3.8s / 4.4s, delays 0 / 0.4 / 0.8)
             trophyFloats.forEach((floatEl, index) => {
-              const dur = HERO_TIMELINE.trophyFloatDurs[index] ?? 3.6;
+              const dur = HERO_TIMELINE.trophyFloatDurs[index] ?? 3.8;
               const delay = HERO_TIMELINE.trophyFloatDelays[index] ?? 0;
-              const rot = index === 1 ? -1.5 : 1.5;
 
               gsap.to(floatEl, {
-                y: -DIST.floatY * distFactor,
-                rotation: isMobile ? 0 : rot,
+                y: -6 * distFactor,
                 duration: dur,
                 delay,
                 ease: EASE.float,
@@ -236,8 +231,8 @@ export function Hero({ hero }: HeroProps) {
               const shadowEl = trophyShadows[index];
               if (shadowEl && !isMobile) {
                 gsap.to(shadowEl, {
-                  scaleX: 0.9,
-                  opacity: 0.5,
+                  scaleX: 0.93,
+                  opacity: 0.55,
                   duration: dur,
                   delay,
                   ease: EASE.float,
@@ -247,10 +242,9 @@ export function Hero({ hero }: HeroProps) {
               }
             });
 
-            // Mobile limits idle loop to trophy float only (SPEC §8.9)
             if (isMobile) return;
 
-            // 2. Motif #mA and #mV opposing slow float (Motion Lab line 64)
+            // Motif #mA and #mV opposing slow float (Motion Lab line 64)
             if (motifA && motifV) {
               gsap.to(motifA, {
                 y: -12,
@@ -268,13 +262,13 @@ export function Hero({ hero }: HeroProps) {
               });
             }
 
-            // 3. Gold glow pulse (opacity 0.6 <-> 1 over 5s)
+            // Gold glow pulse (opacity 0.55 <-> 0.85 over 5s)
             if (glow) {
               gsap.fromTo(
                 glow,
-                { opacity: 0.6 },
+                { opacity: 0.55 },
                 {
-                  opacity: 1,
+                  opacity: 0.85,
                   duration: HERO_TIMELINE.glowDur,
                   ease: EASE.float,
                   yoyo: true,
@@ -282,23 +276,6 @@ export function Hero({ hero }: HeroProps) {
                 },
               );
             }
-
-            // 4. Diagonal light sweep crossing each trophy every 6 to 8s
-            trophyShines.forEach((shineEl, index) => {
-              const repeatDelay = HERO_TIMELINE.shineRepeatDelays[index] ?? 6.5;
-              gsap.fromTo(
-                shineEl,
-                { xPercent: -140 },
-                {
-                  xPercent: 260,
-                  duration: DUR.media,
-                  delay: index * 1.1,
-                  ease: EASE.soft,
-                  repeat: -1,
-                  repeatDelay,
-                },
-              );
-            });
           }, HERO_TIMELINE.idleStart);
 
           // Desktop fine-pointer parallax: trophies move opposite to cursor (back +-8px, front +-14px)
@@ -321,8 +298,8 @@ export function Hero({ hero }: HeroProps) {
 
             const onPointerMove = (e: PointerEvent) => {
               const rect = section.getBoundingClientRect();
-              const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2; // -1..1
-              const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2; // -1..1
+              const nx = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+              const ny = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
               setters.forEach(({ maxShift, xTo, yTo }) => {
                 xTo(-nx * maxShift);
                 yTo(-ny * maxShift);
@@ -368,7 +345,7 @@ export function Hero({ hero }: HeroProps) {
         viewBox="983.03 0 936.97 933.88"
         preserveAspectRatio="xMaxYMin meet"
         aria-hidden="true"
-        className="pointer-events-none absolute top-0 right-0 z-10 h-[76%] w-auto max-w-[78%] mix-blend-multiply select-none md:h-[85%] md:max-w-[52%]"
+        className="pointer-events-none absolute top-0 right-0 z-10 h-[72%] w-auto max-w-[78%] mix-blend-multiply select-none md:h-[82%] md:max-w-[52%]"
       >
         <path
           id="mA"
@@ -387,8 +364,8 @@ export function Hero({ hero }: HeroProps) {
       </svg>
 
       {/* Main hero content grid */}
-      <div className="mx-auto my-auto grid w-full max-w-[1680px] relative z-20 items-center gap-10 px-6 pt-6 pb-10 sm:px-12 md:grid-cols-12 lg:gap-4 lg:pt-10 lg:pb-12 lg:pl-[9.5%] lg:pr-[3.5%]">
-        {/* Left column: Headline (never clips horizontally), subheading, VIEW OUR WORK link */}
+      <div className="relative z-20 mx-auto mt-auto grid w-full max-w-[1680px] items-center gap-10 px-6 pt-6 pb-4 sm:px-12 md:grid-cols-12 lg:gap-4 lg:pt-10 lg:pb-6 lg:pl-[9.5%] lg:pr-[3.5%]">
+        {/* Left column: Headline, subheading, VIEW OUR WORK link */}
         <div className="space-y-6 md:col-span-6 lg:col-span-5 lg:space-y-7">
           <h1
             id="hero-heading"
@@ -444,19 +421,20 @@ export function Hero({ hero }: HeroProps) {
         </div>
 
         {/* Right column: Three Silverback Awards trophies */}
-        <div className="md:col-span-6 lg:col-span-7">
+        <div className="md:col-span-6 lg:col-span-7 lg:translate-y-8">
           <Trophies awards={hero.awards} />
         </div>
       </div>
 
-      {/* Bottom ghosted text: TRUTH WELL TOLD, inset within viewport margins and cropped at the bottom edge */}
+      {/* Bottom ghosted text: TRUTH WELL TOLD — ~90% visible, cropped slightly by the bottom edge (matching 14-54-05.png) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none relative z-10 -mt-12 w-full overflow-hidden px-[3.5%] select-none sm:-mt-16 lg:-mt-28"
+        className="pointer-events-none relative z-10 mt-2 w-full overflow-hidden px-[3.5%] select-none sm:mt-0 lg:-mt-8"
       >
         <p
           data-hero-ghost
-          className="mx-auto w-full max-w-[1780px] translate-y-[24%] text-center font-display text-[clamp(2.8rem,9.5vw,11.6rem)] leading-[0.82] font-bold tracking-[-0.025em] whitespace-nowrap text-[#0f0f0f]/45 uppercase mix-blend-multiply will-change-transform"
+          style={{ transform: 'translateY(8%)' }}
+          className="mx-auto w-full max-w-[1780px] text-center font-display text-[clamp(2.8rem,9.5vw,11.6rem)] leading-[0.84] font-bold tracking-[-0.025em] whitespace-nowrap text-[#0f0f0f]/45 uppercase mix-blend-multiply will-change-transform"
         >
           {hero.ghostText}
         </p>

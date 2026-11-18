@@ -45,7 +45,7 @@ function SocialIcon({ platform }: { platform: SocialPlatform }) {
 }
 
 /**
- * Charcoal rounded block footer (SPEC §7 #8, matching Screenshot From 2026-11-18 14-36-34.png).
+ * Charcoal rounded block footer (SPEC §7 #8, matching Screenshot From 2026-11-18 14-53-53.png).
  * Clean, flat #222222 card sitting inside FooterMotifStage (where the SVG motif bloom + spotlight run).
  */
 export function Footer({ settings }: FooterProps) {
@@ -125,13 +125,13 @@ export function Footer({ settings }: FooterProps) {
     >
       <div
         ref={cardRef}
-        className="mx-auto max-w-[1720px] rounded-t-[2.75rem] bg-charcoal px-8 pt-16 pb-10 text-paper sm:px-16 lg:px-28 lg:pt-24 lg:pb-12 xl:px-36"
+        className="mx-auto max-w-[1720px] rounded-t-[2.75rem] bg-charcoal px-8 pt-24 pb-12 text-paper sm:px-16 sm:pt-28 lg:px-28 lg:pt-36 lg:pb-16 xl:px-36"
       >
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
-          {/* Left column: Logo + LET'S CONNECT grouped cleanly as in 14-36-34.png */}
+          {/* Left column: Logo + LET'S CONNECT grouped cleanly as in 14-53-53.png */}
           <div
             data-footer-col
-            className="flex flex-col justify-center gap-12 lg:col-span-5"
+            className="flex flex-col justify-center gap-14 lg:col-span-5"
           >
             <Link href="/" aria-label="MAAD McCANN Home" className="inline-block w-fit">
               <img
@@ -147,7 +147,7 @@ export function Footer({ settings }: FooterProps) {
               <h2 className="text-connect font-semibold tracking-wide text-paper uppercase">
                 LET’S CONNECT
               </h2>
-              <ul className="mt-3.5 flex items-center gap-4">
+              <ul className="mt-4 flex items-center gap-4">
                 {footer.socials.map((social) => (
                   <li key={social.platform}>
                     <Link
@@ -171,7 +171,7 @@ export function Footer({ settings }: FooterProps) {
               <h2 className="text-footer-title font-bold tracking-wide text-paper uppercase">
                 NAVIGATION
               </h2>
-              <ul className="mt-5 space-y-1.5">
+              <ul className="mt-6 space-y-2">
                 {footer.navigation.map((item) => (
                   <li key={item.label}>
                     <ContentLink
@@ -188,7 +188,7 @@ export function Footer({ settings }: FooterProps) {
               <h2 className="text-footer-title font-bold tracking-wide text-paper uppercase">
                 SERVICES
               </h2>
-              <ul className="mt-5 space-y-1.5">
+              <ul className="mt-6 space-y-2">
                 {footer.services.map((item) => (
                   <li key={item.label}>
                     <ContentLink
@@ -205,8 +205,8 @@ export function Footer({ settings }: FooterProps) {
               <h2 className="text-footer-title font-bold tracking-wide text-paper uppercase">
                 INFO
               </h2>
-              <address className="mt-5 space-y-4 text-small leading-snug font-regular text-paper/90 not-italic">
-                <div className="space-y-1">
+              <address className="mt-6 space-y-5 text-small leading-snug font-regular text-paper/90 not-italic">
+                <div className="space-y-1.5">
                   <p>
                     <a
                       href={`mailto:${footer.contact.email}`}
@@ -232,7 +232,7 @@ export function Footer({ settings }: FooterProps) {
                   </p>
                 </div>
 
-                <div className="space-y-0.5">
+                <div className="space-y-1">
                   {footer.contact.address.map((line) => (
                     <p key={line}>{line}</p>
                   ))}
@@ -242,9 +242,9 @@ export function Footer({ settings }: FooterProps) {
           </div>
         </div>
 
-        {/* Divider & Copyright */}
-        <div className="mt-14 border-t border-paper/20 pt-7 text-center lg:mt-16">
-          <p className="text-small font-regular text-paper/85">{footer.copyright}</p>
+        {/* Crisp horizontal divider & Copyright matching 14-53-53.png */}
+        <div className="mt-20 border-t border-paper/40 pt-10 text-center lg:mt-28 lg:pt-12">
+          <p className="text-small font-regular text-paper/90">{footer.copyright}</p>
         </div>
       </div>
     </footer>

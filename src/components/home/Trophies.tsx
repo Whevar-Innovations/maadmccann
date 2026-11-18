@@ -16,11 +16,11 @@ const SLOT_CLASSES = [
 
 /**
  * Three Silverback Awards trophies arranged in a triangle (SPEC §7 #2 & §8.4).
- * Matches Screenshot From 2026-11-18 14-36-17.png:
+ * Matches Screenshot From 2026-11-18 14-54-05.png:
  * - DOM order & entrance order: [back-left, back-right, front].
  * - Three nested wrappers per trophy (entrance -> parallax -> float) with origin-bottom
  *   so transforms never fight.
- * - Includes soft gold radial glow, diagonal light sweep (shine), and contact shadow ellipses.
+ * - No rectangular shine overlay over the transparent WebP bounds (prevents rectangular shimmer).
  */
 export function Trophies({ awards }: TrophiesProps) {
   return (
@@ -32,10 +32,10 @@ export function Trophies({ awards }: TrophiesProps) {
       <div
         data-trophies-glow
         aria-hidden="true"
-        className="pointer-events-none absolute inset-[12%] rounded-full opacity-75 blur-3xl will-change-transform"
+        className="pointer-events-none absolute inset-[14%] rounded-full opacity-70 blur-3xl"
         style={{
           background:
-            'radial-gradient(circle, var(--color-gold-500) 0%, rgba(217, 169, 58, 0.24) 45%, transparent 72%)',
+            'radial-gradient(circle, var(--color-gold-500) 0%, rgba(217, 169, 58, 0.22) 45%, transparent 72%)',
         }}
       />
 
@@ -48,36 +48,16 @@ export function Trophies({ awards }: TrophiesProps) {
             className={`absolute ${slotClass}`}
           >
             {/* Outer wrapper: entrance animation */}
-            <div
-              data-trophy-entrance
-              className="origin-bottom will-change-transform"
-            >
+            <div data-trophy-entrance className="origin-bottom">
               {/* Middle wrapper: pointer parallax */}
-              <div
-                data-trophy-parallax
-                className="origin-bottom will-change-transform"
-              >
-                {/* Inner wrapper: idle float + diagonal shine sweep */}
-                <div
-                  data-trophy-float
-                  className="relative origin-bottom overflow-hidden will-change-transform"
-                >
+              <div data-trophy-parallax className="origin-bottom">
+                {/* Inner wrapper: gentle vertical idle float */}
+                <div data-trophy-float className="relative origin-bottom">
                   <Img
                     image={award.image}
                     priority
                     sizes="(min-width: 1024px) 280px, 36vw"
-                    className="h-auto w-full drop-shadow-[0_22px_28px_rgba(0,0,0,0.68)]"
-                  />
-
-                  {/* Diagonal light sweep (masked linear-gradient, mix-blend-mode: overlay, SPEC §8.4) */}
-                  <div
-                    data-trophy-shine
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 -translate-x-[130%] skew-x-[-22deg] opacity-60 mix-blend-overlay will-change-transform"
-                    style={{
-                      background:
-                        'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.85) 50%, transparent 100%)',
-                    }}
+                    className="h-auto w-full drop-shadow-[0_20px_24px_rgba(0,0,0,0.62)]"
                   />
                 </div>
               </div>
@@ -87,7 +67,7 @@ export function Trophies({ awards }: TrophiesProps) {
             <div
               data-trophy-shadow
               aria-hidden="true"
-              className="mx-auto -mt-3 h-5 w-[88%] rounded-full bg-black/70 blur-md will-change-transform"
+              className="mx-auto -mt-3 h-5 w-[88%] rounded-full bg-black/70 blur-md"
             />
           </div>
         );
