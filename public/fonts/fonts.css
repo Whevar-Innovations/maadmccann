@@ -1,0 +1,29 @@
+/* MAAD McCANN: font faces. Place this folder at /public/fonts and import fonts.css in globals.css.
+   Inter 18pt (OFL licence, free to self-host): LIVE.
+   Haas Grot Disp R, Futura BT: FILL IN once licensed web files are bought (see SPEC section 6). */
+
+/* ---------- Inter 18pt (body, UI, labels) ---------- */
+@font-face { font-family: 'Inter 18pt'; font-weight: 400; font-style: normal; font-display: swap;
+  src: url('/fonts/inter-18pt-regular.woff2') format('woff2'); }
+@font-face { font-family: 'Inter 18pt'; font-weight: 500; font-style: normal; font-display: swap;
+  src: url('/fonts/inter-18pt-medium.woff2') format('woff2'); }
+@font-face { font-family: 'Inter 18pt'; font-weight: 600; font-style: normal; font-display: swap;
+  src: url('/fonts/inter-18pt-semibold.woff2') format('woff2'); }
+@font-face { font-family: 'Inter 18pt'; font-weight: 700; font-style: normal; font-display: swap;
+  src: url('/fonts/inter-18pt-bold.woff2') format('woff2'); }
+
+/* ---------- Haas Grot Disp R (display: headlines, stats). LICENSED FILES REQUIRED ----------
+@font-face { font-family: 'Haas Grot Disp R'; font-weight: 500; font-display: swap;   // 65 Medium
+  src: url('/fonts/haas-grot-disp-r-65-medium.woff2') format('woff2'); }
+@font-face { font-family: 'Haas Grot Disp R'; font-weight: 700; font-display: swap;   // 75 Bold
+  src: url('/fonts/haas-grot-disp-r-75-bold.woff2') format('woff2'); }
+@font-face { font-family: 'Haas Grot Disp R'; font-weight: 900; font-display: swap;   // 95 Black
+  src: url('/fonts/haas-grot-disp-r-95-black.woff2') format('woff2'); }
+*/
+
+/* ---------- Futura BT Medium (only the VIEW OUR WORK link). LICENSE OR REPLACE ---------- */
+/* @font-face { font-family: 'Futura BT'; font-weight: 500; font-display: swap;
+  src: url('/fonts/futura-bt-medium.woff2') format('woff2'); } */
+
+/* Font stacks (--font-display / --font-body / --font-accent) are defined once, in the
+   Tailwind @theme in src/styles/globals.css. Display falls back to Inter until Haas is licensed. */

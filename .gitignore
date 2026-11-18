@@ -1,0 +1,11 @@
+# Source material: trial/commercial fonts, raw media, .ai files (SPEC §6)
+The MAADness/
+MAAD WEBSITE FILES/
+
+node_modules/
+dist/
+*.local
+.env*.local
+.DS_Store
+*.log
+.vite/

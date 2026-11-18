@@ -1,0 +1,99 @@
+/* MAAD McCANN design tokens (SPEC §6).
+   Colour values are the spec's approximations: confirm with the designer before launch.
+   Font faces are declared in /public/fonts/fonts.css (linked from index.html). */
+@import 'tailwindcss';
+
+@theme {
+  /* ---------- Colour: brand tokens only, the stock palette is removed ---------- */
+  --color-*: initial;
+  --color-crimson-600: #c42b4c; /* hero highlight (top right of gradient) */
+  --color-crimson-800: #8e1b3b; /* hero and CTA mid-tone */
+  --color-crimson-950: #2a0618; /* hero and CTA shadow, loader panel */
+  --color-impact-red: #8b1a1a; /* OUR IMPACT heading, stat accents */
+  --color-ink: #0b0b0b; /* showreel section */
+  --color-charcoal: #222222; /* footer block */
+  --color-paper: #ffffff; /* light sections */
+  --color-gold-500: #d9a93a; /* trophy glow only */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* ---------- Font stacks (display falls back to Inter until Haas is licensed) ---------- */
+  --font-*: initial;
+  --font-display: 'Haas Grot Disp R', 'Inter 18pt', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Inter 18pt', 'Helvetica Neue', Arial, sans-serif;
+  --font-accent: 'Futura BT', 'Jost', 'Century Gothic', 'Inter 18pt', sans-serif;
+
+  /* Weights map to the supplied cuts: Haas 65/75/95, Inter 400–700 */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  /* ---------- Breakpoints: 640 / 1024 / 1440 (+768 for the mobile motion rules in §8.9) ---------- */
+  --breakpoint-*: initial;
+  --breakpoint-sm: 40rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 90rem;
+
+  /* ---------- Display scale (§6 fluid sizes, verbatim) ---------- */
+  --tracking-display: -0.02em;
+  --leading-display: 0.95;
+  --leading-body: 1.5;
+
+  --text-hero: clamp(2.75rem, 5.5vw, 6.6rem); /* 105.6px, Haas 75 Bold */
+  --text-hero--line-height: 0.95;
+  --text-hero--letter-spacing: -0.02em;
+  --text-ghost: clamp(4.5rem, 10.65vw, 12.8rem); /* 204.5px, Haas 75 Bold */
+  --text-ghost--line-height: 0.95;
+  --text-ghost--letter-spacing: -0.02em;
+  --text-showreel: clamp(2rem, 3.125vw, 3.75rem); /* 60px, Haas 75 Bold */
+  --text-showreel--line-height: 1.1;
+  --text-impact: clamp(1.75rem, 2.4vw, 2.9rem); /* 45.9px, Haas 95 Black */
+  --text-impact--line-height: 0.95;
+  --text-impact--letter-spacing: -0.02em;
+  --text-stat: clamp(3rem, 4.26vw, 5.1rem); /* 81.8px, Haas 95 Black */
+  --text-stat--line-height: 1;
+  --text-cta: clamp(1.75rem, 3.23vw, 3.9rem); /* 62px, Haas 65 Medium */
+  --text-cta--line-height: 1.1;
+
+  /* ---------- UI scale: clamp(0.8 × size, size ÷ 19.2 vw, 1.15 × size) ---------- */
+  --text-tile-label: clamp(1.5rem, 1.5625vw, 2.1562rem); /* 30px, SemiBold: work tile labels */
+  --text-footer-cta: clamp(1.3rem, 1.3542vw, 1.8687rem); /* 26px, Bold: footer Let's Talk */
+  --text-stat-label: clamp(1.175rem, 1.224vw, 1.6891rem); /* 23.5px, Bold: stat labels */
+  --text-sub: clamp(1rem, 1.0417vw, 1.4375rem); /* 20px, SemiBold showreel subheading, Regular View work */
+  --text-footer-title: clamp(0.96rem, 1vw, 1.38rem); /* 19.2px, Bold: footer column titles */
+  --text-body: clamp(0.9rem, 0.9375vw, 1.2937rem); /* 18px, Medium: hero subheading, impact paragraph */
+  --text-connect: clamp(0.865rem, 0.901vw, 1.2434rem); /* 17.3px, SemiBold: LET'S CONNECT */
+  --text-accent: clamp(0.835rem, 0.8698vw, 1.2003rem); /* 16.7px, Futura: VIEW OUR WORK */
+  --text-stat-desc: clamp(0.75rem, 0.7812vw, 1.0781rem); /* 15px, Medium: stat descriptions */
+  --text-small: clamp(0.705rem, 0.7344vw, 1.0134rem); /* 14.1px, SemiBold contact details, Regular footer links */
+}
+
+/* Page container: max 1440px, side padding clamp(20px, 5vw, 72px) */
+@utility container-site {
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
+  padding-inline: clamp(20px, 5vw, 72px);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-body);
+    line-height: var(--leading-body);
+    color: var(--color-ink);
+    background-color: var(--color-paper);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+  }
+}
