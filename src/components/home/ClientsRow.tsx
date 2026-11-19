@@ -36,7 +36,7 @@ export function ClientsRow({ clients }: ClientsRowProps) {
           renderItem={(logo) => (
             <span
               data-client-logo
-              className="flex h-12 w-full max-w-[9.5rem] items-center justify-center sm:h-14 lg:h-16"
+              className="relative flex h-12 w-full max-w-[9.5rem] items-center justify-center will-change-transform hover:z-10 active:z-10 motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:active:scale-110 motion-safe:[@media(hover:hover)]:hover:scale-[1.15] sm:h-14 lg:h-16"
             >
               <Img
                 image={logo.image}
