@@ -5,6 +5,7 @@ import { Hero } from '@/components/home/Hero';
 import { Impact } from '@/components/home/Impact';
 import { Showreel } from '@/components/home/Showreel';
 import { WorkGrid } from '@/components/home/WorkGrid';
+import { useSeo } from '@/lib/useSeo';
 
 export const homeLoader = async () => ({
   home: await getHomePage(),
@@ -17,6 +18,7 @@ export const homeLoader = async () => ({
  */
 export function HomeRoute() {
   const { home } = useLoaderData<typeof homeLoader>();
+  useSeo({ path: '/' });
 
   return (
     <>

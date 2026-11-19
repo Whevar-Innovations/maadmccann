@@ -1,0 +1,14 @@
+{
+  "name": "MAAD McCANN",
+  "short_name": "MAAD",
+  "description": "MAAD McCANN is a 360° creative agency in Kampala, Uganda: strategy, creativity, digital and culture.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#2A0618",
+  "background_color": "#2A0618",
+  "icons": [
+    { "src": "/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
