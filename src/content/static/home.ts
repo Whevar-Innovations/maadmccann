@@ -6,7 +6,12 @@ import cocacolaSrc from '@/assets/img/work/cocacola-digital.webp';
 import tuskerSrc from '@/assets/img/work/tuskerlite-turn-on.webp';
 import baatiSrc from '@/assets/img/work/uganda-baati-crown.webp';
 import prideSrc from '@/assets/img/work/pride-bank-growing.webp';
-import clientPlaceholderSrc from '@/assets/img/clients/placeholder-logo.png';
+import cocaColaLogo from '@/assets/img/clients/coca-cola.webp';
+import unicefLogo from '@/assets/img/clients/unicef.webp';
+import diageoLogo from '@/assets/img/clients/diageo.webp';
+import emiratesLogo from '@/assets/img/clients/emirates.webp';
+import ugachickLogo from '@/assets/img/clients/ugachick.webp';
+import multichoiceLogo from '@/assets/img/clients/multichoice.webp';
 
 type RawProject = Omit<Project, 'href'>;
 
@@ -53,15 +58,14 @@ const rawProjects: RawProject[] = [
   },
 ];
 
-// Placeholder logo used until the 7 final client SVGs arrive (SPEC §5.4 & §9)
-const clientNames = [
-  { id: 'coca-cola', name: 'Coca-Cola' },
-  { id: 'dstv', name: 'DStv' },
-  { id: 'unicef', name: 'UNICEF' },
-  { id: 'rotary', name: 'Rotary' },
-  { id: 'gotv', name: 'GOtv' },
-  { id: 'emirates', name: 'Emirates' },
-  { id: 'bni', name: 'BNI' },
+// Client logos (trimmed of padding; source files live in assets/img/clients/color)
+const clientLogos = [
+  { id: 'coca-cola', name: 'Coca-Cola', src: cocaColaLogo, w: 520, h: 180 },
+  { id: 'unicef', name: 'UNICEF', src: unicefLogo, w: 520, h: 134 },
+  { id: 'diageo', name: 'Diageo', src: diageoLogo, w: 520, h: 120 },
+  { id: 'emirates', name: 'Emirates', src: emiratesLogo, w: 520, h: 116 },
+  { id: 'ugachick', name: 'Ugachick', src: ugachickLogo, w: 225, h: 225 },
+  { id: 'multichoice', name: 'MultiChoice', src: multichoiceLogo, w: 428, h: 260 },
 ] as const;
 
 export const home: HomePage = {
@@ -118,10 +122,10 @@ export const home: HomePage = {
   },
   clients: {
     heading: 'TRUSTED BY VISIONARY BRANDS',
-    logos: clientNames.map(({ id, name }) => ({
+    logos: clientLogos.map(({ id, name, src, w, h }) => ({
       id,
       name,
-      image: img(clientPlaceholderSrc, 144, 149, `${name} logo`),
+      image: img(src, w, h, `${name} logo`),
     })),
   },
   featuredProjects: rawProjects.map(withProjectHref),

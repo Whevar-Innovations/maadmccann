@@ -1,7 +1,7 @@
 import type { HomePage } from '@/content/types';
 import { Img } from '@/components/ui/Img';
 import { FadeUp } from '@/motion/FadeUp';
-import { REVEAL } from '@/motion/tokens';
+import { LogoCarousel } from '@/motion/LogoCarousel';
 
 export type ClientsRowProps = {
   clients: HomePage['clients'];
@@ -9,8 +9,7 @@ export type ClientsRowProps = {
 
 /**
  * Clients row section (SPEC §7 #4 & §8.5).
- * Centred small-caps label, then 7 logos in one row (wraps to 2 rows below 640px).
- * Uses <FadeUp> with stagger 0.05.
+ * Centred small-caps label, then a stepped, infinite logo carousel (visible count follows width; pauses on hover).
  */
 export function ClientsRow({ clients }: ClientsRowProps) {
   return (
@@ -28,27 +27,26 @@ export function ClientsRow({ clients }: ClientsRowProps) {
             {clients.heading}
           </h2>
         </FadeUp>
+      </div>
 
-        <FadeUp
-          as="ul"
-          stagger={REVEAL.clientsStagger}
-          className="mt-8 grid grid-cols-4 items-center justify-items-center gap-6 sm:grid-cols-7 sm:gap-8 lg:mt-10"
-        >
-          {clients.logos.map((logo) => (
-            <li
-              key={logo.id}
+      <FadeUp className="container-site mt-8 lg:mt-10">
+        <LogoCarousel
+          items={clients.logos}
+          getKey={(logo) => logo.id}
+          renderItem={(logo) => (
+            <span
               data-client-logo
-              className="flex items-center justify-center will-change-transform"
+              className="flex h-12 w-full max-w-[9.5rem] items-center justify-center sm:h-14 lg:h-16"
             >
               <Img
                 image={logo.image}
-                sizes="120px"
-                className="h-10 w-auto object-contain sm:h-12 lg:h-14"
+                sizes="152px"
+                className="h-full w-full object-contain"
               />
-            </li>
-          ))}
-        </FadeUp>
-      </div>
+            </span>
+          )}
+        />
+      </FadeUp>
     </section>
   );
 }

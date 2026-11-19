@@ -128,7 +128,7 @@ export function RevealImage({
         <div
           ref={driftRef}
           className={`h-full w-full will-change-transform ${
-            parallax ? 'md:scale-[1.12]' : ''
+            parallax ? 'md:scale-[1.06]' : ''
           }`.trim()}
         >
           {children}

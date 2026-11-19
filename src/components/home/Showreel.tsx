@@ -1,30 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
 import type { HomePage } from '@/content/types';
+import MuxPlayer from '@mux/mux-player-react';
+import type MuxPlayerElement from '@mux/mux-player';
 import { Img } from '@/components/ui/Img';
+import { PlayButton } from '@/components/ui/PlayButton';
 import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
 import { RevealImage } from '@/motion/RevealImage';
 import { RevealText } from '@/motion/RevealText';
 import { useSmoothScroll } from '@/motion/SmoothScroll';
-import { DUR, EASE } from '@/motion/tokens';
 
 export type ShowreelProps = {
   showreel: HomePage['showreel'];
 };
 
-function toEmbedVideoUrl(rawUrl: string): string {
-  if (!rawUrl) return '';
-  const muxWatchPrefix = 'https://player.mux.com/watch/';
-  if (rawUrl.startsWith(muxWatchPrefix)) {
-    const id = rawUrl.slice(muxWatchPrefix.length).split('?')[0];
-    return `https://player.mux.com/${id}?autoplay=1`;
-  }
-  return rawUrl;
+function toMuxPlaybackId(rawUrl: string): string | null {
+  const m = rawUrl.match(/^https:\/\/player\.mux\.com\/(?:watch\/)?([A-Za-z0-9]+)/);
+  return m?.[1] ?? null;
 }
 
 /**
  * Showreel section (SPEC §7 #3, §8.5 & §8.6).
  * - Heading and subheading use <RevealText>, poster uses <RevealImage>.
- * - WATCH circle follows the pointer inside the poster (lerped, desktop) and scales 1.15 on hover.
+ * - The poster frame widens to 90vw on scroll; the play button stays fixed at its centre.
  * - Click opens a fullscreen video modal, locks Lenis scroll, traps focus, and closes on Esc.
  */
 export function Showreel({ showreel }: ShowreelProps) {
@@ -35,12 +32,23 @@ export function Showreel({ showreel }: ShowreelProps) {
   const closeBtnRef = useRef<HTMLButtonElement | null>(null);
   const { stopScroll, startScroll } = useSmoothScroll();
 
-  const embedUrl = toEmbedVideoUrl(showreel.videoUrl);
+  const playbackId = toMuxPlaybackId(showreel.videoUrl);
+  const playerRef = useRef<MuxPlayerElement | null>(null);
 
   useEffect(() => {
     if (!modalOpen) return;
     stopScroll();
     closeBtnRef.current?.focus();
+
+    // Start playback right away, still inside the click's user activation.
+    // If the browser refuses sound, fall back to muted so one click always plays.
+    const player = playerRef.current;
+    if (player) {
+      player.play().catch(() => {
+        player.muted = true;
+        player.play().catch(() => {});
+      });
+    }
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -51,7 +59,7 @@ export function Showreel({ showreel }: ShowreelProps) {
         const dialog = document.getElementById('showreel-video-modal');
         if (!dialog) return;
         const focusable = dialog.querySelectorAll<HTMLElement>(
-          'button, iframe, [tabindex]:not([tabindex="-1"])',
+          'button, mux-player, [tabindex]:not([tabindex="-1"])',
         );
         if (focusable.length === 0) return;
         const first = focusable[0];
@@ -73,52 +81,31 @@ export function Showreel({ showreel }: ShowreelProps) {
     };
   }, [modalOpen, stopScroll, startScroll]);
 
+  // Scroll-linked expansion: the frame widens from 62vw to 90vw as it rises into view.
   useGSAP(
     () => {
-      const wrap = posterWrapRef.current;
-      const btn = triggerRef.current;
-      if (!wrap || !btn) return;
-
+      const frame = posterWrapRef.current;
+      if (!frame) return;
       const mm = gsap.matchMedia();
-
       mm.add(
-        {
-          fine: MEDIA_QUERIES.finePointer,
-          motionOk: MEDIA_QUERIES.motionOk,
-        },
+        { motionOk: MEDIA_QUERIES.motionOk, isDesktop: MEDIA_QUERIES.desktop },
         (context) => {
-          const { fine, motionOk } = context.conditions ?? {};
-          if (!fine || !motionOk) return;
-
-          const xTo = gsap.quickTo(btn, 'x', {
-            duration: DUR.spotlight,
-            ease: EASE.soft,
-          });
-          const yTo = gsap.quickTo(btn, 'y', {
-            duration: DUR.spotlight,
-            ease: EASE.soft,
-          });
-
-          const onPointerMove = (e: PointerEvent) => {
-            const rect = wrap.getBoundingClientRect();
-            const dx = (e.clientX - (rect.left + rect.width / 2)) * 0.22;
-            const dy = (e.clientY - (rect.top + rect.height / 2)) * 0.22;
-            xTo(dx);
-            yTo(dy);
-          };
-
-          const onPointerLeave = () => {
-            xTo(0);
-            yTo(0);
-          };
-
-          wrap.addEventListener('pointermove', onPointerMove);
-          wrap.addEventListener('pointerleave', onPointerLeave);
-
-          return () => {
-            wrap.removeEventListener('pointermove', onPointerMove);
-            wrap.removeEventListener('pointerleave', onPointerLeave);
-          };
+          const { motionOk, isDesktop } = context.conditions ?? {};
+          if (!motionOk || !isDesktop) return;
+          gsap.fromTo(
+            frame,
+            { width: '62vw' },
+            {
+              width: '90vw',
+              ease: 'none',
+              scrollTrigger: {
+                trigger: frame,
+                start: 'top 88%',
+                end: 'top 20%',
+                scrub: 0.6,
+              },
+            },
+          );
         },
       );
     },
@@ -151,38 +138,33 @@ export function Showreel({ showreel }: ShowreelProps) {
           </RevealText>
         </div>
 
-        <div
-          ref={posterWrapRef}
-          data-showreel-poster-wrap
-          onClick={() => setModalOpen(true)}
-          className="relative mt-12 cursor-pointer overflow-hidden lg:mt-16"
-        >
-          <RevealImage>
-            <Img
-              image={showreel.poster}
-              sizes="(min-width: 1440px) 1296px, 92vw"
-              className="aspect-video h-auto w-full object-cover"
-            />
-          </RevealImage>
+      </div>
 
-          {/* Outlined circle labelled WATCH in the centre */}
-          <button
-            ref={triggerRef}
-            type="button"
-            data-showreel-trigger
-            data-video-url={showreel.videoUrl}
-            aria-haspopup="dialog"
-            aria-expanded={modalOpen}
-            aria-label={`Watch showreel: ${showreel.heading}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setModalOpen(true);
-            }}
-            className="absolute top-1/2 left-1/2 flex h-28 w-28 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border-[1.5px] border-paper/95 bg-transparent text-small font-semibold tracking-[0.08em] text-paper uppercase transition-[background-color,color,scale] duration-300 hover:scale-115 hover:bg-paper hover:text-ink sm:h-36 sm:w-36 lg:h-44 lg:w-44"
-          >
-            WATCH
-          </button>
-        </div>
+      {/* Frame: sits outside the container so it can grow to 90vw. */}
+      <div
+        ref={posterWrapRef}
+        data-showreel-poster-wrap
+        onClick={() => setModalOpen(true)}
+        className="relative mx-auto mt-12 aspect-video w-[92vw] cursor-pointer overflow-hidden md:w-[90vw] lg:mt-16"
+      >
+        <RevealImage className="absolute inset-0 h-full w-full">
+          {/* The poster still has black letterbox bars baked in (~13% top/bottom),
+              so it is scaled just enough to make the picture cover the frame edge to edge. */}
+          <Img
+            image={showreel.poster}
+            sizes="90vw"
+            className="h-full w-full scale-[1.36] object-cover"
+          />
+        </RevealImage>
+
+        <PlayButton
+          ref={triggerRef}
+          data-showreel-trigger
+          data-video-url={showreel.videoUrl}
+          aria-haspopup="dialog"
+          aria-expanded={modalOpen}
+          aria-label={`Play showreel: ${showreel.heading}`}
+        />
       </div>
 
       {/* Fullscreen Showreel Video Modal (SPEC §7 #3 & §8.6) */}
@@ -228,13 +210,16 @@ export function Showreel({ showreel }: ShowreelProps) {
             onClick={(e) => e.stopPropagation()}
             className="relative aspect-video w-full max-w-6xl overflow-hidden bg-black shadow-2xl"
           >
-            {embedUrl ? (
-              <iframe
-                src={embedUrl}
+            {playbackId ? (
+              <MuxPlayer
+                ref={playerRef}
+                playbackId={playbackId}
+                streamType="on-demand"
                 title={showreel.heading}
-                allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture; fullscreen"
-                allowFullScreen
-                className="h-full w-full border-0"
+                autoPlay
+                playsInline
+                accentColor="#8e1b3b"
+                style={{ width: '100%', height: '100%' }}
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-body text-paper/80">

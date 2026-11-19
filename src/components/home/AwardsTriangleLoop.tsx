@@ -21,8 +21,11 @@ export const TRIANGLE_POINTS = {
 
 type PointName = keyof typeof TRIANGLE_POINTS;
 
-/** Starting point per image index: [back-left, back-right, front]. */
+/** Starting point per image index: [back-left, back-right, front]. Extra images start in the pool. */
 const START_POINTS: readonly PointName[] = ['backLeft', 'backRight', 'front'];
+
+/** A trophy is either on a triangle point or waiting (hidden, parked at back-right) in the pool. */
+type TrophyState = PointName | 'pool';
 
 /** Loop direction: front -> back-right -> back-left -> front. */
 const NEXT_POINT: Record<PointName, PointName> = {
@@ -32,7 +35,7 @@ const NEXT_POINT: Record<PointName, PointName> = {
 };
 
 export type AwardsTriangleLoopProps = {
-  /** Trophy images in starting order: [back-left, back-right, front]. Only the first 3 are used. */
+  /** Trophy images, 3 or more. The first 3 start as [back-left, back-right, front]; extras rotate in from a pool. */
   images: readonly ImageAsset[];
   /** Gate the loop (e.g. wait for the page loader). Default true. */
   play?: boolean;
@@ -54,7 +57,9 @@ export type AwardsTriangleLoopProps = {
 };
 
 /**
- * Three award trophies that continuously rotate around a triangle (SPEC §8.4).
+ * Award trophies that continuously rotate around a triangle (SPEC §8.4). Three are visible at a time;
+ * with more than three images, the trophy leaving the front fades into a pool and the next one
+ * from the pool fades in at back-right.
  * Each trophy lives in a stage-sized "orbit" wrapper, so xPercent/yPercent are relative to
  * the stage and the triangle scales with its container. Inside, the original
  * entrance -> parallax -> float wrappers are kept so Hero's existing animations still apply.
@@ -94,10 +99,11 @@ export function AwardsTriangleLoop({
 
       // Resting layout (also the reduced-motion layout).
       orbits.forEach((orbit, i) => {
-        const name = START_POINTS[i] ?? 'front';
+        const name = START_POINTS[i];
         gsap.set(orbit, {
-          ...pointVars(name),
-          zIndex: TRIANGLE_POINTS[name].zIndex,
+          ...pointVars(name ?? 'backRight'),
+          zIndex: TRIANGLE_POINTS[name ?? 'backRight'].zIndex,
+          autoAlpha: name ? 1 : 0,
           transformOrigin: '50% 100%',
         });
       });
@@ -123,26 +129,52 @@ export function AwardsTriangleLoop({
             });
           }
 
-          // One full cycle = 3 steps (hold, then move); every trophy is back at its start point.
+          // One full cycle = one step per image (the ring of points + pool rotates by one each step),
+          // after which every trophy is back at its start state.
           const tl = gsap.timeline({ repeat: -1, delay: startDelay });
-          const current = START_POINTS.slice(0, orbits.length);
+          const states: TrophyState[] = orbits.map((_, i) => START_POINTS[i] ?? 'pool');
+          const pool: number[] = [];
+          states.forEach((state, i) => {
+            if (state === 'pool') pool.push(i);
+          });
 
-          for (let step = 0; step < 3; step += 1) {
+          for (let step = 0; step < orbits.length; step += 1) {
             const moveAt = step * (holdDuration + moveDuration) + holdDuration;
+            const midAt = moveAt + moveDuration / 2;
+            const incoming = pool.shift();
+            const before = [...states];
+
             orbits.forEach((orbit, i) => {
-              const target = NEXT_POINT[current[i] ?? 'front'];
+              const from = before[i];
+              if (from === 'pool') {
+                if (i !== incoming) return;
+                // Pool head is parked at back-right: fade in there.
+                tl.set(orbit, { zIndex: TRIANGLE_POINTS.backRight.zIndex }, moveAt);
+                tl.to(orbit, { autoAlpha: 1, duration: moveDuration, ease }, moveAt);
+                states[i] = 'backRight';
+                return;
+              }
+
+              const target = NEXT_POINT[from ?? 'front'];
+              const toPool = from === 'front' && incoming !== undefined;
               tl.to(
                 orbit,
-                { ...pointVars(target), duration: moveDuration, ease },
+                {
+                  ...pointVars(target),
+                  ...(toPool ? { autoAlpha: 0 } : undefined),
+                  duration: moveDuration,
+                  ease,
+                },
                 moveAt,
               );
               // Swap stacking halfway through the move so trophies pass in front/behind correctly.
-              tl.set(
-                orbit,
-                { zIndex: TRIANGLE_POINTS[target].zIndex },
-                moveAt + moveDuration / 2,
-              );
-              current[i] = target;
+              tl.set(orbit, { zIndex: TRIANGLE_POINTS[target].zIndex }, midAt);
+              if (toPool) {
+                pool.push(i);
+                states[i] = 'pool';
+              } else {
+                states[i] = target;
+              }
             });
           }
 
@@ -173,6 +205,7 @@ export function AwardsTriangleLoop({
         backScale,
         backBrightness,
         bob,
+        images.length,
       ],
     },
   );
@@ -194,12 +227,16 @@ export function AwardsTriangleLoop({
         }}
       />
 
-      {images.slice(0, 3).map((image, index) => (
+      {images.map((image, index) => (
         <div
-          key={image.src}
+          key={`${index}-${image.src}`}
           data-trophy-orbit={index}
           className="pointer-events-none absolute inset-0 origin-bottom will-change-transform"
-          style={{ zIndex: TRIANGLE_POINTS[START_POINTS[index] ?? 'front'].zIndex }}
+          style={{
+            zIndex: TRIANGLE_POINTS[START_POINTS[index] ?? 'backRight'].zIndex,
+            // Pool trophies start hidden (no flash before GSAP takes over)
+            ...(index >= START_POINTS.length ? { visibility: 'hidden', opacity: 0 } : undefined),
+          }}
         >
           {/* Trophy box sits at the front point; the orbit wrapper moves it around the triangle */}
           <div className="absolute bottom-0 left-1/2 w-[41.5%] -translate-x-1/2">

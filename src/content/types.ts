@@ -36,7 +36,7 @@ export type HomePage = {
     subheading: string;
     cta: Link;
     ghostText: string;           // 'TRUTH WELL TOLD'
-    awards: Award[];             // exactly 3; order = [back-left, back-right, front]
+    awards: Award[];             // 3+; first 3 = [back-left, back-right, front], extras = rotation pool
   };
   showreel: { heading: string; subheading: string; poster: ImageAsset; videoUrl: string };
   clients: { heading: string; logos: ClientLogo[] };

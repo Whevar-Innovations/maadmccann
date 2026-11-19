@@ -50,6 +50,9 @@ export function Hero({ hero }: HeroProps) {
         section.querySelectorAll<HTMLElement>('[data-trophy-shadow]');
       const glow = section.querySelector<HTMLElement>('[data-trophies-glow]');
 
+      // Rest position of the ghost text (owned by GSAP; the element must be block-level to transform).
+      if (ghost) gsap.set(ghost, { yPercent: 0 });
+
       const mm = gsap.matchMedia();
 
       // Reduced motion: immediate resting state, no loops or parallax (SPEC §8.9)
@@ -148,76 +151,14 @@ export function Hero({ hero }: HeroProps) {
             }
           };
 
-          // --- REFRESH SCENARIO (loader already shown in session) ---
-          // Smooth 0.5s settle into resting state with zero jump/flash
-          if (skippedLoader) {
-            if (bg) gsap.set(bg, { scale: 1 });
-
-            if (motifA && motifV) {
-              gsap.fromTo(
-                [motifA, motifV],
-                { fillOpacity: 0, strokeOpacity: 0, x: 0, y: 0 },
-                {
-                  fillOpacity: 0.36,
-                  strokeOpacity: 0,
-                  duration: 0.6,
-                  ease: EASE.soft,
-                },
-              );
-            }
-
-            if (lines.length > 0) {
-              gsap.fromTo(
-                lines,
-                { opacity: 0, y: 12 },
-                { opacity: 1, y: 0, duration: 0.5, stagger: 0.04, ease: EASE.soft },
-              );
-            }
-
-            if (ghost) {
-              gsap.fromTo(
-                ghost,
-                { yPercent: 8, opacity: 0 },
-                { opacity: 1, duration: 0.6, ease: EASE.soft },
-              );
-            }
-
-            trophyEntrances.forEach((el) => {
-              gsap.fromTo(
-                el,
-                { opacity: 0, y: 16 },
-                { opacity: 1, y: 0, duration: 0.5, ease: EASE.soft },
-              );
-            });
-
-            if (subheading) {
-              gsap.fromTo(
-                subheading,
-                { opacity: 0 },
-                { opacity: 1, duration: 0.5, ease: EASE.soft },
-              );
-            }
-
-            if (cta) {
-              gsap.fromTo(
-                cta,
-                { opacity: 0 },
-                { opacity: 1, duration: 0.5, ease: EASE.soft },
-              );
-            }
-
-            if (headerItems.length > 0) {
-              gsap.fromTo(
-                headerItems,
-                { opacity: 0, y: -8 },
-                { opacity: 1, y: 0, duration: 0.4, ease: EASE.soft },
-              );
-            }
-
-            startIdleLoops();
-          } else {
+          // Full entrance choreography plays on every load. When the loader was skipped
+          // (already shown this session) there is no panel wipe, so use a short lead-in.
+          {
             // --- FIRST VISIT SCENARIO (plays timed with loader exit) ---
-            const tl = gsap.timeline({ defaults: { ease: EASE.out } });
+            const tl = gsap.timeline({
+              defaults: { ease: EASE.out },
+              delay: skippedLoader ? 0.15 : 0,
+            });
 
             // t = 0.0: Background scale 1.08 -> 1 (1.8s)
             if (bg) {
@@ -248,8 +189,8 @@ export function Hero({ hero }: HeroProps) {
               )
                 .fromTo(
                   motifV,
-                  { y: -120 * distFactor },
-                  { y: 0, duration: 2.2 },
+                  { x: -160 * distFactor },
+                  { x: 0, duration: 2.2 },
                   HERO_TIMELINE.motifStart + 0.15,
                 )
                 .to(
@@ -419,7 +360,7 @@ export function Hero({ hero }: HeroProps) {
         fetchPriority="high"
         decoding="async"
         data-hero-bg
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center will-change-transform"
+        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-top will-change-transform"
       />
 
       {/* Upright A (#mA) and Inverted A (#mV) motif from Motion Lab (Zero FOUC initial attributes) */}
@@ -488,12 +429,12 @@ export function Hero({ hero }: HeroProps) {
           <div data-hero-cta className="pt-1 will-change-transform">
             <Link
               href={hero.cta.href}
-              className="inline-flex items-center gap-3 text-accent font-semibold tracking-wider text-paper uppercase transition-opacity hover:opacity-80"
+              className="group inline-flex items-center gap-3 text-accent font-semibold tracking-wider text-paper uppercase transition-colors duration-300 hover:text-gold-500 focus-visible:text-gold-500"
             >
               <span>{hero.cta.label}</span>
               <span
                 aria-hidden="true"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-paper/40 transition-transform hover:translate-x-1"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-paper/40 transition-[translate,background-color,border-color,color] duration-300 ease-out group-hover:translate-x-1 group-hover:border-gold-500 group-hover:bg-gold-500 group-hover:text-crimson-950 group-focus-visible:translate-x-1 group-focus-visible:border-gold-500 group-focus-visible:bg-gold-500 group-focus-visible:text-crimson-950"
               >
                 <svg
                   width="14"
@@ -529,8 +470,7 @@ export function Hero({ hero }: HeroProps) {
       >
         <span
           data-hero-ghost
-          style={{ transform: 'translateY(8%)' }}
-          className="mx-auto w-full max-w-[1780px] text-center font-display text-[clamp(2.8rem,9.5vw,11.6rem)] leading-[0.84] font-bold tracking-[-0.025em] whitespace-nowrap text-[#19060c]/45 uppercase mix-blend-multiply will-change-transform"
+          className="mx-auto block w-full max-w-[1780px] text-center font-display text-[clamp(2.8rem,9.5vw,11.6rem)] leading-[0.84] font-bold tracking-[-0.025em] whitespace-nowrap text-[#240610]/50 uppercase mix-blend-multiply will-change-transform"
         >
           {hero.ghostText}
         </span>

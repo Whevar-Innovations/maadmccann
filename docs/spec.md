@@ -211,7 +211,7 @@ export const settings: SiteSettings = {
 Schema rules that keep the swap painless:
 
 - `headlineLines` is an **array of strings**, not one block of text, because line masks depend on visual lines.
-- `featuredProjects` is a reference array validated to exactly 5, and `hero.awards` to exactly 3. Layout slots are positional (see §7), so editors reorder rather than pick a layout.
+- `featuredProjects` is a reference array validated to exactly 5, and `hero.awards` to at least 3 (the first 3 fill the triangle, extras rotate in from a pool). Layout slots are positional (see §7), so editors reorder rather than pick a layout.
 - Every image field requires `alt`. Query `asset->metadata{lqip, dimensions}` and map it to `ImageAsset`.
 - Stats are an array of objects with numeric `value`, optional `decimals`, `suffix`, `label`, `description`.
 - Mappers live in `src/content/sanity/mappers.ts`. They are the only place that knows both shapes.
@@ -219,11 +219,8 @@ Schema rules that keep the swap painless:
 ```groq
 *[_type == 'homePage'][0]{
   hero{ headlineLines, subheading, cta, ghostText,
-    'awards': awards[]->{ 'id': _id, title, year,
-      'image': image{ alt, 'src': asset->url,
-        'width': asset->metadata.dimensions.width,
-        'height': asset->metadata.dimensions.height,
-        'lqip': asset->metadata.lqip } } },
+    'awards': awards[]->{ _id, title, year,
+      image{ alt, asset->{ _id, url, metadata{ lqip, dimensions } } } } },  // raw shape -> mapAward()
   showreel{ ... }, clients{ ... }, impact{ ... }, cta{ ... },
   'featuredProjects': featuredProjects[]->{ ... }
 }

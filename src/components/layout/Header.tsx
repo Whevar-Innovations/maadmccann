@@ -158,13 +158,13 @@ export function Header({ settings }: HeaderProps) {
                 <li key={item.href} data-header-item>
                   <ContentLink
                     link={item}
-                    className="group relative inline-block py-1 text-small font-medium text-paper/95 cursor-default"
+                    className="group relative inline-block py-1 text-small font-medium text-paper/95 cursor-default transition-colors duration-300 hover:text-gold-500 focus-visible:text-gold-500"
                   >
                     <span>{item.label}</span>
                     {/* Underline indicator */}
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 bg-paper transition-transform duration-300 group-hover:scale-x-100"
+                      className="pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 bg-gold-500 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
                     />
                   </ContentLink>
                 </li>

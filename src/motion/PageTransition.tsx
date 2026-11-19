@@ -363,6 +363,7 @@ export function PageTransition({ children }: PageTransitionProps) {
         <div
           ref={curtainAccentRef}
           data-curtain-accent
+          style={{ visibility: 'hidden', transform: 'translateY(100%)' }}
           className="fixed inset-0 z-[9991] bg-[#1a1a1e] will-change-transform"
         />
 
@@ -370,6 +371,7 @@ export function PageTransition({ children }: PageTransitionProps) {
         <div
           ref={curtainMainRef}
           data-curtain-main
+          style={{ visibility: 'hidden', transform: 'translateY(100%)' }}
           className="fixed inset-0 z-[9992] flex items-center justify-center bg-[#0E0E10] will-change-transform"
         >
           {/* Subtle brand motif in curtain */}

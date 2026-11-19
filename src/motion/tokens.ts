@@ -86,8 +86,8 @@ export const MOTIF_LAB = {
 export const REVEAL = {
   imageClipDuration: 1.2,
   imageScaleDuration: 1.6,
-  imageScaleFrom: 1.15,
-  parallaxPercent: 8,
+  imageScaleFrom: 1.06,
+  parallaxPercent: 3,
   ctaParallaxPercent: 6,
   counterDuration: 1.6,
   counterStart: 'top 80%',
@@ -95,6 +95,14 @@ export const REVEAL = {
   workHoverScale: 1.05,
   workHoverDuration: 0.8,
   magneticMaxPx: 8,
+  // "Fall into grid" entry for work tiles
+  fallY: 40,
+  fallYMobile: 24,
+  fallScale: 0.72,
+  fallDuration: 1.1,
+  fallCaptionDelay: 0.35,
+  carouselHold: 3,
+  carouselStep: 0.9,
 } as const;
 
 export const TRANSITION = {

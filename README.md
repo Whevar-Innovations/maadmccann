@@ -126,12 +126,21 @@ npm run typecheck
 # Build for production
 npm run build
 
+# Dev server with the mock CMS source (Sanity-shaped awards via src/content/sanity/mappers.ts)
+npm run dev:mock
+
 # Build with mock CMS source (verifies CMS decoupling)
 VITE_CONTENT_SOURCE=mock npm run build
 
 # Preview production build locally
 npm run preview
 ```
+
+### Adding a trophy (mock CMS)
+
+1. Export a transparent image as `<name>-700.webp` and `<name>-1400.webp` into `public/trophies/` (the number is the height in px).
+2. Add an entry to `src/content/mock/data/awards.ts` (`asset.url` = the `-1400` file, `dimensions` = its size).
+3. Run `npm run dev:mock`. The first 3 awards fill the hero triangle; any extra awards rotate in from a pool.
 
 ---
 

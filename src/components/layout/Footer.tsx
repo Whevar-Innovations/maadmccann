@@ -155,7 +155,7 @@ export function Footer({ settings }: FooterProps) {
                       href={social.url}
                       external={social.url !== '#'}
                       aria-label={social.platform}
-                      className="inline-flex h-7 w-7 items-center justify-center text-paper transition-opacity hover:opacity-75"
+                      className="inline-flex h-7 w-7 items-center justify-center text-paper transition-[color,transform] duration-300 hover:-translate-y-0.5 hover:scale-110 hover:text-gold-500 focus-visible:text-gold-500"
                     >
                       <SocialIcon platform={social.platform} />
                     </Link>
@@ -177,7 +177,7 @@ export function Footer({ settings }: FooterProps) {
                   <li key={item.label}>
                     <ContentLink
                       link={item}
-                      className="text-small leading-snug font-regular text-paper/90 transition-opacity hover:text-paper"
+                      className="link-accent text-small leading-snug font-regular text-paper/90"
                     />
                   </li>
                 ))}
@@ -194,7 +194,7 @@ export function Footer({ settings }: FooterProps) {
                   <li key={item.label}>
                     <ContentLink
                       link={item}
-                      className="text-small leading-snug font-regular text-paper/90 transition-opacity hover:text-paper"
+                      className="link-accent text-small leading-snug font-regular text-paper/90"
                     />
                   </li>
                 ))}
@@ -211,7 +211,7 @@ export function Footer({ settings }: FooterProps) {
                   <p>
                     <a
                       href={`mailto:${footer.contact.email}`}
-                      className="transition-opacity hover:text-paper"
+                      className="link-accent"
                     >
                       {footer.contact.email}
                     </a>
@@ -220,7 +220,7 @@ export function Footer({ settings }: FooterProps) {
                     Phone:{' '}
                     <a
                       href={`tel:${footer.contact.phone.replace(/\s+/g, '')}`}
-                      className="font-bold text-paper transition-opacity hover:opacity-85"
+                      className="link-accent font-bold text-paper"
                     >
                       {footer.contact.phone}
                     </a>

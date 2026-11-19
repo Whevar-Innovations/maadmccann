@@ -3,8 +3,8 @@ import type { HomePage, SiteSettings } from './types';
 const source = import.meta.env.VITE_CONTENT_SOURCE ?? 'static';
 
 function assertHomePage(data: HomePage): HomePage {
-  if (data.hero.awards.length !== 3) {
-    throw new Error(`Expected exactly 3 hero awards, received ${data.hero.awards.length}`);
+  if (data.hero.awards.length < 3) {
+    throw new Error(`Expected at least 3 hero awards, received ${data.hero.awards.length}`);
   }
   if (data.featuredProjects.length !== 5) {
     throw new Error(

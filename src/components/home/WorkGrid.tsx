@@ -28,7 +28,12 @@ const SLOT_LAYOUT: readonly string[] = [
  */
 export function WorkGrid({ projects }: WorkGridProps) {
   return (
-    <section id="work" aria-labelledby="work-grid-heading" data-work-grid>
+    <section
+      id="work"
+      aria-labelledby="work-grid-heading"
+      data-work-grid
+      className="overflow-x-clip"
+    >
       <h2 id="work-grid-heading" className="sr-only">
         Featured Work
       </h2>

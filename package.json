@@ -5,12 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:mock": "VITE_CONTENT_SOURCE=mock vite",
     "typecheck": "tsc -b",
     "build": "tsc -b && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@mux/mux-player-react": "^3.14.1",
     "@sanity/client": "^8.16.0",
     "@sanity/image-url": "^2.2.0",
     "gsap": "^3.15.1",

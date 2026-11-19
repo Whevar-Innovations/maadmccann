@@ -1,14 +1,20 @@
 import type { HomePage, SiteSettings } from '../types';
 import { home } from '../static/home';
 import { settings } from '../static/settings';
+import { mapAward } from '../sanity/mappers';
+import { mockAwards } from './data/awards';
+import { mockImageUrl } from './imageUrl';
 
 /**
  * Mock async CMS source to verify that swapping VITE_CONTENT_SOURCE requires
- * zero component edits (SPEC §10 Acceptance Criterion 1).
+ * zero component edits (SPEC §10 Acceptance Criterion 1). Awards come back as
+ * Sanity-shaped documents and go through the same mapper the real source will use.
  */
 export async function getHomePage(): Promise<HomePage> {
   await Promise.resolve();
-  return structuredClone(home);
+  const page = structuredClone(home);
+  page.hero.awards = mockAwards.map((award) => mapAward(award, mockImageUrl));
+  return page;
 }
 
 export async function getSiteSettings(): Promise<SiteSettings> {

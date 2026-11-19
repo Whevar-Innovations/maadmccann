@@ -5,6 +5,7 @@ import { Link } from '@/components/ui/Link';
 import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
 import { RevealImage } from '@/motion/RevealImage';
 import { DUR, EASE, REVEAL } from '@/motion/tokens';
+import { useFallIn } from '@/motion/useFallIn';
 
 export type WorkCardProps = {
   project: Project;
@@ -25,6 +26,11 @@ export function WorkCard({ project, slotIndex, className = '' }: WorkCardProps) 
   const lineStemRef = useRef<HTMLSpanElement | null>(null);
   const lineTipRef = useRef<SVGSVGElement | null>(null);
 
+  const landedRef = useFallIn(cardRef, {
+    delay: slotIndex === 1 ? 0.12 : 0,
+    captionSelector: '[data-work-caption]',
+  });
+
   const isBanner = slotIndex === 4;
   const isTall = slotIndex === 0;
   const sizes = isBanner ? '100vw' : '(min-width: 768px) 50vw, 100vw';
@@ -42,6 +48,7 @@ export function WorkCard({ project, slotIndex, className = '' }: WorkCardProps) 
 
       mm.add(MEDIA_QUERIES.motionOk, () => {
         const onEnter = () => {
+          if (!landedRef.current) return;
           gsap.to(zoomEl, {
             scale: REVEAL.workHoverScale,
             duration: REVEAL.workHoverDuration,
@@ -116,7 +123,7 @@ export function WorkCard({ project, slotIndex, className = '' }: WorkCardProps) 
       ref={cardRef}
       data-work-card
       data-work-slot={slotIndex}
-      className={`group relative overflow-hidden bg-ink text-paper ${className}`.trim()}
+      className={`group relative bg-ink text-paper ${className}`.trim()}
     >
       <Link
         href={project.href}
@@ -157,10 +164,10 @@ export function WorkCard({ project, slotIndex, className = '' }: WorkCardProps) 
 
         {/* Bottom-left caption: Client: Title + View work ——> */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 p-6 sm:p-8 lg:px-10 lg:py-9">
-          <h3 className="text-tile-label leading-tight font-semibold text-paper">
+          <h3 data-work-caption className="text-tile-label leading-tight font-semibold text-paper">
             {project.client}: {project.title}
           </h3>
-          <div className="mt-2.5 inline-flex items-center gap-3 text-sub font-regular text-paper/95">
+          <div data-work-caption className="mt-2.5 inline-flex items-center gap-3 text-sub font-regular text-paper/95 transition-colors duration-300 group-hover:text-gold-500 group-focus-within:text-gold-500">
             <span>View work</span>
             <span
               data-work-line
