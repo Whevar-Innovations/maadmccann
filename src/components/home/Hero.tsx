@@ -4,7 +4,7 @@ import { Link } from '@/components/ui/Link';
 import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
 import { useLoaderState } from '@/motion/LoaderProvider';
 import { DIST, DUR, EASE, HERO_TIMELINE, STAGGER } from '@/motion/tokens';
-import { Trophies } from './Trophies';
+import { AwardsTriangleLoop } from './AwardsTriangleLoop';
 import heroBgSrc from '@/assets/jpg/hero-bg.jpg';
 
 export type HeroProps = {
@@ -514,7 +514,11 @@ export function Hero({ hero }: HeroProps) {
 
         {/* Right column: 3 Silverback Awards trophies in triangle formation */}
         <div className="flex justify-center md:col-span-6 lg:col-span-7 lg:justify-end">
-          <Trophies awards={hero.awards} />
+          <AwardsTriangleLoop
+            images={hero.awards.map((award) => award.image)}
+            play={isHeroReady}
+            bob={false}
+          />
         </div>
       </div>
 
