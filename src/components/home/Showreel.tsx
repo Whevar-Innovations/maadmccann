@@ -34,21 +34,58 @@ export function Showreel({ showreel }: ShowreelProps) {
 
   const playbackId = toMuxPlaybackId(showreel.videoUrl);
   const playerRef = useRef<MuxPlayerElement | null>(null);
+  const [needsUnmute, setNeedsUnmute] = useState(false);
+
+  /**
+   * Opens the modal and starts playback WITH sound synchronously inside the click,
+   * so browsers (incl. Safari/iOS) treat it as user-initiated. The player stays mounted
+   * (hidden) so it exists at click time. If sound is still refused, play muted and
+   * show a "Tap for sound" pill.
+   */
+  const openModal = () => {
+    setNeedsUnmute(false);
+    setModalOpen(true);
+    const player = playerRef.current;
+    if (!player) return;
+    player.muted = false;
+    player.volume = 1;
+    const attempt = player.play();
+    attempt?.catch((err: unknown) => {
+      if ((err as DOMException)?.name !== 'NotAllowedError') return;
+      player.muted = true;
+      setNeedsUnmute(true);
+      player.play()?.catch(() => {});
+    });
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    triggerRef.current?.focus();
+  };
+
+  const unmute = () => {
+    const player = playerRef.current;
+    if (!player) return;
+    player.muted = false;
+    player.volume = 1;
+    setNeedsUnmute(false);
+  };
+
+  // Hide the "Tap for sound" pill if the viewer unmutes via the player's own controls.
+  useEffect(() => {
+    const player = playerRef.current;
+    if (!player || !needsUnmute) return;
+    const onVolume = () => {
+      if (!player.muted) setNeedsUnmute(false);
+    };
+    player.addEventListener('volumechange', onVolume);
+    return () => player.removeEventListener('volumechange', onVolume);
+  }, [needsUnmute]);
 
   useEffect(() => {
     if (!modalOpen) return;
     stopScroll();
     closeBtnRef.current?.focus();
-
-    // Start playback right away, still inside the click's user activation.
-    // If the browser refuses sound, fall back to muted so one click always plays.
-    const player = playerRef.current;
-    if (player) {
-      player.play().catch(() => {
-        player.muted = true;
-        player.play().catch(() => {});
-      });
-    }
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -77,6 +114,8 @@ export function Showreel({ showreel }: ShowreelProps) {
     window.addEventListener('keydown', onKeyDown);
     return () => {
       window.removeEventListener('keydown', onKeyDown);
+      // The player stays mounted, so stop it when the modal closes.
+      playerRef.current?.pause();
       startScroll();
     };
   }, [modalOpen, stopScroll, startScroll]);
@@ -144,7 +183,7 @@ export function Showreel({ showreel }: ShowreelProps) {
       <div
         ref={posterWrapRef}
         data-showreel-poster-wrap
-        onClick={() => setModalOpen(true)}
+        onClick={openModal}
         className="relative mx-auto mt-12 aspect-video w-[92vw] cursor-pointer overflow-hidden md:w-[90vw] lg:mt-16"
       >
         <RevealImage className="absolute inset-0 h-full w-full">
@@ -167,18 +206,19 @@ export function Showreel({ showreel }: ShowreelProps) {
         />
       </div>
 
-      {/* Fullscreen Showreel Video Modal (SPEC §7 #3 & §8.6) */}
-      {modalOpen && (
-        <div
+      {/* Fullscreen Showreel Video Modal (SPEC §7 #3 & §8.6).
+          Always mounted (hidden when closed) so the player exists inside the play click. */}
+      <div
           id="showreel-video-modal"
           role="dialog"
           aria-modal="true"
           aria-label={showreel.heading}
-          onClick={() => {
-            setModalOpen(false);
-            triggerRef.current?.focus();
-          }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/95 p-4 backdrop-blur-md sm:p-8 lg:p-14"
+          aria-hidden={!modalOpen}
+          inert={!modalOpen}
+          onClick={closeModal}
+          className={`fixed inset-0 z-50 items-center justify-center bg-ink/95 p-4 backdrop-blur-md sm:p-8 lg:p-14 ${
+            modalOpen ? 'flex' : 'hidden'
+          }`}
         >
           <button
             ref={closeBtnRef}
@@ -186,8 +226,7 @@ export function Showreel({ showreel }: ShowreelProps) {
             aria-label="Close showreel video"
             onClick={(e) => {
               e.stopPropagation();
-              setModalOpen(false);
-              triggerRef.current?.focus();
+              closeModal();
             }}
             className="fixed top-6 right-6 z-50 inline-flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border border-paper/40 bg-ink/70 text-paper transition-colors hover:bg-paper hover:text-ink"
           >
@@ -216,7 +255,7 @@ export function Showreel({ showreel }: ShowreelProps) {
                 playbackId={playbackId}
                 streamType="on-demand"
                 title={showreel.heading}
-                autoPlay
+                preload="metadata"
                 playsInline
                 accentColor="#8e1b3b"
                 style={{ width: '100%', height: '100%' }}
@@ -226,9 +265,33 @@ export function Showreel({ showreel }: ShowreelProps) {
                 Showreel video unavailable
               </div>
             )}
+
+            {needsUnmute && (
+              <button
+                type="button"
+                onClick={unmute}
+                className="absolute top-4 left-4 z-10 inline-flex cursor-pointer items-center gap-2 rounded-full bg-crimson-950/80 px-4 py-2 text-small font-semibold text-paper backdrop-blur-sm transition-colors hover:bg-crimson-800"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M11 5 6 9H2v6h4l5 4V5z" />
+                  <path d="M15.5 8.5a5 5 0 0 1 0 7" />
+                  <path d="M19 5a10 10 0 0 1 0 14" />
+                </svg>
+                Tap for sound
+              </button>
+            )}
           </div>
         </div>
-      )}
     </section>
   );
 }
