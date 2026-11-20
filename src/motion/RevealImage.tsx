@@ -5,6 +5,8 @@ import { DUR, EASE, REVEAL, SCROLL } from './tokens';
 export type RevealImageProps = {
   children: ReactNode;
   parallax?: boolean;
+  /** Skip the inner 1.06 -> 1 entry zoom so the image never shows cropped at rest. */
+  noScale?: boolean;
   className?: string;
   innerClassName?: string;
 };
@@ -18,6 +20,7 @@ export type RevealImageProps = {
 export function RevealImage({
   children,
   parallax = false,
+  noScale = false,
   className = '',
   innerClassName = '',
 }: RevealImageProps) {
@@ -83,16 +86,18 @@ export function RevealImage({
             0,
           );
 
-          tl.fromTo(
-            scaleEl,
-            { scale: REVEAL.imageScaleFrom },
-            {
-              scale: 1,
-              duration: REVEAL.imageScaleDuration,
-              ease: EASE.out,
-            },
-            0,
-          );
+          if (!noScale) {
+            tl.fromTo(
+              scaleEl,
+              { scale: REVEAL.imageScaleFrom },
+              {
+                scale: 1,
+                duration: REVEAL.imageScaleDuration,
+                ease: EASE.out,
+              },
+              0,
+            );
+          }
 
           if (parallax && isDesktop) {
             gsap.fromTo(
@@ -113,7 +118,7 @@ export function RevealImage({
         },
       );
     },
-    { scope: wrapRef, dependencies: [parallax] },
+    { scope: wrapRef, dependencies: [parallax, noScale] },
   );
 
   return (

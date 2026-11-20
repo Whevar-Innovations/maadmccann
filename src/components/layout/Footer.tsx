@@ -155,7 +155,7 @@ export function Footer({ settings }: FooterProps) {
                       href={social.url}
                       external={social.url !== '#'}
                       aria-label={social.platform}
-                      className="inline-flex h-7 w-7 items-center justify-center text-paper transition-[color,transform] duration-300 hover:-translate-y-0.5 hover:scale-110 hover:text-gold-500 focus-visible:text-gold-500"
+                      className="inline-flex h-7 w-7 items-center justify-center text-paper transition-[color,transform] duration-300 hover:-translate-y-0.5 hover:scale-110 hover:text-maroon-200 focus-visible:text-maroon-200"
                     >
                       <SocialIcon platform={social.platform} />
                     </Link>

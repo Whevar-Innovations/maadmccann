@@ -429,12 +429,12 @@ export function Hero({ hero }: HeroProps) {
           <div data-hero-cta className="pt-1 will-change-transform">
             <Link
               href={hero.cta.href}
-              className="group inline-flex items-center gap-3 text-accent font-semibold tracking-wider text-paper uppercase transition-colors duration-300 hover:text-gold-500 focus-visible:text-gold-500"
+              className="group inline-flex items-center gap-3 text-accent font-semibold tracking-wider text-paper uppercase transition-colors duration-300 hover:text-maroon-200 focus-visible:text-maroon-200"
             >
               <span>{hero.cta.label}</span>
               <span
                 aria-hidden="true"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-paper/40 transition-[translate,background-color,border-color,color] duration-300 ease-out group-hover:translate-x-1 group-hover:border-gold-500 group-hover:bg-gold-500 group-hover:text-crimson-950 group-focus-visible:translate-x-1 group-focus-visible:border-gold-500 group-focus-visible:bg-gold-500 group-focus-visible:text-crimson-950"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-paper/40 transition-[translate,background-color,border-color,color] duration-300 ease-out group-hover:translate-x-1 group-hover:border-paper group-hover:bg-paper group-hover:text-crimson-800 group-focus-visible:translate-x-1 group-focus-visible:border-paper group-focus-visible:bg-paper group-focus-visible:text-crimson-800"
               >
                 <svg
                   width="14"

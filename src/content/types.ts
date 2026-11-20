@@ -17,6 +17,8 @@ export type Project = {
   client: string;
   title: string;     // rendered as `${client}: ${title}`
   image: ImageAsset;
+  /** Optional CSS object-position so logos stay inside the cropped tile (default: center). */
+  focus?: string;
   href: string;      // /work/{slug}
 };
 

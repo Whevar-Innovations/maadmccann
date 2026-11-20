@@ -48,6 +48,8 @@ const rawProjects: RawProject[] = [
     client: 'Uganda Baati',
     title: 'Crown Your Home',
     image: img(baatiSrc, 1600, 900, 'Uganda Baati: Crown Your Home campaign artwork'),
+    // Keep the top-right logo whole; crop the contact strip at the bottom instead.
+    focus: 'center top',
   },
   {
     id: 'pride',

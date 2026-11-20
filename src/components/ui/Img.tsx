@@ -6,6 +6,8 @@ export type ImgProps = {
   priority?: boolean;
   decorative?: boolean;
   className?: string;
+  /** CSS object-position, for object-cover images that need a focal point. */
+  objectPosition?: string;
 };
 
 /**
@@ -18,6 +20,7 @@ export function Img({
   priority = false,
   decorative = false,
   className,
+  objectPosition,
 }: ImgProps) {
   return (
     <img
@@ -32,6 +35,7 @@ export function Img({
       decoding={priority ? 'sync' : 'async'}
       style={{
         aspectRatio: `${image.width} / ${image.height}`,
+        objectPosition,
         ...(image.lqip
           ? {
               backgroundImage: `url(${image.lqip})`,

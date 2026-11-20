@@ -7,14 +7,16 @@
   /* ---------- Colour: brand tokens only, the stock palette is removed ---------- */
   --color-*: initial;
   --color-crimson-600: #c42b4c; /* hero highlight (top right of gradient) */
-  --color-crimson-800: #8e1b3b; /* hero and CTA mid-tone */
+  --color-crimson-800: #8d1819; /* hero and CTA mid-tone */
   --color-crimson-950: #2a0618; /* hero and CTA shadow, loader panel */
-  --color-impact-red: #8b1a1a; /* OUR IMPACT heading, stat accents */
+  --color-impact-red: #8f181c; /* OUR IMPACT heading, stat accents */
   --color-ink: #0b0b0b; /* showreel section */
   --color-charcoal: #222222; /* footer block */
   --color-paper: #ffffff; /* light sections */
   --color-cream: #faf3f0; /* play button */
-  --color-gold-500: #d9a93a; /* trophy glow + hover accent */
+  --color-maroon-100: #eedcdc; /* 15% tint of crimson-800 */
+  --color-maroon-200: #e3c5c5; /* 25% tint of crimson-800: hover accent on dark/maroon */
+  --color-maroon-400: #e06a70; /* lighter maroon for text on dark imagery: ≥4.5:1 over the work-tile gradient */
   --color-white: #ffffff;
   --color-black: #000000;
   --color-transparent: transparent;
@@ -121,6 +123,6 @@
 }
 .link-accent:hover,
 .link-accent:focus-visible {
-  color: var(--color-gold-500);
+  color: var(--color-maroon-200);
   background-size: 100% 1px;
 }

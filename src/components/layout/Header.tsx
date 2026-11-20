@@ -17,7 +17,8 @@ export type HeaderProps = {
 /**
  * Site header (SPEC §7 #1 & §8.6).
  * - Logo left, 8 nav links centered (disabled per route constraints, home active), white pill "Talk To Us" button right.
- * - Transparent at top, then ink at 80% blur after 80px scroll.
+ * - Transparent at top, then deep brand maroon (crimson-950) at 90% blur after 80px scroll.
+ * - Hover/focus/active links: maroon-200 tint (≈11.5:1 on crimson-950, ≈5.7:1 over the hero; WCAG AA).
  * - Hides on scroll down, shows on scroll up (0.4s power3.out).
  * - Mobile drawer: 100% opaque solid dark blackish (#0E0E10) with embossed line-art motif matching Screenshot 15-52-54.png.
  * - Header hides when drawer opens, preventing duplicate logo/button ghosting.
@@ -130,7 +131,7 @@ export function Header({ settings }: HeaderProps) {
           menuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
         } ${
           scrolledPastThreshold && !menuOpen
-            ? 'bg-ink/80 backdrop-blur-md'
+            ? 'bg-crimson-950/90 backdrop-blur-md'
             : 'bg-transparent'
         }`}
       >
@@ -158,13 +159,13 @@ export function Header({ settings }: HeaderProps) {
                 <li key={item.href} data-header-item>
                   <ContentLink
                     link={item}
-                    className="group relative inline-block py-1 text-small font-medium text-paper/95 cursor-default transition-colors duration-300 hover:text-gold-500 focus-visible:text-gold-500"
+                    className="group relative inline-block py-1 text-small font-medium text-paper/95 cursor-default transition-colors duration-300 hover:text-maroon-200 focus-visible:text-maroon-200 aria-[current=page]:text-maroon-200"
                   >
                     <span>{item.label}</span>
                     {/* Underline indicator */}
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 bg-gold-500 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100"
+                      className="pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 bg-paper transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100 group-aria-[current=page]:scale-x-100"
                     />
                   </ContentLink>
                 </li>

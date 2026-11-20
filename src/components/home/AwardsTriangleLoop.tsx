@@ -216,15 +216,11 @@ export function AwardsTriangleLoop({
       data-trophies-stage
       className={`relative mx-auto aspect-[1.15/1] w-full max-w-[780px] select-none ${className}`}
     >
-      {/* Soft gold radial glow behind the trio (SPEC §8.4) */}
+      {/* Soft  radial glow behind the trio (SPEC §8.4) */}
       <div
         data-trophies-glow
         aria-hidden="true"
         className="pointer-events-none absolute inset-[14%] rounded-full opacity-70 blur-3xl"
-        style={{
-          background:
-            'radial-gradient(circle, var(--color-gold-500) 0%, rgba(217, 169, 58, 0.22) 45%, transparent 72%)',
-        }}
       />
 
       {images.map((image, index) => (
