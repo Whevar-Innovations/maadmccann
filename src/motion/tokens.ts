@@ -219,6 +219,7 @@ export const ENTRANCE = {
 } as const;
 
 export const WORK_HERO = {
+  motifOpacity: 0.25, // soft-light strokes: lift the metal's own lighting (dark left stays subtle, lit right glows)
   subDelay: 0.25,
 } as const;
 

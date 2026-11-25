@@ -16,8 +16,10 @@ export type UseMotifBloomOptions = {
   /** Start once true (the first-visit loader is done). */
   canPlay: boolean;
   skippedLoader: boolean;
-  /** Extra layers that bloom with the base (e.g. a depth shadow copy). */
-  alsoBloom?: RefObject<SVGSVGElement | null>[];
+  /** Per-doodle bloom + settle (default). Off: the base just fades in and only the spotlight remains. */
+  bloom?: boolean;
+  /** Resting opacity of the base layer (default MOTIF_LAB.restOpacity). */
+  restOpacity?: number;
   /** Add the page's own tweens (headline, body) to the same timeline. */
   onTimeline?: (tl: gsap.core.Timeline, ctx: { isMobile: boolean }) => void;
   /** Reduced-motion fallback for the page's own elements. */
@@ -26,7 +28,7 @@ export type UseMotifBloomOptions = {
 
 /**
  * Shared motif choreography (matches FooterMotifStage):
- * 1. Bloom: every doodle scales 0.9 to 1 and fades in, delayed by its distance from the focal
+ * 1. Bloom (optional): every doodle scales 0.9 to 1 and fades in, delayed by its distance from the focal
  *    point, while the base peaks at MOTIF_LAB.bloomPeakOpacity and settles to restOpacity.
  * 2. Spotlight: the bright copy, masked by a radial gradient, follows the pointer (fine pointers only).
  */
@@ -40,7 +42,8 @@ export function useMotifBloom({
   height,
   canPlay,
   skippedLoader,
-  alsoBloom = [],
+  bloom = true,
+  restOpacity = MOTIF_LAB.restOpacity,
   onTimeline,
   onReduced,
 }: UseMotifBloomOptions) {
@@ -60,14 +63,10 @@ export function useMotifBloom({
         const [cx, cy] = centerOf(i);
         return Math.hypot(cx - focalX, cy - focalY) / maxDist;
       };
-      const extras = alsoBloom
-        .map((r) => r.current)
-        .filter((el): el is SVGSVGElement => el !== null);
-
       const mm = gsap.matchMedia();
 
       mm.add(MEDIA_QUERIES.reducedMotion, () => {
-        gsap.set([base, ...extras], { opacity: MOTIF_LAB.restOpacity });
+        gsap.set(base, { opacity: restOpacity });
         onReduced?.();
       });
 
@@ -78,24 +77,28 @@ export function useMotifBloom({
           if (!motionOk) return;
 
           const tl = gsap.timeline({ delay: skippedLoader ? 0.05 : 0 });
-          tl.set([base, ...extras], { opacity: MOTIF_LAB.bloomPeakOpacity }, 0);
-          tl.from(
-            paths,
-            {
-              opacity: 0,
-              scale: 0.9,
-              svgOrigin: (i: number) => centerOf(i).join(' '),
-              duration: DUR.bloomPath,
-              ease: EASE.out,
-              delay: (i: number) => distOf(i) * MOTIF_LAB.bloomDistanceDelayFactor,
-            },
-            0,
-          );
-          tl.to(
-            [base, ...extras],
-            { opacity: MOTIF_LAB.restOpacity, duration: DUR.bloomSettle, ease: EASE.SineInOut },
-            MOTIF_LAB.bloomSettleDelay,
-          );
+          if (bloom) {
+            tl.set(base, { opacity: MOTIF_LAB.bloomPeakOpacity }, 0);
+            tl.from(
+              paths,
+              {
+                opacity: 0,
+                scale: 0.9,
+                svgOrigin: (i: number) => centerOf(i).join(' '),
+                duration: DUR.bloomPath,
+                ease: EASE.out,
+                delay: (i: number) => distOf(i) * MOTIF_LAB.bloomDistanceDelayFactor,
+              },
+              0,
+            );
+            tl.to(
+              base,
+              { opacity: restOpacity, duration: DUR.bloomSettle, ease: EASE.SineInOut },
+              MOTIF_LAB.bloomSettleDelay,
+            );
+          } else {
+            tl.to(base, { opacity: restOpacity, duration: DUR.heroMotif, ease: EASE.soft }, 0);
+          }
           onTimeline?.(tl, { isMobile: !!isMobile });
 
           if (!fine) return undefined;
