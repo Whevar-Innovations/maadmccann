@@ -10,11 +10,25 @@ import {
 import { useLocation, useNavigate } from 'react-router';
 import { gsap, MEDIA_QUERIES, ScrollTrigger } from './gsap-setup';
 import { useSmoothScroll } from './SmoothScroll';
-import { EASE, TRANSITION } from './tokens';
+import {
+  boxOf,
+  createOverlay,
+  findSharedSource,
+  SHARED_TARGET_SELECTOR,
+  viewportBox,
+  type SharedOverlay,
+} from './sharedTransition';
+import { EASE, SHARED_TRANSITION, TRANSITION } from './tokens';
+
+/** True while a tile image is expanding into the destination page (the page skips its own hero entrance). */
+export const SHARED_ACTIVE_ATTR = 'sharedTransition';
+export const isSharedTransitionActive = () => SHARED_ACTIVE_ATTR in document.documentElement.dataset;
 
 export type NavigateOptions = {
-  /** The clicked element (the link). Reserved for shared-element transitions. */
+  /** The clicked link. Its `[data-shared-image]` child is the shared element, if any. */
   trigger?: HTMLElement;
+  /** The destination has a `[data-shared-target]` frame, so the tile image can expand into it. */
+  shared?: boolean;
 };
 
 export type PageTransitionContextValue = {
@@ -56,6 +70,7 @@ export function PageTransition({ children, outsideStage }: PageTransitionProps) 
   const lockedRef = useRef(false);
   const releaseTimerRef = useRef<number | undefined>(undefined);
   const lastPathRef = useRef(pathname);
+  const sharedRef = useRef<SharedOverlay | null>(null);
 
   const lock = useCallback(() => {
     if (lockedRef.current) return;
@@ -72,7 +87,7 @@ export function PageTransition({ children, outsideStage }: PageTransitionProps) 
   }, [startScroll]);
 
   const navigateWithTransition = useCallback(
-    (to: string) => {
+    (to: string, options?: NavigateOptions) => {
       const target = (to.split('#')[0] ?? '').split('?')[0] || pathname;
       const hash = to.includes('#') ? to.slice(to.indexOf('#')) : '';
 
@@ -95,12 +110,35 @@ export function PageTransition({ children, outsideStage }: PageTransitionProps) 
       transitioningRef.current = true;
       lock();
       // If the route never lands (loader error), give the page and scrolling back.
-      releaseTimerRef.current = window.setTimeout(() => {
-        gsap.set(stage, { clearProps: 'transform,opacity' });
-        unlock();
-      }, TRANSITION.releaseMs + 1000 * TRANSITION.coverDur);
+      releaseTimerRef.current = window.setTimeout(
+        () => {
+          gsap.set(stage, { clearProps: 'transform,opacity' });
+          sharedRef.current?.remove();
+          sharedRef.current = null;
+          delete document.documentElement.dataset[SHARED_ACTIVE_ATTR];
+          unlock();
+        },
+        1000 * (TRANSITION.coverDur + SHARED_TRANSITION.expand) + SHARED_TRANSITION.readyTimeoutMs,
+      );
 
       const reduced = prefersReducedMotion();
+
+      // Tile image to hero: grow the image from its tile to the screen over the dimmed old page.
+      const source = options?.shared && !reduced ? findSharedSource(options.trigger) : null;
+      if (source) {
+        const overlay = createOverlay(source);
+        overlay.apply(boxOf(source.el), SHARED_TRANSITION.radiusPx);
+        source.el.style.visibility = 'hidden';
+        sharedRef.current = overlay;
+        gsap.to(stage, { opacity: SHARED_TRANSITION.dimOpacity, duration: SHARED_TRANSITION.expand, ease: EASE.inOut });
+        overlay.to(viewportBox(), 0, {
+          duration: SHARED_TRANSITION.expand,
+          ease: EASE.inOut,
+          onComplete: () => navigate(to),
+        });
+        return;
+      }
+
       gsap.to(stage, {
         opacity: 0,
         ...(reduced
@@ -125,6 +163,39 @@ export function PageTransition({ children, outsideStage }: PageTransitionProps) 
     lastPathRef.current = pathname;
     const stage = stageRef.current;
     if (!stage) return;
+
+    const overlay = sharedRef.current;
+    if (overlay) {
+      sharedRef.current = null;
+      gsap.killTweensOf(stage);
+      gsap.set(stage, { clearProps: 'transform,opacity' });
+      const target = stage.querySelector<HTMLElement>(SHARED_TARGET_SELECTOR);
+      const finish = () => {
+        target?.style.removeProperty('visibility');
+        overlay.remove();
+        delete document.documentElement.dataset[SHARED_ACTIVE_ATTR];
+        unlock();
+        ScrollTrigger.refresh();
+      };
+      if (!target) {
+        gsap.to(overlay.root, { opacity: 0, duration: SHARED_TRANSITION.fadeOut, ease: EASE.soft, onComplete: finish });
+        return;
+      }
+      // The page mounts hidden behind the full-screen image; once laid out, the image settles into the frame.
+      document.documentElement.dataset[SHARED_ACTIVE_ATTR] = '';
+      target.style.visibility = 'hidden';
+      let raf = requestAnimationFrame(() => {
+        raf = requestAnimationFrame(() => {
+          overlay.to(boxOf(target), 0, {
+            duration: SHARED_TRANSITION.settle,
+            ease: EASE.out,
+            onComplete: finish,
+          });
+        });
+      });
+      return () => cancelAnimationFrame(raf);
+    }
+
     const reduced = prefersReducedMotion();
     lock();
     gsap.fromTo(

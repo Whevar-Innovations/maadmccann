@@ -9,6 +9,8 @@ export type RevealImageProps = {
   noScale?: boolean;
   className?: string;
   innerClassName?: string;
+  /** Marks the wrapper as the shared element of a tile-to-page transition (see PageTransition). */
+  sharedImage?: boolean;
 };
 
 /**
@@ -23,6 +25,7 @@ export function RevealImage({
   noScale = false,
   className = '',
   innerClassName = '',
+  sharedImage = false,
 }: RevealImageProps) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const scaleRef = useRef<HTMLDivElement | null>(null);
@@ -124,6 +127,7 @@ export function RevealImage({
   return (
     <div
       ref={wrapRef}
+      data-shared-image={sharedImage ? '' : undefined}
       className={`overflow-hidden will-change-[clip-path,opacity] ${className}`.trim()}
     >
       <div

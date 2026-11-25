@@ -201,6 +201,16 @@ export const ORG_CHART = {
   breatheDur: 1.8,
 } as const;
 
+/** Tile-to-case-study expand (befreaky-style): the tile image grows to the screen, then settles into the hero frame. */
+export const SHARED_TRANSITION = {
+  expand: 0.9,
+  settle: 0.8,
+  dimOpacity: 0.35, // the old page behind the growing image
+  radiusPx: 12, // tile image corner radius at the start
+  fadeOut: 0.4, // overlay fades away when the destination has no target frame
+  readyTimeoutMs: 1500, // give up and release scrolling if the route never lands
+} as const;
+
 export const WORK_HERO = {
   subDelay: 0.25,
 } as const;

@@ -52,7 +52,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
   const body = (
     <>
-      <div className="aspect-[802/443] overflow-hidden rounded-xl bg-placeholder">
+      <div data-shared-image className="aspect-[802/443] overflow-hidden rounded-xl bg-placeholder">
         <div data-card-zoom className="h-full w-full will-change-transform">
           <Img
             image={project.image}

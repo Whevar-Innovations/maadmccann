@@ -142,7 +142,7 @@ export function WorkCard({
         className="relative block h-full w-full"
         onClick={handleClick}
       >
-        <RevealImage noScale className={`relative h-full w-full ${aspect}`}>
+        <RevealImage noScale sharedImage className={`relative h-full w-full ${aspect}`}>
           <div ref={hoverZoomRef} className="h-full w-full will-change-transform">
             <Img
               image={project.image}

@@ -26,12 +26,20 @@ function isNativeHref(href: string, external?: boolean): boolean {
  */
 const ENABLED_ROUTES = new Set(['/', '/what-we-do', '/the-maad-ones', '/work', '/work/:slug']);
 
-const ROUTE_PATTERNS = [...ENABLED_ROUTES]
-  .filter((route) => route.includes(':'))
-  .map((route) => new RegExp(`^${route.replace(/:[^/]+/g, '[^/]+')}$`));
+const patternOf = (route: string) => new RegExp(`^${route.replace(/:[^/]+/g, '[^/]+')}$`);
+
+const ROUTE_PATTERNS = [...ENABLED_ROUTES].filter((route) => route.includes(':')).map(patternOf);
 
 const isEnabledRoute = (path: string) =>
   ENABLED_ROUTES.has(path) || ROUTE_PATTERNS.some((pattern) => pattern.test(path));
+
+/**
+ * Routes whose page has a `[data-shared-target]` frame: a tile image in the link
+ * (`[data-shared-image]`) expands into it instead of the generic page transition.
+ */
+const SHARED_ROUTES = new Set(['/work/:slug']);
+const SHARED_PATTERNS = [...SHARED_ROUTES].map(patternOf);
+const isSharedRoute = (path: string) => SHARED_PATTERNS.some((pattern) => pattern.test(path));
 
 function pathOf(href: string): string {
   const path = (href.split('#')[0] ?? '').split('?')[0] ?? '';
@@ -82,7 +90,10 @@ export function Link({ href, external, children, className, onClick, ...rest }: 
     }
 
     e.preventDefault();
-    navigateWithTransition(href);
+    navigateWithTransition(href, {
+      trigger: e.currentTarget,
+      shared: isSharedRoute(pathOf(href)),
+    });
   };
 
   return (
