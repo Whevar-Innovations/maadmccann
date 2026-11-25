@@ -51,21 +51,36 @@ export function TeamCard({ member, cardId, active, onHoverStart, onHoverEnd, onO
         </span>
         <span
           data-card-caption
-          className="mt-[0.3em] min-h-[2.5em] text-[clamp(0.66rem,2.6vw,0.76rem)] leading-[1.25] font-medium text-paper/85 sm:text-[clamp(0.62rem,1.3vw,0.76rem)] lg:text-[clamp(0.56rem,0.66vw,0.8rem)]"
+          className="mt-[0.3em] text-[clamp(0.66rem,2.6vw,0.76rem)] leading-[1.25] font-medium text-paper/85 sm:text-[clamp(0.62rem,1.3vw,0.76rem)] lg:text-[clamp(0.56rem,0.66vw,0.8rem)]"
         >
           {member.title}
         </span>
-        {/* Without a bio the line is kept (invisible) so names align across a row. */}
-        <span
-            data-card-caption
-            aria-hidden={hasBio ? undefined : true}
-            className={`${hasBio ? '' : 'invisible'} mt-[0.5em] self-center text-[clamp(0.58rem,2.2vw,0.66rem)] font-medium tracking-[0.12em] text-paper/80 uppercase sm:text-[clamp(0.55rem,1.1vw,0.66rem)] lg:text-[clamp(0.5rem,0.56vw,0.7rem)]`}
-          >
-            <span className="relative inline-block pb-[0.2em]">
-              See profile
-              <span className="absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-paper transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100 group-data-[active=true]:scale-x-100" />
+        {/*
+          "See profile" row. With a mouse it starts collapsed (0fr), so the name and title sit at
+          the bottom of the card; on hover/focus it opens (1fr), lifting them up to make room.
+          Touch screens have no hover, so it stays open there. Cards without a bio keep the row
+          (invisible) so names stay aligned with their neighbours.
+        */}
+        <div
+          className={`grid grid-rows-[1fr] transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-fine:grid-rows-[0fr] ${
+            hasBio
+              ? 'group-hover:grid-rows-[1fr]! group-focus-visible:grid-rows-[1fr]! group-data-[active=true]:grid-rows-[1fr]!'
+              : ''
+          }`}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <span
+              data-card-caption
+              aria-hidden={hasBio ? undefined : true}
+              className={`${hasBio ? '' : 'invisible'} block pt-[0.6em] text-center text-[clamp(0.58rem,2.2vw,0.66rem)] font-medium tracking-[0.12em] text-paper/80 uppercase sm:text-[clamp(0.55rem,1.1vw,0.66rem)] lg:text-[clamp(0.5rem,0.56vw,0.7rem)]`}
+            >
+              <span className="relative inline-block pb-[0.2em] opacity-100 transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-fine:opacity-0 group-hover:opacity-100! group-focus-visible:opacity-100! group-data-[active=true]:opacity-100!">
+                See profile
+                <span className="absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-paper transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100 group-data-[active=true]:scale-x-100" />
+              </span>
             </span>
-          </span>
+          </div>
+        </div>
       </div>
     </>
   );

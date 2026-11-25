@@ -122,7 +122,7 @@ export function BioPanel({ target, containerRef, onPointerEnter, onPointerLeave 
       <div
         ref={scrollRef}
         data-lenis-prevent
-        className="max-h-[min(26rem,62vh)] overflow-y-auto overscroll-contain px-6 py-6 sm:px-8 sm:py-7 [scrollbar-width:thin]"
+        className="max-h-[min(26rem,62vh)] overflow-y-auto overscroll-contain px-6 py-6 sm:px-8 sm:py-7 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <div data-bio-head className="mb-4">
           <p className="font-display text-[1.05rem] leading-tight font-bold text-ink">{member.name}</p>

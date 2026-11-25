@@ -31,23 +31,26 @@ export function Services() {
         <ServiceCard id={IDS.sbcc} tone="dark" className="p-6 sm:p-10 lg:px-14 lg:py-14">
           <div className="grid gap-x-16 gap-y-10 lg:grid-cols-2">
             <div className="flex flex-col">
-              <CardTitle id={`${IDS.sbcc}-title`} lines={[sbcc.title]} />
-              <Tagline lines={[sbcc.tagline]} className="mt-4" />
-              <Body className="mt-3 max-w-[48ch]">{sbcc.body}</Body>
-              <ul
-                data-reveal
-                className="mt-5 list-disc pl-5 text-[clamp(0.875rem,0.85vw,1.05rem)] leading-[1.6] font-semibold marker:text-paper sm:grid sm:grid-flow-col sm:grid-rows-4 sm:justify-start sm:gap-x-10"
-              >
-                {sbcc.bullets.map((b) => (
-                  // One line where there's room; at lg the left column is narrow, so wrap there.
-                  <li key={b} className="sm:whitespace-nowrap lg:whitespace-normal xl:whitespace-nowrap">
-                    {b}
-                  </li>
-                ))}
-              </ul>
+              {/* Tablet: intro beside the orbit so the card has no empty right half. Desktop: stacked. */}
+              <div className="md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,16rem)] md:items-center md:gap-x-10 lg:block">
+                <div>
+                  <CardTitle id={`${IDS.sbcc}-title`} lines={[sbcc.title]} />
+                  <Tagline lines={[sbcc.tagline]} className="mt-4" />
+                  <Body className="mt-3 max-w-[60ch] lg:max-w-[48ch]">{sbcc.body}</Body>
+                  <ul
+                    data-reveal
+                    className="mt-5 list-disc pl-5 text-[clamp(0.875rem,0.85vw,1.05rem)] leading-[1.6] font-semibold marker:text-paper sm:grid sm:grid-flow-col sm:grid-cols-[auto_minmax(0,1fr)] sm:grid-rows-4 sm:gap-x-10 md:grid-flow-row md:grid-cols-1 md:grid-rows-none lg:grid-flow-col lg:grid-cols-[auto_minmax(0,1fr)] lg:grid-rows-4"
+                  >
+                    {/* Items wrap inside their column instead of spilling into the next one. */}
+                    {sbcc.bullets.map((b) => (
+                      <li key={b}>{b}</li>
+                    ))}
+                  </ul>
+                </div>
 
-              <div className="my-10 lg:my-14">
-                <SbccOrbit />
+                <div className="my-10 md:my-0 lg:my-14">
+                  <SbccOrbit />
+                </div>
               </div>
 
               <h3 data-reveal className={`${SUBHEAD} mt-auto`}>
