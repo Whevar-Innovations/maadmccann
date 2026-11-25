@@ -1,5 +1,5 @@
 import type { AnchorHTMLAttributes, MouseEvent, ReactNode } from 'react';
-import { Link as RouterLink } from 'react-router';
+import { Link as RouterLink, useLocation } from 'react-router';
 import type { Link as LinkType } from '@/content/types';
 import { usePageTransition } from '@/motion/PageTransition';
 
@@ -20,20 +20,26 @@ function isNativeHref(href: string, external?: boolean): boolean {
   );
 }
 
-function isHomePageHref(href: string): boolean {
-  return href === '/' || href === '' || href.startsWith('/#') || href.startsWith('#');
+/** Routes that exist so far. Every other internal link renders disabled until its page ships. */
+const ENABLED_ROUTES = new Set(['/', '/what-we-do']);
+
+function pathOf(href: string): string {
+  const path = (href.split('#')[0] ?? '').split('?')[0] ?? '';
+  return path === '' ? '/' : path.replace(/(.)\/$/, '$1');
 }
 
 /**
  * Router-aware link primitive.
- * Per project requirement: All routes/links except the home page are disabled.
- * Only '/' and hash links ('#work', '#footer', etc.) or external links are navigable.
+ * Only routes in ENABLED_ROUTES (plus hash, external, mailto/tel links) are navigable;
+ * the rest render with aria-disabled and do nothing on click.
+ * The link to the current page gets aria-current="page".
  */
 export function Link({ href, external, children, className, onClick, ...rest }: LinkProps) {
   const { navigateWithTransition } = usePageTransition();
+  const { pathname } = useLocation();
   const isNative = isNativeHref(href, external);
-  const isHome = isHomePageHref(href);
-  const isDisabledRoute = !isNative && !isHome;
+  const isDisabledRoute = !isNative && !ENABLED_ROUTES.has(pathOf(href));
+  const isCurrent = !isNative && !href.includes('#') && pathOf(href) === pathOf(pathname);
 
   if (isNative) {
     return (
@@ -73,6 +79,7 @@ export function Link({ href, external, children, className, onClick, ...rest }: 
     <RouterLink
       to={isDisabledRoute ? '#' : href}
       aria-disabled={isDisabledRoute ? 'true' : undefined}
+      aria-current={isCurrent ? 'page' : undefined}
       className={className}
       onClick={handleClick}
       {...rest}

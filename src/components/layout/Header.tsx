@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useLocation } from 'react-router';
 import type { SiteSettings } from '@/content/types';
 import darkMotifBgSrc from '@/assets/img/dark-motif-bg.webp';
 import maadLogoWhiteSrc from '@/assets/svg/maad-logo-white.svg';
@@ -43,6 +44,18 @@ export function Header({ settings }: HeaderProps) {
       startScroll();
     };
   }, [menuOpen, stopScroll, startScroll]);
+
+  // On page change: close the mobile drawer and bring the header back into view
+  // (it may have been hidden by scrolling down the previous page).
+  const { pathname } = useLocation();
+  useEffect(() => {
+    setMenuOpen(false);
+    const header = headerRef.current;
+    if (header && hiddenRef.current) {
+      hiddenRef.current = false;
+      gsap.to(header, { yPercent: 0, duration: DUR.ui, ease: EASE.soft, overwrite: 'auto' });
+    }
+  }, [pathname]);
 
   useGSAP(
     () => {
@@ -159,7 +172,7 @@ export function Header({ settings }: HeaderProps) {
                 <li key={item.href} data-header-item>
                   <ContentLink
                     link={item}
-                    className="group relative inline-block py-1 text-small font-medium text-paper/95 cursor-default transition-colors duration-300 hover:text-maroon-200 focus-visible:text-maroon-200 aria-[current=page]:text-maroon-200"
+                    className="group relative inline-block py-1 text-small font-medium text-paper/95 aria-disabled:cursor-default transition-colors duration-300 hover:text-maroon-200 focus-visible:text-maroon-200 aria-[current=page]:text-maroon-200"
                   >
                     <span>{item.label}</span>
                     {/* Underline indicator */}

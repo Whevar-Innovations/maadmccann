@@ -5,6 +5,7 @@ import { LoaderProvider } from '@/motion/LoaderProvider';
 import { PageTransition } from '@/motion/PageTransition';
 import { SmoothScroll } from '@/motion/SmoothScroll';
 import type { homeLoader } from '@/routes/home';
+import type { whatWeDoLoader } from '@/routes/what-we-do';
 import { Footer } from './Footer';
 import { FooterMotifStage } from './FooterMotifStage';
 import { Header } from './Header';
@@ -15,9 +16,8 @@ export const rootLoader = async () => ({
 
 /**
  * App shell (SPEC §4, §7 & §8).
- * Wraps the site in Lenis SmoothScroll, LoaderProvider, and PageTransition.
- * Header sits directly at the root level outside transformed wrappers, ensuring its
- * fixed/sticky positioning stays anchored to the viewport across all scroll states.
+ * Wraps the site in Lenis SmoothScroll, LoaderProvider, and PageTransition (direct navigation,
+ * no curtain). Header stays outside the page wrapper so its fixed positioning is unaffected.
  * CtaBand and Footer share a single continuous FooterMotifStage with zero seam.
  */
 export function RootLayout() {
@@ -25,6 +25,10 @@ export function RootLayout() {
   const homeData = useRouteLoaderData('home') as
     | Awaited<ReturnType<typeof homeLoader>>
     | undefined;
+  const whatWeDoData = useRouteLoaderData('what-we-do') as
+    | Awaited<ReturnType<typeof whatWeDoLoader>>
+    | undefined;
+  const cta = homeData?.home.cta ?? whatWeDoData?.cta;
 
   return (
     <SmoothScroll>
@@ -37,17 +41,15 @@ export function RootLayout() {
             Skip to content
           </a>
 
-          {/* Persistent site header anchored to viewport */}
-          <Header settings={settings} />
-
-          {/* Page transition wraps dynamic page content & footer */}
-          <PageTransition>
+          {/* Navigation context wraps page content & footer. The header sits inside it (so its
+              links navigate) but outside the page wrapper. */}
+          <PageTransition outsideStage={<Header settings={settings} />}>
             <main id="main">
               <Outlet />
             </main>
 
             <FooterMotifStage>
-              {homeData?.home.cta && <CtaBand cta={homeData.home.cta} />}
+              {cta && <CtaBand cta={cta} />}
               <Footer settings={settings} />
             </FooterMotifStage>
           </PageTransition>

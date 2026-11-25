@@ -1,8 +1,9 @@
 import type { SiteSettings } from '../types';
+import { WHAT_WE_DO_IDS } from './whatWeDo';
 
 export const settings: SiteSettings = {
   nav: [
-    { label: 'The MAADness', href: '/the-maadness' },
+    { label: 'The MAADness', href: '/' },
     { label: 'What We Do', href: '/what-we-do' },
     { label: 'Our Work', href: '/work' },
     { label: 'CSR', href: '/csr' },
@@ -14,7 +15,7 @@ export const settings: SiteSettings = {
   navCta: { label: 'Talk To Us', href: '#footer' },
   footer: {
     navigation: [
-      { label: 'The MAADness', href: '/the-maadness' },
+      { label: 'The MAADness', href: '/' },
       { label: 'What We Do', href: '/what-we-do' },
       { label: 'Our Work', href: '/work' },
       { label: 'Corporate Social Responsibility', href: '/csr' },
@@ -24,15 +25,15 @@ export const settings: SiteSettings = {
       { label: 'Awards', href: '/awards' },
     ],
     services: [
-      { label: 'Creative', href: '#' },
-      { label: 'PR & Reputation Mgt', href: '#' },
-      { label: 'Brand Strategy & Dev’t', href: '#' },
-      { label: 'Experiential Marketing', href: '#' },
-      { label: 'Account Management', href: '#' },
-      { label: 'Production', href: '#' },
-      { label: 'Media', href: '#' },
-      { label: 'Digital', href: '#' },
-      { label: 'SBCC', href: '#' },
+      { label: 'Creative', href: `/what-we-do#${WHAT_WE_DO_IDS.creative}` },
+      { label: 'PR & Reputation Mgt', href: `/what-we-do#${WHAT_WE_DO_IDS.pr}` },
+      { label: 'Brand Strategy & Dev’t', href: `/what-we-do#${WHAT_WE_DO_IDS.brandStrategy}` },
+      { label: 'Experiential Marketing', href: `/what-we-do#${WHAT_WE_DO_IDS.experiential}` },
+      { label: 'Account Management', href: `/what-we-do#${WHAT_WE_DO_IDS.accountManagement}` },
+      { label: 'Production', href: `/what-we-do#${WHAT_WE_DO_IDS.production}` },
+      { label: 'Media', href: `/what-we-do#${WHAT_WE_DO_IDS.media}` },
+      { label: 'Digital', href: `/what-we-do#${WHAT_WE_DO_IDS.digital}` },
+      { label: 'SBCC', href: `/what-we-do#${WHAT_WE_DO_IDS.sbcc}` },
     ],
     contact: {
       email: 'maad@maad.co.ug',

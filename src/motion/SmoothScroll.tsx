@@ -3,6 +3,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   type ReactNode,
@@ -15,14 +16,20 @@ import { SCROLL } from './tokens';
 export type SmoothScrollContextValue = {
   stopScroll: () => void;
   startScroll: () => void;
-  scrollToTop: () => void;
+  scrollToTop: (opts?: { smooth?: boolean }) => void;
+  /** Scroll to the element whose id matches `hash` ("#creative" or "creative"). */
+  scrollToHash: (hash: string, opts?: { immediate?: boolean }) => boolean;
 };
 
 const SmoothScrollContext = createContext<SmoothScrollContextValue>({
   stopScroll: () => {},
   startScroll: () => {},
   scrollToTop: () => {},
+  scrollToHash: () => false,
 });
+
+/** Clearance for the fixed header when jumping to an in-page anchor. */
+const HASH_OFFSET = -96;
 
 export function useSmoothScroll(): SmoothScrollContextValue {
   return useContext(SmoothScrollContext);
@@ -35,7 +42,9 @@ export function useSmoothScroll(): SmoothScrollContextValue {
 export function SmoothScroll({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
   const lockCountRef = useRef(0);
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
+  const hashRef = useRef(hash);
+  hashRef.current = hash;
 
   useEffect(() => {
     const reduced = window.matchMedia(MEDIA_QUERIES.reducedMotion).matches;
@@ -67,14 +76,49 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  useEffect(() => {
+  const scrollToHash = useCallback((target: string, opts?: { immediate?: boolean }) => {
+    const id = decodeURIComponent(target.replace(/^#/, ''));
+    const el = id ? document.getElementById(id) : null;
+    if (!el) return false;
+    const immediate = opts?.immediate ?? false;
+    // Layout position (offsetTop ignores transforms), so in-progress entrance animations
+    // don't skew the target.
+    let top = 0;
+    for (let node: HTMLElement | null = el; node; node = node.offsetParent as HTMLElement | null) {
+      top += node.offsetTop;
+    }
+    top = Math.max(0, top + HASH_OFFSET);
     if (lenisRef.current) {
-      lenisRef.current.scrollTo(0, { immediate: true });
+      lenisRef.current.scrollTo(top, { immediate, force: true });
+    } else {
+      window.scrollTo({ top, left: 0, behavior: immediate ? 'instant' : 'smooth' });
+    }
+    return true;
+  }, []);
+
+  // We own scroll position on navigation; stop the browser restoring an old offset over it.
+  useEffect(() => {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  }, []);
+
+  // New page: jump to the top (or the #anchor) before the browser paints it, so the incoming
+  // page never flashes at the previous page's scroll position. Any leftover wheel momentum
+  // from the old page is cancelled by the immediate scroll.
+  useLayoutEffect(() => {
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(0, { immediate: true, force: true });
     } else {
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     }
-    ScrollTrigger.refresh();
-  }, [pathname]);
+
+    // Recalculate trigger positions once the new page has laid out.
+    const raf = requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+      const target = hashRef.current;
+      if (target) scrollToHash(target, { immediate: true });
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [pathname, scrollToHash]);
 
   const stopScroll = useCallback(() => {
     lockCountRef.current += 1;
@@ -90,18 +134,19 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const scrollToTop = useCallback(() => {
+  const scrollToTop = useCallback((opts?: { smooth?: boolean }) => {
+    const smooth = opts?.smooth ?? false;
     if (lenisRef.current) {
-      lenisRef.current.scrollTo(0, { immediate: true });
+      lenisRef.current.scrollTo(0, { immediate: !smooth, force: true });
     } else {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      window.scrollTo({ top: 0, left: 0, behavior: smooth ? 'smooth' : 'instant' });
     }
-    ScrollTrigger.refresh();
+    if (!smooth) ScrollTrigger.refresh();
   }, []);
 
   const value = useMemo(
-    () => ({ stopScroll, startScroll, scrollToTop }),
-    [stopScroll, startScroll, scrollToTop],
+    () => ({ stopScroll, startScroll, scrollToTop, scrollToHash }),
+    [stopScroll, startScroll, scrollToTop, scrollToHash],
   );
 
   return (
