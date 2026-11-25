@@ -95,6 +95,9 @@
   --text-cta--line-height: 1.1;
 
   /* ---------- UI scale: clamp(0.8 × size, size ÷ 19.2 vw, 1.15 × size) ---------- */
+  --text-case-title: clamp(2.5rem, 2.6042vw, 3.5938rem); /* 50px, Bold: case-study title */
+  --text-case-title--line-height: 1.05;
+  --text-case-title--letter-spacing: -0.02em;
   --text-tile-label: clamp(1.5rem, 1.5625vw, 2.1562rem); /* 30px, SemiBold: work tile labels */
   --text-footer-cta: clamp(1.3rem, 1.3542vw, 1.8687rem); /* 26px, Bold: footer Let's Talk */
   --text-stat-label: clamp(1.175rem, 1.224vw, 1.6891rem); /* 23.5px, Bold: stat labels */

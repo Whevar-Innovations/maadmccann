@@ -215,6 +215,10 @@ export const WORK_GRID = {
   swapDuration: 0.5,
 } as const;
 
+export const CASE_STUDY = {
+  storyStagger: 0.12, // paragraph rise-in
+} as const;
+
 export const TEAM_INTRO = {
   delay: 0.2,
 } as const;
