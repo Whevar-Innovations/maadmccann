@@ -130,6 +130,7 @@ export function PageTransition({ children, outsideStage }: PageTransitionProps) 
         overlay.apply(boxOf(source.el), SHARED_TRANSITION.radiusPx);
         source.el.style.visibility = 'hidden';
         sharedRef.current = overlay;
+        document.documentElement.dataset[SHARED_ACTIVE_ATTR] = '';
         gsap.to(stage, { opacity: SHARED_TRANSITION.dimOpacity, duration: SHARED_TRANSITION.expand, ease: EASE.inOut });
         overlay.to(viewportBox(), 0, {
           duration: SHARED_TRANSITION.expand,
@@ -182,7 +183,6 @@ export function PageTransition({ children, outsideStage }: PageTransitionProps) 
         return;
       }
       // The page mounts hidden behind the full-screen image; once laid out, the image settles into the frame.
-      document.documentElement.dataset[SHARED_ACTIVE_ATTR] = '';
       target.style.visibility = 'hidden';
       let raf = requestAnimationFrame(() => {
         raf = requestAnimationFrame(() => {

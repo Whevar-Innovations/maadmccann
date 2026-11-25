@@ -211,17 +211,15 @@ export const SHARED_TRANSITION = {
   readyTimeoutMs: 1500, // give up and release scrolling if the route never lands
 } as const;
 
-export const WORK_HERO = {
-  subDelay: 0.25,
+/** Entrance of above-the-fold items on inner pages (starts once the first-visit loader is done). */
+export const ENTRANCE = {
+  clipFrom: 'inset(100% 0% 0% 0%)', // un-clips from the bottom up, like the content rising
+  clipTo: 'inset(0% 0% 0% 0%)',
+  lead: 0.05, // short lead-in when the loader was already shown this session
 } as const;
 
-export const WORK_GRID = {
-  start: 'top 88%',
-  rise: 36, // × 0.5 on mobile
-  duration: 0.8,
-  stagger: 0.06,
-  swapRise: 18, // filter / page change: shorter, quicker than the first entrance
-  swapDuration: 0.5,
+export const WORK_HERO = {
+  subDelay: 0.25,
 } as const;
 
 export const CASE_STUDY = {

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { WorkPage } from '@/content/types';
 import { Pill } from '@/components/ui/Pill';
+import { useHeroEntrance } from '@/motion/useHeroEntrance';
 
 export type CategoryFilterProps = {
   label: string;
@@ -17,6 +18,7 @@ export type CategoryFilterProps = {
  */
 export function CategoryFilter({ label, allLabel, categories, value, onChange }: CategoryFilterProps) {
   const rowRef = useRef<HTMLDivElement | null>(null);
+  useHeroEntrance(rowRef, { targets: '[data-pill]', delay: 0.2 });
 
   // Keep the selected pill in view on the mobile scroller (scrollTo on the row, never the page).
   useEffect(() => {
@@ -42,7 +44,7 @@ export function CategoryFilter({ label, allLabel, categories, value, onChange }:
       {options.map((option) => {
         const selected = option.id === value;
         return (
-          <span key={option.id ?? 'all'} data-selected={selected} className="snap-center">
+          <span key={option.id ?? 'all'} data-pill data-selected={selected} className="snap-center">
             <Pill selected={selected} aria-pressed={selected} onClick={() => onChange(option.id)}>
               {option.label}
             </Pill>

@@ -40,7 +40,7 @@ Never weaken the guard to get a build through. Fix the code, or ask.
 | `src/components/layout/` | `RootLayout` (shell, loader, transitions), `Header`, `Footer`, `FooterMotifStage` (CtaBand + Footer share one stage) |
 | `src/components/<page>/` | Page sections: `home/`, `what-we-do/`, `team/` |
 | `src/components/ui/` | Primitives: `Link`, `Button`, `Img`, `PlayButton` |
-| `src/motion/` | `tokens.ts`, `gsap-setup.ts`, `SmoothScroll`, `LoaderProvider`, `PageTransition`, reveal primitives (`RevealText`, `RevealImage`, `FadeUp`, `Counter`, `Magnetic`, `LogoCarousel`, `useFallIn`) |
+| `src/motion/` | `tokens.ts`, `gsap-setup.ts`, `SmoothScroll`, `LoaderProvider`, `PageTransition`, reveal primitives (`RevealText`, `RevealImage`, `FadeUp`, `Counter`, `Magnetic`, `LogoCarousel`, `useFallIn`, `useHeroEntrance`, `useMotifBloom`, shared-element helpers) |
 | `src/content/` | `types.ts` (CMS contract), `api.ts` (async fetchers), `static/` (content), `mock/` + `sanity/` (CMS adapter + mappers) |
 | `src/styles/globals.css` | Tailwind `@theme` with every colour, font, breakpoint and type size |
 | `src/lib/useSeo.ts`, `src/lib/site.ts` | Per-route title, description, canonical and OG tags. `site.ts` holds site-wide SEO defaults (build config, not CMS content). |
@@ -116,7 +116,8 @@ Never weaken the guard to get a build through. Fix the code, or ask.
     - `finePointer` gates magnetic, cursor-follow and hover-only effects.
 17. Animate only `transform`, `opacity` and `clip-path`. Never animate layout properties.
 18. Reach for the existing primitives (`RevealText`, `RevealImage`, `FadeUp`, `Counter`,
-    `Magnetic`, `useFallIn`) before writing a bespoke timeline.
+    `Magnetic`, `useFallIn`, `useHeroEntrance` for above-the-fold items that must wait for the loader,
+    `useMotifBloom` for motif heroes) before writing a bespoke timeline.
 19. Lenis owns scrolling. Stop it for overlays (menu, modal, dialog) and resume it on close.
     Anything `position: fixed` (header, drawers, dialogs) must sit outside transformed wrappers,
     so portal it to `document.body` as `Header` and `ProfileDialog` do.

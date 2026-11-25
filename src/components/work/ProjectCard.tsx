@@ -3,10 +3,14 @@ import type { WorkProject } from '@/content/types';
 import { Img } from '@/components/ui/Img';
 import { Link } from '@/components/ui/Link';
 import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
+import { RevealImage } from '@/motion/RevealImage';
+import { useFallIn } from '@/motion/useFallIn';
 import { EASE, REVEAL } from '@/motion/tokens';
 
 export type ProjectCardProps = {
   project: WorkProject;
+  /** Position in the grid: staggers the fall-in across a row. */
+  index: number;
 };
 
 const SIZES = '(min-width: 1024px) 400px, (min-width: 768px) 45vw, 100vw';
@@ -15,8 +19,10 @@ const SIZES = '(min-width: 1024px) 400px, (min-width: 768px) 45vw, 100vw';
  * Our Work grid card: image over a light caption panel (title, then client in red).
  * Cards with a case study link to it and zoom the image on hover; the rest are inert.
  */
-export function ProjectCard({ project }: ProjectCardProps) {
+export function ProjectCard({ project, index }: ProjectCardProps) {
   const cardRef = useRef<HTMLElement | null>(null);
+  // Same "fall into grid" entry as the homepage work tiles.
+  useFallIn(cardRef, { delay: (index % 3) * 0.08 });
 
   useGSAP(
     () => {
@@ -52,7 +58,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
   const body = (
     <>
-      <div data-shared-image className="aspect-[802/443] overflow-hidden rounded-xl bg-placeholder">
+      <RevealImage noScale sharedImage className="aspect-[802/443] rounded-xl bg-placeholder">
         <div data-card-zoom className="h-full w-full will-change-transform">
           <Img
             image={project.image}
@@ -61,7 +67,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
             className="h-full w-full object-cover"
           />
         </div>
-      </div>
+      </RevealImage>
       <div className="px-2 pt-3 pb-2.5">
         <h3 className="text-connect leading-snug font-semibold text-ink">{project.title}</h3>
         <p className="text-small text-impact-red">{project.client}</p>
