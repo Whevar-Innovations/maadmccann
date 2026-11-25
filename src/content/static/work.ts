@@ -209,6 +209,16 @@ export const work: WorkPage = {
   ],
   pageSize: 9,
   projects,
+  labels: {
+    summary: 'Showing {from}–{to} of {total} projects',
+    empty: 'Nothing here yet. Check back soon, or pick another sector.',
+    paginationLabel: 'Pagination',
+    previous: 'Prev',
+    next: 'Next',
+    pageOf: 'Page {page} of {total}',
+    goToPage: 'Go to page {n}',
+    announce: 'Page {page} of {total}, {count} projects',
+  },
 };
 
 /** Header video: the showreel stands in until each project has its own Mux asset. */

@@ -36,6 +36,8 @@
   /* The MAAD Ones */
   --color-placeholder: #d6d6d6; /* portrait background while images load */
   --color-mist: #eef3f5; /* bio hover panel (at 95%) */
+  /* Our Work */
+  --color-tile-grey: #f2f2f2; /* project card caption panel (sampled from the Our Work design) */
   --color-white: #ffffff;
   --color-black: #000000;
   --color-transparent: transparent;

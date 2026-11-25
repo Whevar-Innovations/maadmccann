@@ -181,6 +181,17 @@ export type WorkPage = {
   categories: WorkCategory[];
   pageSize: number;
   projects: WorkProject[];
+  /** Interface copy. `{from}`, `{to}`, `{total}`, `{page}` and `{n}` are filled in by the grid. */
+  labels: {
+    summary: string;        // 'Showing {from}–{to} of {total} projects'
+    empty: string;          // shown when a sector has no projects
+    paginationLabel: string;
+    previous: string;
+    next: string;
+    pageOf: string;         // 'Page {page} of {total}' (compact mobile paginator)
+    goToPage: string;       // 'Go to page {n}'
+    announce: string;       // live region: 'Page {page} of {total}, {count} projects'
+  };
 };
 
 /** Case-study header media: a Mux video (poster as the still) or a plain hero image. */

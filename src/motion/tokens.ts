@@ -199,6 +199,22 @@ export const ORG_CHART = {
   breatheDur: 1.8,
 } as const;
 
+export const WORK_HERO = {
+  motifScaleFrom: 1.06,
+  motifOpacity: 0.1, // a touch under MOTIF_LAB.restOpacity: this motif is denser than the hero A/V
+  motifDriftPercent: 8, // desktop scroll drift
+  subDelay: 0.25,
+} as const;
+
+export const WORK_GRID = {
+  start: 'top 88%',
+  rise: 36, // × 0.5 on mobile
+  duration: 0.8,
+  stagger: 0.06,
+  swapRise: 18, // filter / page change: shorter, quicker than the first entrance
+  swapDuration: 0.5,
+} as const;
+
 export const TEAM_INTRO = {
   delay: 0.2,
 } as const;
