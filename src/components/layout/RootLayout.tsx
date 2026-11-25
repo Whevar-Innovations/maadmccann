@@ -3,7 +3,7 @@ import { getSiteSettings } from '@/content/api';
 import { CtaBand } from '@/components/home/CtaBand';
 import { LoaderProvider } from '@/motion/LoaderProvider';
 import { PageTransition } from '@/motion/PageTransition';
-import { SmoothScroll } from '@/motion/SmoothScroll';
+import { RouteScrollReset, SmoothScroll } from '@/motion/SmoothScroll';
 import { Footer } from './Footer';
 import { FooterMotifStage } from './FooterMotifStage';
 import { Header } from './Header';
@@ -36,6 +36,8 @@ export function RootLayout() {
               links navigate) but outside the page wrapper. */}
           <PageTransition outsideStage={<Header settings={settings} />}>
             <main id="main">
+              {/* Must stay before <Outlet />: resets scroll before the page's triggers exist. */}
+              <RouteScrollReset />
               <Outlet />
             </main>
 
