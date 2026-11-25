@@ -18,7 +18,7 @@ Do not mix in Motion/framer-motion. GSAP owns all animation so timing stays cons
 src/
   content/
     types.ts            // TS types = future Sanity schema shape
-    api.ts              // getHomePage(), getSiteSettings(), getWhatWeDoPage(), getTeamPage()...
+    api.ts              // getHomePage(), getSiteSettings(), getWhatWeDoPage(), getTeamPage(), getWorkPage(), getCaseStudy(slug)...
     static/             // static source; only src/content/ may import it (check:rules)
       home.ts  settings.ts  whatWeDo.ts  team.ts
     mock/               // Sanity-shaped mock source (VITE_CONTENT_SOURCE=mock)
@@ -34,7 +34,9 @@ src/
            WorkGrid.tsx  WorkCard.tsx  Impact.tsx  CtaBand.tsx
     what-we-do/  WhatWeDoHero.tsx  Services.tsx  ServiceCard.tsx  SbccOrbit.tsx  OrgChart.tsx
     team/  TeamHero.tsx  TeamIntro.tsx  TeamGrid.tsx  TeamCard.tsx  BioPanel.tsx  ProfileDialog.tsx
-  routes/  home.tsx  what-we-do.tsx  the-maad-ones.tsx (loader + page each)
+    work/  WorkHero.tsx  CategoryFilter.tsx  ProjectGrid.tsx  ProjectCard.tsx  Pagination.tsx
+           CaseHeader.tsx  CaseMedia.tsx  CaseStory.tsx  ArtworkGallery.tsx
+  routes/  home.tsx  what-we-do.tsx  the-maad-ones.tsx  work.tsx  work-detail.tsx (loader + page each)
   lib/     useSeo.ts  site.ts (site-wide SEO defaults)
   styles/  globals.css (tokens)
 scripts/check-rules.mjs   // rule guard, runs before every build
@@ -127,6 +129,16 @@ export type TeamMember = TeamPerson & { slug: string; title: string; image: Imag
 export type TeamSection = { id: string; title: string; columns: number; members: TeamMember[] };
 export type TeamRow = TeamSection | [TeamSection, TeamSection];  // a pair renders side by side
 export type TeamPage = { seo: PageSeo; hero: ImageAsset; intro: { accent; headline; body }; rows: TeamRow[] };
+
+// Our Work (/work) and case studies (/work/:slug)
+export type WorkProject = Project & { categoryIds: string[]; hasCaseStudy: boolean };  // grid card
+export type WorkPage = { seo; hero: { headlineLines; subheading; motif }; filterLabel; allLabel;
+  categories: WorkCategory[]; pageSize: number; projects: WorkProject[]; labels: { ... } };
+export type CaseMedia = { kind: 'video'; videoUrl; poster } | { kind: 'image'; image };  // Mux video or hero image
+export type GalleryBlock = { layout: 'rows'; rows: GalleryItem[][] }
+  | { layout: 'beside'; tallSide: 'left' | 'right'; tall: GalleryItem; rows: GalleryItem[][] };
+export type CaseStudyPage = { slug; seo; clientLabel; client; title; media: CaseMedia; headline;
+  story: { label?; body }[]; gallery: GalleryBlock[] };
 ```
 
 ### 5.3 API layer (`src/content/api.ts`)
@@ -157,6 +169,9 @@ export const homeLoader = async () => ({ home: await getHomePage() });
 // routes/what-we-do.tsx, routes/the-maad-ones.tsx
 export const whatWeDoLoader = async () => ({ page: await getWhatWeDoPage() });
 export const theMaadOnesLoader = async () => ({ page: await getTeamPage() });
+// routes/work.tsx, routes/work-detail.tsx (unknown slug throws a 404 Response)
+export const workLoader = async () => ({ page: await getWorkPage() });
+export const workDetailLoader = async ({ params }) => ({ page: await getCaseStudy(params.slug) });
 // RootLayout route loader: settings.cta feeds the CTA band on every page
 export const rootLoader = async () => ({ settings: await getSiteSettings() });
 ```
@@ -242,6 +257,8 @@ export const settings: SiteSettings = {
 | `homePage` (singleton) | `HomePage` | hero, showreel, clients, impact objects |
 | `whatWeDoPage` (singleton) | `WhatWeDoPage` | seo, hero, one object per service (with anchor `id`) |
 | `teamPage` (singleton) | `TeamPage` | seo, hero image, intro, rows of sections referencing `teamMember` |
+| `workPage` (singleton) | `WorkPage` | seo, hero, categories, interface labels; projects reference `project` |
+| `caseStudy` (collection) | `CaseStudyPage` | slug, media (Mux URL or image), story paragraphs, gallery blocks; referenced from `project` |
 | `teamMember` (collection) | `TeamMember` | portrait (hotspot, required `alt`), bio; title is set per section |
 | `project` (collection) | `Project` | `client`, `title`, `slug`, `image` (hotspot, required `alt`) |
 | `award` (collection) | `Award` | referenced from `homePage.hero.awards` |

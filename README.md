@@ -21,7 +21,7 @@ All digital assets, layouts, typography, and motifs are derived directly from th
 |---|---|---|---|
 | **`The MAADness/`** | `MAAD McCANN Website Homepage.ai`<br>• `Homepage Awards/` (Gorilla trophies)<br>• `Ka Weekie/` (GOtv TVC & posters)<br>• `PrideBank/` (Campaign posters & TVC)<br>• `CCBU/` (Coca-Cola Beverages Uganda)<br>• `Showreel/` (`MAAD REEL.mp4`) | **Homepage Core**<br>• Hero master timeline<br>• 3D-float awards trophies<br>• Fullscreen Showreel video modal<br>• Continuous footer motif stage | • `src/routes/home.tsx`<br>• `src/components/home/Hero.tsx`<br>• `src/components/home/Trophies.tsx`<br>• `src/components/home/Showreel.tsx`<br>• `src/components/home/Impact.tsx`<br>• `src/components/home/CtaBand.tsx` |
 | **`What We Do/`** | `MAAD McCANN Website Services.ai`<br>• `Services Motif.png`<br>• Font packages | **Services & Capabilities**<br>• Brand Strategy & Development<br>• Creative & Art Direction<br>• PR & Reputation Management<br>• Experiential & Events<br>• Media Planning & Buying<br>• Production, Digital & SBCC | • `src/routes/what-we-do.tsx`<br>• `src/components/what-we-do/*`<br>• `src/content/types.ts` (`WhatWeDoPage`)<br>• `src/content/static/whatWeDo.ts`<br>• Footer services grid in `Footer.tsx` |
-| **`Our Work/`** | `MAAD McCANN Website Our Work.ai`<br>• High-res campaign key visuals | **Portfolio Grid**<br>• Zero-gap modular card layout<br>• Parallax image clipping<br>• Magnetic line-stretch hover interaction | • `src/components/home/WorkGrid.tsx`<br>• `src/components/home/WorkCard.tsx`<br>• `src/assets/img/work/*` |
+| **`Our Work/`** | `MAAD McCANN Website Our Work.ai`<br>• `Our Work Motif.png`<br>• High-res campaign key visuals | **Our Work & Case Studies**<br>• Sector filter pills + paginated project grid (URL-driven)<br>• `/work/:slug` case studies: video or hero image, story, artwork mosaic<br>• Homepage tile grid (`WorkGrid`) links into them | • `src/routes/work.tsx`, `src/routes/work-detail.tsx`<br>• `src/components/work/*`<br>• `src/content/types.ts` (`WorkPage`, `CaseStudyPage`)<br>• `src/content/static/work.ts`, `workSlugs.ts`<br>• `src/components/home/WorkGrid.tsx`, `WorkCard.tsx`<br>• `src/assets/img/work/*` |
 | **`CSR/`** | `MAAD McCANN CSR.ai`<br>• `Run For The Nile/`<br>• `Iron Sharpens Iron/`<br>• `CSR Motif.png` | **Corporate Social Responsibility**<br>• Purpose-driven campaigns<br>• Master dark line-art motif backdrop | • `src/assets/img/dark-motif-bg.webp`<br>• Mobile header menu backdrop<br>• Transition curtain styling |
 | **`Our Partners/`** | `MAAD McCANN Website Our Clients.ai`<br>• Partner brand marks | **Client Roster**<br>• Dual-tier trust display<br>• Staggered fade-up reveal | • `src/components/home/ClientsRow.tsx`<br>• `src/assets/img/clients/*` |
 | **`The Maad Ones/`** | `The MAAD Ones.ai`<br>• `People Page.docx`<br>• Leadership portraits | **Agency Team & Culture**<br>• Creative leadership<br>• Department heads & culture | • `src/routes/the-maad-ones.tsx`<br>• `src/components/team/*`<br>• `src/content/types.ts` (`TeamPage`, `TeamMember`)<br>• `src/content/static/team.ts` |
@@ -47,7 +47,7 @@ All digital assets, layouts, typography, and motifs are derived directly from th
 ## 4. Architectural Highlights
 
 ### A. Decoupled Content Layer (Zero-Static-Import Rule)
-Only files inside `src/content/` may import `src/content/static/`. All content flows through an async data-fetching contract (`src/content/api.ts`: `getHomePage`, `getSiteSettings`, `getWhatWeDoPage`, `getTeamPage`), consumed by React Router data loaders (`rootLoader`, `homeLoader`, `whatWeDoLoader`, `theMaadOnesLoader`) and passed to section components as props. Content types live in `src/content/types.ts`. Site-wide content (nav, footer, and the CTA band via `SiteSettings.cta`) comes from `rootLoader`, so every page gets the CTA band and footer without extra wiring.
+Only files inside `src/content/` may import `src/content/static/`. All content flows through an async data-fetching contract (`src/content/api.ts`: `getHomePage`, `getSiteSettings`, `getWhatWeDoPage`, `getTeamPage`, `getWorkPage`, `getCaseStudy`), consumed by React Router data loaders (`rootLoader`, `homeLoader`, `whatWeDoLoader`, `theMaadOnesLoader`, `workLoader`, `workDetailLoader`) and passed to section components as props. Content types live in `src/content/types.ts`. Site-wide content (nav, footer, and the CTA band via `SiteSettings.cta`) comes from `rootLoader`, so every page gets the CTA band and footer without extra wiring.
 - **Enforced:** `npm run check:rules` (run automatically by `npm run build`) fails on static-content imports outside `src/content/`, raw colour literals in components, string eases outside `src/motion/tokens.ts`, and routes missing from `ENABLED_ROUTES`/`SITEMAP_ROUTES`. See `CLAUDE.md` for the fix for each.
 - **Production Mode:** Fetches from the headless CMS endpoint.
 - **Mock Mode (`VITE_CONTENT_SOURCE=mock`):** Uses an asynchronous in-memory clone of `mock/source.ts` to simulate CMS latency and verify zero build regressions.
@@ -84,11 +84,12 @@ A unified red metallic texture stage (`src/components/layout/FooterMotifStage.ts
 │   │   ├── layout/               # Shell layout (Header, Footer, FooterMotifStage, RootLayout)
 │   │   ├── what-we-do/           # What We Do sections (WhatWeDoHero, Services, ServiceCard, SbccOrbit, OrgChart)
 │   │   ├── team/                 # The MAAD Ones sections (TeamHero, TeamIntro, TeamGrid, TeamCard, BioPanel, ProfileDialog)
-│   │   └── ui/                   # Shared UI primitives (Button, Link, Img, PlayButton)
+│   │   ├── work/                 # Our Work + case studies (WorkHero, CategoryFilter, ProjectGrid, ProjectCard, Pagination, CaseHeader, CaseMedia, CaseStory, ArtworkGallery)
+│   │   └── ui/                   # Shared UI primitives (Button, Link, Img, PlayButton, Pill, VideoFrame)
 │   ├── content/
-│   │   ├── api.ts                # Content fetchers (getHomePage, getSiteSettings, getWhatWeDoPage, getTeamPage)
+│   │   ├── api.ts                # Content fetchers (getHomePage, getSiteSettings, getWhatWeDoPage, getTeamPage, getWorkPage, getCaseStudy)
 │   │   ├── types.ts              # CMS schema type definitions (the contract)
-│   │   ├── static/               # Source content (settings, home, whatWeDo, team): imported only by src/content/
+│   │   ├── static/               # Source content (settings, home, whatWeDo, team, work): imported only by src/content/
 │   │   ├── mock/                 # Mock CMS source adapter
 │   │   └── sanity/               # Sanity document types + mappers
 │   ├── motion/
@@ -109,6 +110,8 @@ A unified red metallic texture stage (`src/components/layout/FooterMotifStage.ts
 │   │   ├── home.tsx              # Homepage data loader & route view
 │   │   ├── what-we-do.tsx        # What We Do loader & route view
 │   │   ├── the-maad-ones.tsx     # The MAAD Ones loader & route view
+│   │   ├── work.tsx              # Our Work loader & route view
+│   │   ├── work-detail.tsx       # Case study (/work/:slug) loader & route view
 │   │   └── RouteError.tsx        # Top-level error boundary
 │   ├── styles/
 │   │   └── globals.css           # Tailwind v4 theme & typography tokens
