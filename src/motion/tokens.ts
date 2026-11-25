@@ -200,9 +200,6 @@ export const ORG_CHART = {
 } as const;
 
 export const WORK_HERO = {
-  motifScaleFrom: 1.06,
-  motifOpacity: 0.1, // a touch under MOTIF_LAB.restOpacity: this motif is denser than the hero A/V
-  motifDriftPercent: 8, // desktop scroll drift
   subDelay: 0.25,
 } as const;
 

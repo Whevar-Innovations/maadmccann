@@ -173,8 +173,6 @@ export type WorkPage = {
   hero: {
     headlineLines: string[];
     subheading: string;
-    /** White line-art on black: blended over the crimson hero. */
-    motif: ImageAsset;
   };
   filterLabel: string;      // accessible name of the pill group
   allLabel: string;         // 'ALL WORK'

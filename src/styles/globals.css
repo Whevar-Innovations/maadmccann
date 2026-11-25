@@ -150,6 +150,13 @@
   background-image: radial-gradient(ellipse at 60% 35%, #2a2b2a 0%, #161716 55%, #0b0c0b 100%);
 }
 
+/* Our Work hero depth: darker corners and base over the metallic image. */
+@utility bg-work-vignette {
+  background-image:
+    radial-gradient(ellipse at 65% 25%, transparent 45%, rgb(42 6 24 / 0.22) 100%),
+    linear-gradient(to bottom, transparent 70%, rgb(42 6 24 / 0.15) 100%);
+}
+
 /* Animated underline + accent colour for text links on dark backgrounds. */
 .link-accent {
   background-image: linear-gradient(currentColor, currentColor);

@@ -1,7 +1,8 @@
 import { useRef, type CSSProperties } from 'react';
 import type { WhatWeDoPage } from '@/content/types';
-import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
+import { gsap } from '@/motion/gsap-setup';
 import { useLoaderState } from '@/motion/LoaderProvider';
+import { useMotifBloom } from '@/motion/useMotifBloom';
 import { DUR, EASE, MOTIF_LAB, STAGGER } from '@/motion/tokens';
 import {
   HEADER_MOTIF_CENTERS,
@@ -31,107 +32,44 @@ export function WhatWeDoHero({ hero }: WhatWeDoHeroProps) {
   // First visit: wait for the loader to clear. In-site navigation: play as soon as the page enters.
   const canPlay = isHeroReady;
 
-  useGSAP(
-    () => {
+  useMotifBloom({
+    sectionRef,
+    baseRef: baseSvgRef,
+    brightRef: brightSvgRef,
+    patternSelector: '#header-motif-pattern',
+    centers: HEADER_MOTIF_CENTERS,
+    width: HEADER_MOTIF_W,
+    height: HEADER_MOTIF_H,
+    canPlay,
+    skippedLoader,
+    onReduced: () => {
       const section = sectionRef.current;
-      const base = baseSvgRef.current;
-      const bright = brightSvgRef.current;
-      if (!section || !base || !bright || !canPlay) return;
-
-      const lines = section.querySelectorAll<HTMLElement>('[data-hero-line]');
-      const body = section.querySelectorAll<HTMLElement>('[data-hero-body]');
-      const paths = Array.from(base.querySelectorAll<SVGPathElement>('#header-motif-pattern path'));
-
-      // Radial distance from the focal point [W/2, H*0.55], as the footer computes it, but from
-      // precomputed centres: no getBBox() layout reads while the page mounts.
-      const focalX = HEADER_MOTIF_W / 2;
-      const focalY = HEADER_MOTIF_H * 0.55;
-      const maxDist = Math.hypot(HEADER_MOTIF_W, HEADER_MOTIF_H) / 2;
-      const centerOf = (i: number) => HEADER_MOTIF_CENTERS[i] ?? [focalX, focalY];
-      const distOf = (i: number) => {
-        const [cx, cy] = centerOf(i);
-        return Math.hypot(cx - focalX, cy - focalY) / maxDist;
-      };
-
-      const mm = gsap.matchMedia();
-
-      mm.add(MEDIA_QUERIES.reducedMotion, () => {
-        gsap.set(base, { opacity: MOTIF_LAB.restOpacity });
-        gsap.fromTo([lines, body], { opacity: 0 }, { opacity: 1, duration: DUR.ui });
-      });
-
-      mm.add(
-        { motionOk: MEDIA_QUERIES.motionOk, isMobile: MEDIA_QUERIES.mobile },
-        (context) => {
-          const { motionOk, isMobile } = context.conditions ?? {};
-          if (!motionOk) return;
-
-          // --- Bloom (identical to FooterMotifStage) ---
-          const st = gsap.timeline({ delay: skippedLoader ? 0.05 : 0 });
-          st.set(base, { opacity: MOTIF_LAB.bloomPeakOpacity }, 0);
-          st.from(
-            paths,
-            {
-              opacity: 0,
-              scale: 0.9,
-              // Same visual as transformOrigin '50% 50%', without GSAP measuring each path.
-              svgOrigin: (i: number) => centerOf(i).join(' '),
-              duration: DUR.bloomPath,
-              ease: EASE.out,
-              delay: (i: number) => distOf(i) * MOTIF_LAB.bloomDistanceDelayFactor,
-            },
-            0,
-          );
-          st.to(
-            base,
-            { opacity: MOTIF_LAB.restOpacity, duration: DUR.bloomSettle, ease: EASE.SineInOut },
-            MOTIF_LAB.bloomSettleDelay,
-          );
-
-          // --- Headline: masked line rise, body fades up ---
-          st.fromTo(
-            lines,
-            { yPercent: 105 },
-            { yPercent: 0, duration: DUR.hero, stagger: STAGGER.lines, ease: EASE.out },
-            0.15,
-          ).fromTo(
-            body,
-            { y: isMobile ? 12 : 24, opacity: 0 },
-            { y: 0, opacity: 1, duration: DUR.text, stagger: STAGGER.lines, ease: EASE.out },
-            0.5,
-          );
-
-          // --- Pointer spotlight (identical to FooterMotifStage) ---
-          const mx = gsap.quickTo(bright, '--x', { duration: DUR.spotlight, ease: EASE.soft });
-          const my = gsap.quickTo(bright, '--y', { duration: DUR.spotlight, ease: EASE.soft });
-
-          const onPointerMove = (e: PointerEvent) => {
-            const r = section.getBoundingClientRect();
-            mx(e.clientX - r.left);
-            my(e.clientY - r.top);
-          };
-          const onPointerEnter = (e: PointerEvent) => {
-            const r = section.getBoundingClientRect();
-            gsap.set(bright, { '--x': e.clientX - r.left, '--y': e.clientY - r.top });
-            gsap.to(bright, { opacity: MOTIF_LAB.spotOpacity, duration: DUR.ui, ease: EASE.soft });
-          };
-          const onPointerLeave = () => {
-            gsap.to(bright, { opacity: 0, duration: DUR.ui, ease: EASE.soft });
-          };
-
-          section.addEventListener('pointermove', onPointerMove);
-          section.addEventListener('pointerenter', onPointerEnter);
-          section.addEventListener('pointerleave', onPointerLeave);
-          return () => {
-            section.removeEventListener('pointermove', onPointerMove);
-            section.removeEventListener('pointerenter', onPointerEnter);
-            section.removeEventListener('pointerleave', onPointerLeave);
-          };
-        },
+      if (!section) return;
+      gsap.fromTo(
+        section.querySelectorAll('[data-hero-line], [data-hero-body]'),
+        { opacity: 0 },
+        { opacity: 1, duration: DUR.ui },
       );
     },
-    { scope: sectionRef, dependencies: [canPlay, skippedLoader] },
-  );
+    // Headline: masked line rise, body fades up.
+    onTimeline: (tl, { isMobile }) => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const lines = section.querySelectorAll<HTMLElement>('[data-hero-line]');
+      const body = section.querySelectorAll<HTMLElement>('[data-hero-body]');
+      tl.fromTo(
+        lines,
+        { yPercent: 105 },
+        { yPercent: 0, duration: DUR.hero, stagger: STAGGER.lines, ease: EASE.out },
+        0.15,
+      ).fromTo(
+        body,
+        { y: isMobile ? 12 : 24, opacity: 0 },
+        { y: 0, opacity: 1, duration: DUR.text, stagger: STAGGER.lines, ease: EASE.out },
+        0.5,
+      );
+    },
+  });
 
   const brightMaskStyle: CSSProperties = {
     ['--x' as string]: 400,

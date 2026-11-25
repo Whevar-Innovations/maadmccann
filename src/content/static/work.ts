@@ -8,8 +8,6 @@ import type {
 import { img } from './assets';
 import { home } from './home';
 import { CASE_STUDY_SLUGS } from './workSlugs';
-import motif1600 from '@/assets/img/work-motif-1600.webp';
-import motif2800 from '@/assets/img/work-motif-2800.webp';
 
 /**
  * Our Work (/work) and the case studies behind it (/work/:slug).
@@ -192,7 +190,6 @@ export const work: WorkPage = {
     headlineLines: ['We don’t just make ads.', 'We make cultural waves.'],
     subheading:
       'Where deep brand strategy meets world-class creative execution. See how we turn real truths into market growth.',
-    motif: img(motif2800, 6336, 2688, '', `${motif1600} 1600w, ${motif2800} 2800w`),
   },
   filterLabel: 'Filter work by sector',
   allLabel: 'ALL WORK',

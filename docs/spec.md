@@ -132,7 +132,7 @@ export type TeamPage = { seo: PageSeo; hero: ImageAsset; intro: { accent; headli
 
 // Our Work (/work) and case studies (/work/:slug)
 export type WorkProject = Project & { categoryIds: string[]; hasCaseStudy: boolean };  // grid card
-export type WorkPage = { seo; hero: { headlineLines; subheading; motif }; filterLabel; allLabel;
+export type WorkPage = { seo; hero: { headlineLines; subheading }; filterLabel; allLabel;
   categories: WorkCategory[]; pageSize: number; projects: WorkProject[]; labels: { ... } };
 export type CaseMedia = { kind: 'video'; videoUrl; poster } | { kind: 'image'; image };  // Mux video or hero image
 export type GalleryBlock = { layout: 'rows'; rows: GalleryItem[][] }
