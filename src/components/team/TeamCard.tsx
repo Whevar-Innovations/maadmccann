@@ -1,5 +1,5 @@
 import type { FocusEvent, PointerEvent } from 'react';
-import type { TeamMember } from '@/content/static/team';
+import type { TeamMember } from '@/content/types';
 import { Img } from '@/components/ui/Img';
 import { preloadDialogPhoto } from './ProfileDialog';
 
@@ -36,7 +36,7 @@ export function TeamCard({ member, cardId, active, onHoverStart, onHoverEnd, onO
         <Img
           image={member.image}
           sizes="(min-width: 1440px) 11vw, (min-width: 1024px) 15vw, (min-width: 768px) 24vw, (min-width: 640px) 31vw, 48vw"
-          className="h-full w-full object-cover object-top transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.06] group-focus-visible:scale-[1.06] group-data-[active=true]:scale-[1.06]"
+          className="h-full w-full object-cover object-top transition-transform duration-[900ms] ease-expo group-hover:scale-[1.06] group-focus-visible:scale-[1.06] group-data-[active=true]:scale-[1.06]"
         />
       </div>
       <div
@@ -63,7 +63,7 @@ export function TeamCard({ member, cardId, active, onHoverStart, onHoverEnd, onO
           (invisible) so names stay aligned with their neighbours.
         */}
         <div
-          className={`grid grid-rows-[1fr] transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-fine:grid-rows-[0fr] ${
+          className={`grid grid-rows-[1fr] transition-[grid-template-rows] duration-500 ease-expo pointer-fine:grid-rows-[0fr] ${
             hasBio
               ? 'group-hover:grid-rows-[1fr]! group-focus-visible:grid-rows-[1fr]! group-data-[active=true]:grid-rows-[1fr]!'
               : ''
@@ -75,9 +75,9 @@ export function TeamCard({ member, cardId, active, onHoverStart, onHoverEnd, onO
               aria-hidden={hasBio ? undefined : true}
               className={`${hasBio ? '' : 'invisible'} block pt-[0.6em] text-center text-[clamp(0.58rem,2.2vw,0.66rem)] font-medium tracking-[0.12em] text-paper/80 uppercase sm:text-[clamp(0.55rem,1.1vw,0.66rem)] lg:text-[clamp(0.5rem,0.56vw,0.7rem)]`}
             >
-              <span className="relative inline-block pb-[0.2em] opacity-100 transition-opacity duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-fine:opacity-0 group-hover:opacity-100! group-focus-visible:opacity-100! group-data-[active=true]:opacity-100!">
+              <span className="relative inline-block pb-[0.2em] opacity-100 transition-opacity duration-500 ease-expo pointer-fine:opacity-0 group-hover:opacity-100! group-focus-visible:opacity-100! group-data-[active=true]:opacity-100!">
                 See profile
-                <span className="absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-paper transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100 group-data-[active=true]:scale-x-100" />
+                <span className="absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 bg-paper transition-transform duration-500 ease-expo group-hover:scale-x-100 group-focus-visible:scale-x-100 group-data-[active=true]:scale-x-100" />
               </span>
             </span>
           </div>
@@ -86,7 +86,7 @@ export function TeamCard({ member, cardId, active, onHoverStart, onHoverEnd, onO
     </>
   );
 
-  const shell = `group relative block aspect-[2/3] overflow-hidden bg-[#d6d6d6] ${CARD_WIDTH}`;
+  const shell = `group relative block aspect-[2/3] overflow-hidden bg-placeholder ${CARD_WIDTH}`;
 
   if (!hasBio) {
     return (

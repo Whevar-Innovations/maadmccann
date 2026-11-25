@@ -1,18 +1,19 @@
 import { useRef } from 'react';
-import { team } from '@/content/static/team';
+import type { TeamPage } from '@/content/types';
 import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
 import { useLoaderState } from '@/motion/LoaderProvider';
-import { DUR, EASE, SCROLL, STAGGER } from '@/motion/tokens';
+import { DUR, EASE, SCROLL, STAGGER, TEAM_INTRO } from '@/motion/tokens';
 
 /**
  * "Different minds. One beautiful MAAD way of thinking." intro.
  * Headline lines rise out of masks, then the body fades up. Waits for the first-visit loader so
  * the reveal is not spent underneath it on tall screens where the intro is already in view.
  */
-export function TeamIntro() {
+export type TeamIntroProps = { intro: TeamPage['intro'] };
+
+export function TeamIntro({ intro }: TeamIntroProps) {
   const ref = useRef<HTMLElement | null>(null);
   const { isHeroReady } = useLoaderState();
-  const { intro } = team;
 
   useGSAP(
     () => {
@@ -32,7 +33,7 @@ export function TeamIntro() {
           const { motionOk, isMobile } = context.conditions ?? {};
           if (!motionOk) return;
           gsap
-            .timeline({ scrollTrigger: { trigger: root, start: SCROLL.start, once: true }, delay: 0.2 })
+            .timeline({ scrollTrigger: { trigger: root, start: SCROLL.start, once: true }, delay: TEAM_INTRO.delay })
             .fromTo(
               lines,
               { yPercent: 110 },

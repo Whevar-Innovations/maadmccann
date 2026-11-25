@@ -1,5 +1,5 @@
 import { useRef, useState, type ReactNode } from 'react';
-import type { TeamBio } from '@/content/static/team';
+import type { TeamBio } from '@/content/types';
 import { gsap } from '@/motion/gsap-setup';
 import { EASE } from '@/motion/tokens';
 

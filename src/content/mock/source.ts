@@ -1,6 +1,8 @@
-import type { HomePage, SiteSettings } from '../types';
+import type { HomePage, SiteSettings, TeamPage, WhatWeDoPage } from '../types';
 import { home } from '../static/home';
 import { settings } from '../static/settings';
+import { team } from '../static/team';
+import { whatWeDo } from '../static/whatWeDo';
 import { mapAward } from '../sanity/mappers';
 import { mockAwards } from './data/awards';
 import { mockImageUrl } from './imageUrl';
@@ -20,4 +22,14 @@ export async function getHomePage(): Promise<HomePage> {
 export async function getSiteSettings(): Promise<SiteSettings> {
   await Promise.resolve();
   return structuredClone(settings);
+}
+
+export async function getWhatWeDoPage(): Promise<WhatWeDoPage> {
+  await Promise.resolve();
+  return structuredClone(whatWeDo);
+}
+
+export async function getTeamPage(): Promise<TeamPage> {
+  await Promise.resolve();
+  return structuredClone(team);
 }

@@ -1,9 +1,9 @@
 import { useRef } from 'react';
-import { team } from '@/content/static/team';
+import type { ImageAsset } from '@/content/types';
 import { Img } from '@/components/ui/Img';
 import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
 import { useLoaderState } from '@/motion/LoaderProvider';
-import { DUR, EASE } from '@/motion/tokens';
+import { DUR, EASE, TEAM_HERO } from '@/motion/tokens';
 
 /**
  * The MAAD Ones header image: the full team photo, edge to edge, under the transparent site header.
@@ -12,7 +12,9 @@ import { DUR, EASE } from '@/motion/tokens';
  * over the light mural.
  * Crops: mobile keeps nearly the whole group; wider screens trim the ceiling, like the design.
  */
-export function TeamHero() {
+export type TeamHeroProps = { image: ImageAsset };
+
+export function TeamHero({ image }: TeamHeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const { isHeroReady, skippedLoader } = useLoaderState();
 
@@ -55,8 +57,8 @@ export function TeamHero() {
               drift,
               { yPercent: 0 },
               {
-                yPercent: 8,
-                ease: 'none',
+                yPercent: TEAM_HERO.driftYPercent,
+                ease: EASE.linear,
                 scrollTrigger: { trigger: section, start: 'top top', end: 'bottom top', scrub: true },
               },
             );
@@ -80,7 +82,7 @@ export function TeamHero() {
         <div data-hero-drift className="absolute inset-0 will-change-transform">
           <div data-hero-zoom className="h-full w-full will-change-transform">
             <Img
-              image={team.hero}
+              image={image}
               sizes="100vw"
               priority
               className="h-full w-full object-cover object-[50%_60%] sm:object-[50%_72%] lg:object-[50%_78%]"

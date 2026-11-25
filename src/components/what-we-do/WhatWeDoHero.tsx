@@ -1,5 +1,5 @@
 import { useRef, type CSSProperties } from 'react';
-import { whatWeDo } from '@/content/static/whatWeDo';
+import type { WhatWeDoPage } from '@/content/types';
 import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
 import { useLoaderState } from '@/motion/LoaderProvider';
 import { DUR, EASE, MOTIF_LAB, STAGGER } from '@/motion/tokens';
@@ -21,12 +21,13 @@ import {
  * (after the first-visit loader) instead of on scroll-enter, and the lines are light grey on
  * charcoal instead of dark on crimson. Everything is clipped to the banner.
  */
-export function WhatWeDoHero() {
+export type WhatWeDoHeroProps = { hero: WhatWeDoPage['hero'] };
+
+export function WhatWeDoHero({ hero }: WhatWeDoHeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const baseSvgRef = useRef<SVGSVGElement | null>(null);
   const brightSvgRef = useRef<SVGSVGElement | null>(null);
   const { isHeroReady, skippedLoader } = useLoaderState();
-  const { hero } = whatWeDo;
   // First visit: wait for the loader to clear. In-site navigation: play as soon as the page enters.
   const canPlay = isHeroReady;
 
@@ -135,20 +136,20 @@ export function WhatWeDoHero() {
   const brightMaskStyle: CSSProperties = {
     ['--x' as string]: 400,
     ['--y' as string]: 260,
-    WebkitMaskImage: `radial-gradient(circle ${MOTIF_LAB.spotRadiusPx}px at calc(var(--x, 400) * 1px) calc(var(--y, 260) * 1px), #000, transparent)`,
-    maskImage: `radial-gradient(circle ${MOTIF_LAB.spotRadiusPx}px at calc(var(--x, 400) * 1px) calc(var(--y, 260) * 1px), #000, transparent)`,
+    WebkitMaskImage: `radial-gradient(circle ${MOTIF_LAB.spotRadiusPx}px at calc(var(--x, 400) * 1px) calc(var(--y, 260) * 1px), black, transparent)`,
+    maskImage: `radial-gradient(circle ${MOTIF_LAB.spotRadiusPx}px at calc(var(--x, 400) * 1px) calc(var(--y, 260) * 1px), black, transparent)`,
   };
 
   return (
     <section
       ref={sectionRef}
       aria-labelledby="wwd-hero-heading"
-      className="relative isolate flex min-h-[34rem] items-center overflow-hidden bg-[#121312] pt-28 pb-20 text-paper sm:min-h-[38rem] lg:min-h-[42rem] lg:pt-32 [@media(orientation:landscape)_and_(max-height:540px)]:min-h-svh [@media(orientation:landscape)_and_(max-height:540px)]:pt-24 [@media(orientation:landscape)_and_(max-height:540px)]:pb-10"
+      className="relative isolate flex min-h-[34rem] items-center overflow-hidden bg-wwd-ink pt-28 pb-20 text-paper sm:min-h-[38rem] lg:min-h-[42rem] lg:pt-32 [@media(orientation:landscape)_and_(max-height:540px)]:min-h-svh [@media(orientation:landscape)_and_(max-height:540px)]:pt-24 [@media(orientation:landscape)_and_(max-height:540px)]:pb-10"
     >
       {/* Soft vignette like the design: lighter charcoal centre, darker edges */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_60%_35%,#2a2b2a_0%,#161716_55%,#0b0c0b_100%)]"
+        className="pointer-events-none absolute inset-0 bg-wwd-glow"
       />
 
       {/* Base motif: hidden until the bloom starts (no flash under the loader) */}
@@ -157,7 +158,7 @@ export function WhatWeDoHero() {
         viewBox={HEADER_MOTIF_VIEWBOX}
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 h-full w-full text-[#a3a5a4] opacity-0"
+        className="pointer-events-none absolute inset-0 h-full w-full text-ash opacity-0"
       >
         <g id="header-motif-pattern" fill="currentColor" fillRule="evenodd">
           {HEADER_MOTIF_PATHS.map((d, idx) => (

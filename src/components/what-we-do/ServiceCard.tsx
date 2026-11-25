@@ -1,6 +1,6 @@
 import { useRef, type ReactNode } from 'react';
 import { gsap, MEDIA_QUERIES, ScrollTrigger, useGSAP } from '@/motion/gsap-setup';
-import { DUR, EASE, SCROLL } from '@/motion/tokens';
+import { DUR, EASE, SCROLL, SERVICE_CARD } from '@/motion/tokens';
 
 export type ServiceCardProps = {
   id: string;
@@ -12,8 +12,8 @@ export type ServiceCardProps = {
 };
 
 const TONE = {
-  dark: 'bg-[#1e1e1e]',
-  red: 'bg-[#880000]',
+  dark: 'bg-graphite',
+  red: 'bg-service-red',
 } as const;
 
 /**
@@ -55,17 +55,17 @@ export function ServiceCard({ id, tone, className = '', children, labelledBy }: 
 
           const tl = gsap.timeline({
             defaults: { ease: EASE.out },
-            scrollTrigger: { trigger: card, start: 'top 88%', once: true },
+            scrollTrigger: { trigger: card, start: SERVICE_CARD.start, once: true },
           });
 
           tl.fromTo(
             card,
-            { y: 56 * k, opacity: 0, clipPath: 'inset(12% 0% 0% 0% round 16px)' },
+            { y: SERVICE_CARD.rise * k, opacity: 0, clipPath: SERVICE_CARD.clipFrom },
             {
               y: 0,
               opacity: 1,
-              clipPath: 'inset(0% 0% 0% 0% round 16px)',
-              duration: 1.1,
+              clipPath: SERVICE_CARD.clipTo,
+              duration: SERVICE_CARD.duration,
               clearProps: 'clipPath',
             },
             0,
@@ -75,37 +75,37 @@ export function ServiceCard({ id, tone, className = '', children, labelledBy }: 
           // than the viewport), batched so neighbours that enter together still stagger.
           const batches: ScrollTrigger[] = [];
           if (reveals.length) {
-            gsap.set(reveals, { y: 26 * k, opacity: 0 });
+            gsap.set(reveals, { y: SERVICE_CARD.itemRise * k, opacity: 0 });
             batches.push(
               ...ScrollTrigger.batch(reveals, {
-                start: 'top 92%',
+                start: SERVICE_CARD.itemStart,
                 once: true,
                 onEnter: (els) =>
                   gsap.to(els, {
                     y: 0,
                     opacity: 1,
                     duration: DUR.text,
-                    stagger: 0.07,
-                    delay: 0.15,
+                    stagger: SERVICE_CARD.itemStagger,
+                    delay: SERVICE_CARD.itemDelay,
                     ease: EASE.out,
                   }),
               }),
             );
           }
           if (pops.length) {
-            gsap.set(pops, { scale: 0.6, opacity: 0 });
+            gsap.set(pops, { scale: SERVICE_CARD.popScaleFrom, opacity: 0 });
             batches.push(
               ...ScrollTrigger.batch(pops, {
-                start: 'top 92%',
+                start: SERVICE_CARD.itemStart,
                 once: true,
                 onEnter: (els) =>
                   gsap.to(els, {
                     scale: 1,
                     opacity: 1,
-                    duration: 0.8,
-                    stagger: 0.1,
-                    delay: 0.35,
-                    ease: 'back.out(1.6)',
+                    duration: SERVICE_CARD.popDuration,
+                    stagger: SERVICE_CARD.popStagger,
+                    delay: SERVICE_CARD.popDelay,
+                    ease: EASE.popStrong,
                   }),
               }),
             );
@@ -198,7 +198,7 @@ export function RingCircle({
   return (
     <div
       data-pop
-      className={`flex aspect-square shrink-0 items-center justify-center rounded-full border-[6px] border-[#d9d9d9] bg-paper text-ink transition-[scale] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.06] ${className}`}
+      className={`flex aspect-square shrink-0 items-center justify-center rounded-full border-[6px] border-line bg-paper text-ink transition-[scale] duration-500 ease-brand hover:scale-[1.06] ${className}`}
     >
       {children}
     </div>

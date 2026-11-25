@@ -162,9 +162,4 @@ export const home: HomePage = {
       },
     ],
   },
-  cta: {
-    headlineLines: ['Got something in mind?', 'Let’s make something MAAD.'],
-    body: 'Bring us the brief, the challenge or even the “we know something needs to change but we’re not quite sure what.” We’ll take it from there.',
-    button: { label: 'Let’s Talk', href: '#footer' },
-  },
 };

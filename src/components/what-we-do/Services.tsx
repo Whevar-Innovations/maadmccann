@@ -1,4 +1,4 @@
-import { WHAT_WE_DO_IDS as IDS, whatWeDo } from '@/content/static/whatWeDo';
+import type { CreativeIcon, WhatWeDoPage } from '@/content/types';
 import ideationSrc from '@/assets/svg/services/ideation.svg';
 import conceptSrc from '@/assets/svg/services/concept.svg';
 import graphicDesignSrc from '@/assets/svg/services/graphic-design.svg';
@@ -7,7 +7,7 @@ import { OrgChart } from './OrgChart';
 import { SbccOrbit } from './SbccOrbit';
 import { Body, CardTitle, RingCircle, ServiceCard, Tagline } from './ServiceCard';
 
-const CREATIVE_ICONS: Record<(typeof whatWeDo.creative.tiles)[number]['icon'], string> = {
+const CREATIVE_ICONS: Record<CreativeIcon, string> = {
   ideation: ideationSrc,
   concept: conceptSrc,
   'graphic-design': graphicDesignSrc,
@@ -20,21 +20,28 @@ const SUBHEAD = 'text-[clamp(1.05rem,1.2vw,1.45rem)] leading-[1.2] font-semibold
  * What We Do service cards (design: MAAD McCANN Website-what_we_do.jpg).
  * Desktop: bento layout. Tablet: two columns. Mobile: single column stack.
  */
-export function Services() {
+export type ServicesProps = {
+  page: Pick<
+    WhatWeDoPage,
+    'sbcc' | 'digital' | 'accountManagement' | 'media' | 'experiential' | 'brandStrategy' | 'pr' | 'creative' | 'production'
+  >;
+};
+
+export function Services({ page }: ServicesProps) {
   const { sbcc, digital, accountManagement: am, media, experiential, brandStrategy, pr, creative, production } =
-    whatWeDo;
+    page;
 
   return (
     <div className="bg-paper py-20 sm:py-28 lg:py-40">
       <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-3 px-4 sm:gap-3.5 sm:px-8">
         {/* ---------------- SBCC ---------------- */}
-        <ServiceCard id={IDS.sbcc} tone="dark" className="p-6 sm:p-10 lg:px-14 lg:py-14">
+        <ServiceCard id={sbcc.id} tone="dark" className="p-6 sm:p-10 lg:px-14 lg:py-14">
           <div className="grid gap-x-16 gap-y-10 lg:grid-cols-2">
             <div className="flex flex-col">
               {/* Tablet: intro beside the orbit so the card has no empty right half. Desktop: stacked. */}
               <div className="md:grid md:grid-cols-[minmax(0,1fr)_minmax(0,16rem)] md:items-center md:gap-x-10 lg:block">
                 <div>
-                  <CardTitle id={`${IDS.sbcc}-title`} lines={[sbcc.title]} />
+                  <CardTitle id={`${sbcc.id}-title`} lines={[sbcc.title]} />
                   <Tagline lines={[sbcc.tagline]} className="mt-4" />
                   <Body className="mt-3 max-w-[60ch] lg:max-w-[48ch]">{sbcc.body}</Body>
                   <ul
@@ -87,10 +94,10 @@ export function Services() {
         </ServiceCard>
 
         {/* ---------------- Digital ---------------- */}
-        <ServiceCard id={IDS.digital} tone="red" className="p-6 sm:p-10 lg:px-14 lg:py-12">
+        <ServiceCard id={digital.id} tone="red" className="p-6 sm:p-10 lg:px-14 lg:py-12">
           <div className="grid gap-x-16 gap-y-6 lg:grid-cols-2">
             <div>
-              <CardTitle id={`${IDS.digital}-title`} lines={[digital.title]} />
+              <CardTitle id={`${digital.id}-title`} lines={[digital.title]} />
               <Tagline lines={[digital.tagline]} className="mt-6" />
               <Body className="mt-3">{digital.intro}</Body>
 
@@ -132,13 +139,13 @@ export function Services() {
         {/* ---------------- Bento: AM / Media / Experiential / Brand / PR / Creative ---------------- */}
         <div className="grid gap-3 sm:gap-3.5 md:grid-cols-2 lg:grid-cols-[1.18fr_1fr_1fr]">
           <ServiceCard
-            id={IDS.accountManagement}
+            id={am.id}
             tone="dark"
             className="flex flex-col p-6 sm:p-10 md:col-span-2 lg:col-span-1 lg:row-span-2 lg:px-10 lg:py-16"
           >
             <div className="md:grid md:grid-cols-2 md:items-center md:gap-10 lg:flex lg:h-full lg:flex-col lg:items-stretch">
               <div>
-                <CardTitle id={`${IDS.accountManagement}-title`} lines={[am.title]} />
+                <CardTitle id={`${am.id}-title`} lines={[am.title]} />
                 <Tagline lines={am.taglineLines} className="mt-5" />
                 <Body className="mt-3">{am.body}</Body>
               </div>
@@ -148,8 +155,8 @@ export function Services() {
             </div>
           </ServiceCard>
 
-          <ServiceCard id={IDS.media} tone="red" className="p-6 sm:p-10 lg:px-11 lg:py-10">
-            <CardTitle id={`${IDS.media}-title`} lines={[media.title]} />
+          <ServiceCard id={media.id} tone="red" className="p-6 sm:p-10 lg:px-11 lg:py-10">
+            <CardTitle id={`${media.id}-title`} lines={[media.title]} />
             <Tagline lines={media.taglineLines} className="mt-6" />
             <Body className="mt-3">{media.body}</Body>
             <Body className="mt-3">
@@ -161,19 +168,19 @@ export function Services() {
             </Body>
           </ServiceCard>
 
-          <ServiceCard id={IDS.experiential} tone="dark" className="p-6 sm:p-10 lg:px-11 lg:py-10">
-            <CardTitle id={`${IDS.experiential}-title`} lines={experiential.titleLines} />
+          <ServiceCard id={experiential.id} tone="dark" className="p-6 sm:p-10 lg:px-11 lg:py-10">
+            <CardTitle id={`${experiential.id}-title`} lines={experiential.titleLines} />
             <Tagline lines={experiential.taglineLines} className="mt-6" />
             <Body className="mt-3">{experiential.body}</Body>
           </ServiceCard>
 
           <ServiceCard
-            id={IDS.brandStrategy}
+            id={brandStrategy.id}
             tone="red"
             className="flex flex-col justify-center p-6 sm:p-10 md:col-span-2 lg:px-11 lg:py-14"
           >
             <h2
-              id={`${IDS.brandStrategy}-title`}
+              id={`${brandStrategy.id}-title`}
               data-reveal
               className="font-display text-[clamp(2rem,3.7vw,3.75rem)] leading-[0.98] font-black tracking-[-0.015em] uppercase"
             >
@@ -188,11 +195,11 @@ export function Services() {
           </ServiceCard>
 
           <ServiceCard
-            id={IDS.pr}
+            id={pr.id}
             tone="red"
             className="p-6 sm:p-10 md:col-span-2 lg:col-span-1 lg:px-11 lg:py-14"
           >
-            <CardTitle id={`${IDS.pr}-title`} lines={pr.titleLines} />
+            <CardTitle id={`${pr.id}-title`} lines={pr.titleLines} />
             <Tagline lines={pr.taglineLines} className="mt-6" />
             <Body className="mt-3">{pr.body}</Body>
             <ul
@@ -206,11 +213,11 @@ export function Services() {
           </ServiceCard>
 
           <ServiceCard
-            id={IDS.creative}
+            id={creative.id}
             tone="dark"
             className="p-6 sm:p-10 md:col-span-2 lg:px-11 lg:py-14"
           >
-            <CardTitle id={`${IDS.creative}-title`} lines={[creative.title]} />
+            <CardTitle id={`${creative.id}-title`} lines={[creative.title]} />
             <Tagline lines={[creative.tagline]} className="mt-3" />
             <Body className="mt-3 max-w-[60ch]">{creative.body}</Body>
 
@@ -219,7 +226,7 @@ export function Services() {
                 <li
                   key={tile.icon}
                   data-reveal
-                  className="flex flex-col items-center gap-4 rounded-xl bg-[#880000] px-3 pt-6 pb-6 text-center transition-[translate,background-color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:bg-[#9a0000] sm:pb-8"
+                  className="flex flex-col items-center gap-4 rounded-xl bg-service-red px-3 pt-6 pb-6 text-center transition-[translate,background-color] duration-500 ease-brand hover:-translate-y-1.5 hover:bg-service-red-hover sm:pb-8"
                 >
                   <RingCircle className="w-[4.5rem] border-[5px] sm:w-[5.25rem]">
                     <img
@@ -244,10 +251,10 @@ export function Services() {
         </div>
 
         {/* ---------------- Production ---------------- */}
-        <ServiceCard id={IDS.production} tone="dark" className="p-6 sm:p-10 lg:px-11 lg:py-10">
+        <ServiceCard id={production.id} tone="dark" className="p-6 sm:p-10 lg:px-11 lg:py-10">
           <div className="grid items-center gap-x-12 gap-y-8 lg:grid-cols-[1fr_auto]">
             <div>
-              <CardTitle id={`${IDS.production}-title`} lines={[production.title]} />
+              <CardTitle id={`${production.id}-title`} lines={[production.title]} />
               <Tagline lines={[production.tagline]} className="mt-6" />
               <Body className="mt-3 max-w-[52ch]">{production.body}</Body>
             </div>
