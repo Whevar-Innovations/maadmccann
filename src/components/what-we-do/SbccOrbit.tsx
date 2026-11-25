@@ -126,14 +126,14 @@ export function SbccOrbit() {
         />
       </svg>
 
-      <img
-        data-center
-        src={crowdSrc}
-        alt=""
-        width={96}
-        height={96}
-        className="absolute top-1/2 left-1/2 w-[27%] -translate-x-1/2 -translate-y-1/2"
-      />
+      {/*
+        Centring lives on wrappers GSAP never animates. GSAP folds an element's CSS `translate`
+        into its own transform when it animates it; if the image hasn't loaded yet (common on
+        phones) the -50% resolves to 0 and the icon ends up off-centre.
+      */}
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <img data-center src={crowdSrc} alt="" width={96} height={96} className="block h-auto w-[27%]" />
+      </div>
 
       {/* Rotating ring of channels (the centre community stays still) */}
       <div data-orbit className="absolute inset-0">
@@ -142,15 +142,16 @@ export function SbccOrbit() {
           return (
             <div
               key={src}
-              data-orbit-icon
-              className="absolute w-[13%]"
+              className="absolute aspect-square w-[13%]"
               style={{
                 left: `${50 + Math.cos(rad) * ORBIT_RADIUS}%`,
                 top: `${50 + Math.sin(rad) * ORBIT_RADIUS}%`,
                 translate: '-50% -50%',
               }}
             >
-              <img data-orbit-upright src={src} alt="" width={48} height={48} className="block h-auto w-full" />
+              <div data-orbit-icon className="flex h-full w-full items-center justify-center">
+                <img data-orbit-upright src={src} alt="" width={48} height={48} className="block h-auto w-full" />
+              </div>
             </div>
           );
         })}

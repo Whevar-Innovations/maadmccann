@@ -1,6 +1,7 @@
 import type { FocusEvent, PointerEvent } from 'react';
 import type { TeamMember } from '@/content/static/team';
 import { Img } from '@/components/ui/Img';
+import { preloadDialogPhoto } from './ProfileDialog';
 
 export type TeamCardProps = {
   member: TeamMember;
@@ -96,6 +97,8 @@ export function TeamCard({ member, cardId, active, onHoverStart, onHoverEnd, onO
   }
 
   const onPointerEnter = (e: PointerEvent<HTMLButtonElement>) => {
+    // Fetch the dialog's larger portrait now, so it's ready when the profile opens.
+    preloadDialogPhoto(member);
     if (e.pointerType === 'mouse') onHoverStart(cardId, e.currentTarget);
   };
   const onPointerLeave = (e: PointerEvent<HTMLButtonElement>) => {
@@ -115,6 +118,7 @@ export function TeamCard({ member, cardId, active, onHoverStart, onHoverEnd, onO
       aria-describedby={active ? 'team-bio-panel' : undefined}
       aria-label={`${member.name}, ${member.title}. See profile`}
       onPointerEnter={onPointerEnter}
+      onPointerDown={() => preloadDialogPhoto(member)}
       onPointerLeave={onPointerLeave}
       onFocus={onFocus}
       onBlur={onHoverEnd}

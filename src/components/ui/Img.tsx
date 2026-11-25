@@ -1,5 +1,23 @@
 import type { ImageAsset } from '@/content/types';
 
+const preloaded = new Set<string>();
+
+/**
+ * Warm the browser cache for an image before it's rendered (e.g. on hover, ahead of a dialog
+ * opening), picking the same srcset candidate an <img> with these `sizes` would.
+ */
+export function preloadImage(image: ImageAsset, sizes: string) {
+  const key = `${image.src}|${sizes}`;
+  if (preloaded.has(key)) return;
+  preloaded.add(key);
+  const img = new Image();
+  if (image.srcSet) {
+    img.sizes = sizes;
+    img.srcset = image.srcSet;
+  }
+  img.src = image.src;
+}
+
 export type ImgProps = {
   image: ImageAsset;
   sizes?: string;
@@ -8,6 +26,8 @@ export type ImgProps = {
   className?: string;
   /** CSS object-position, for object-cover images that need a focal point. */
   objectPosition?: string;
+  /** Load immediately without `priority`'s high fetch priority and sync decoding. */
+  eager?: boolean;
 };
 
 /**
@@ -21,6 +41,7 @@ export function Img({
   decorative = false,
   className,
   objectPosition,
+  eager = false,
 }: ImgProps) {
   return (
     <img
@@ -30,7 +51,7 @@ export function Img({
       alt={decorative ? '' : image.alt}
       width={image.width}
       height={image.height}
-      loading={priority ? 'eager' : 'lazy'}
+      loading={priority || eager ? 'eager' : 'lazy'}
       fetchPriority={priority ? 'high' : undefined}
       decoding={priority ? 'sync' : 'async'}
       style={{

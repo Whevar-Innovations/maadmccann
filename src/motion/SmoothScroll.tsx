@@ -123,7 +123,11 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
   const stopScroll = useCallback(() => {
     lockCountRef.current += 1;
     lenisRef.current?.stop();
-    document.documentElement.style.overflow = 'hidden';
+    const root = document.documentElement;
+    // Keep the scrollbar's space while locked, so the page (and fixed header) doesn't jump
+    // sideways when the scrollbar disappears.
+    if (window.innerWidth > root.clientWidth) root.style.scrollbarGutter = 'stable';
+    root.style.overflow = 'hidden';
   }, []);
 
   const startScroll = useCallback(() => {
@@ -131,6 +135,7 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     if (lockCountRef.current === 0) {
       lenisRef.current?.start();
       document.documentElement.style.overflow = '';
+      document.documentElement.style.scrollbarGutter = '';
     }
   }, []);
 

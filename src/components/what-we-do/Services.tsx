@@ -94,11 +94,15 @@ export function Services() {
               <Tagline lines={[digital.tagline]} className="mt-6" />
               <Body className="mt-3">{digital.intro}</Body>
 
-              <ul className="my-8 flex flex-wrap gap-3 sm:gap-4" aria-label="Digital services">
+              {/* Phones: three equal columns so all circles stay on one line, however narrow. */}
+              <ul
+                className="my-8 grid max-w-[20rem] grid-cols-3 gap-2 sm:flex sm:max-w-none sm:flex-wrap sm:gap-4"
+                aria-label="Digital services"
+              >
                 {digital.pills.map((words) => (
-                  <li key={words.join(' ')}>
-                    <RingCircle className="w-[5.75rem] sm:w-[6.5rem]">
-                      <span className="text-center text-[0.7rem] leading-[1.2] font-semibold sm:text-[0.78rem]">
+                  <li key={words.join(' ')} className="min-w-0">
+                    <RingCircle className="w-full border-[5px] sm:w-[6.5rem] sm:border-[6px]">
+                      <span className="px-0.5 text-center text-[clamp(0.58rem,2.6vw,0.7rem)] leading-[1.2] font-semibold sm:text-[0.78rem]">
                         {words.map((w) => (
                           <span key={w} className="block">
                             {w}

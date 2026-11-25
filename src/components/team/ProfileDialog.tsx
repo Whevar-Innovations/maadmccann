@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import type { TeamMember } from '@/content/static/team';
-import { Img } from '@/components/ui/Img';
+import { Img, preloadImage } from '@/components/ui/Img';
 import { gsap, MEDIA_QUERIES } from '@/motion/gsap-setup';
 import { useSmoothScroll } from '@/motion/SmoothScroll';
 import { EASE } from '@/motion/tokens';
@@ -23,6 +23,17 @@ export type ProfileDialogProps = {
   /** Called once the close animation has finished. */
   onClosed: () => void;
 };
+
+/** Portrait `sizes` for the dialog; TeamCard preloads with these so the photo is ready on open. */
+export const DIALOG_PHOTO_SIZES = {
+  desktop: '(min-width: 768px) 380px, 0px',
+  mobile: '100vw',
+} as const;
+
+export function preloadDialogPhoto(member: TeamMember) {
+  const desktop = window.matchMedia('(min-width: 768px)').matches;
+  preloadImage(member.image, desktop ? '380px' : DIALOG_PHOTO_SIZES.mobile);
+}
 
 const SWIPE_CLOSE_PX = 110;
 const SWIPE_PAGE_PX = 60;
@@ -111,20 +122,21 @@ export function ProfileDialog({ people, startIndex, groupLabel, onClosed }: Prof
     const reduced = window.matchMedia(MEDIA_QUERIES.reducedMotion).matches;
     const mobile = window.matchMedia(MEDIA_QUERIES.mobile).matches;
 
-    const tl = gsap.timeline();
-    tl.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: EASE.soft }, 0);
+    // Promote to GPU layers up front so the first frames don't hitch.
+    const tl = gsap.timeline({ defaults: { force3D: true } });
+    tl.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.45, ease: EASE.soft }, 0);
     if (reduced) {
       tl.fromTo(sheet, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0);
     } else {
       tl.fromTo(
         sheet,
-        mobile ? { yPercent: 100 } : { y: 48, opacity: 0, scale: 0.97 },
+        mobile ? { yPercent: 100 } : { y: 28, opacity: 0, scale: 0.98 },
         mobile
-          ? { yPercent: 0, duration: 0.75, ease: EASE.out }
-          : { y: 0, opacity: 1, scale: 1, duration: 0.8, ease: EASE.out },
-        0.05,
+          ? { yPercent: 0, duration: 0.7, ease: 'expo.out' }
+          : { y: 0, opacity: 1, scale: 1, duration: 0.7, ease: 'expo.out' },
+        0.04,
       )
-        .fromTo(photos, { scale: 1.15 }, { scale: 1, duration: 1.3, ease: EASE.out }, 0.05)
+        .fromTo(photos, { scale: 1.08 }, { scale: 1, duration: 1.2, ease: 'expo.out' }, 0.04)
         .fromTo(
           items,
           { y: 16, opacity: 0 },
@@ -305,7 +317,7 @@ export function ProfileDialog({ people, startIndex, groupLabel, onClosed }: Prof
         data-dialog-overlay
         aria-hidden="true"
         onClick={requestClose}
-        className="absolute inset-0 bg-black/75 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/80"
       />
 
       <div
@@ -317,7 +329,8 @@ export function ProfileDialog({ people, startIndex, groupLabel, onClosed }: Prof
           <div key={member.slug} data-dialog-photo className="absolute inset-0 will-change-transform">
             <Img
               image={member.image}
-              sizes="(min-width: 768px) 380px, 0px"
+              eager
+              sizes={DIALOG_PHOTO_SIZES.desktop}
               className="h-full w-full object-cover object-top"
             />
           </div>
@@ -349,7 +362,8 @@ export function ProfileDialog({ people, startIndex, groupLabel, onClosed }: Prof
                 <div data-dialog-photo className="absolute inset-0 will-change-transform">
                   <Img
                     image={member.image}
-                    sizes="100vw"
+                    eager
+                    sizes={DIALOG_PHOTO_SIZES.mobile}
                     className="h-full w-full object-cover object-[50%_12%]"
                   />
                 </div>
