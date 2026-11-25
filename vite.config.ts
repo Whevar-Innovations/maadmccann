@@ -2,9 +2,15 @@ import { fileURLToPath, URL } from 'node:url';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import { CASE_STUDY_SLUGS } from './src/content/static/workSlugs';
 
 /** Public routes that belong in the sitemap. Add real routes as they ship. */
-const SITEMAP_ROUTES = ['/', '/what-we-do', '/the-maad-ones'];
+const SITEMAP_ROUTES = ['/', '/what-we-do', '/the-maad-ones', '/work', '/work/:slug'];
+
+/** `/work/:slug` is a pattern: the sitemap lists one URL per case study instead. */
+const SITEMAP_URLS = SITEMAP_ROUTES.flatMap((route) =>
+  route === '/work/:slug' ? CASE_STUDY_SLUGS.map((slug) => `/work/${slug}`) : [route],
+);
 
 /**
  * Domain-agnostic SEO URLs. The site URL is, in order:
@@ -18,7 +24,7 @@ function seoPlugin(siteUrl: string): Plugin {
   const lastmod = new Date().toISOString().slice(0, 10);
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${SITEMAP_ROUTES.map(
+${SITEMAP_URLS.map(
   (r) => `  <url>
     <loc>${siteUrl}${r}</loc>
     <lastmod>${lastmod}</lastmod>

@@ -157,3 +157,55 @@ export type TeamPage = {
   intro: { accent: string; headline: string; body: string };
   rows: TeamRow[];
 };
+
+/* ---------- Our Work (/work) and case studies (/work/:slug) ---------- */
+
+export type WorkCategory = { id: string; label: string };
+
+/** A project tile in the Our Work grid. `hasCaseStudy: false` tiles render without a link. */
+export type WorkProject = Project & {
+  categoryIds: string[];
+  hasCaseStudy: boolean;
+};
+
+export type WorkPage = {
+  seo: PageSeo;
+  hero: {
+    headlineLines: string[];
+    subheading: string;
+    /** White line-art on black: blended over the crimson hero. */
+    motif: ImageAsset;
+  };
+  filterLabel: string;      // accessible name of the pill group
+  allLabel: string;         // 'ALL WORK'
+  categories: WorkCategory[];
+  pageSize: number;
+  projects: WorkProject[];
+};
+
+/** Case-study header media: a Mux video (poster as the still) or a plain hero image. */
+export type CaseMedia =
+  | { kind: 'video'; videoUrl: string; poster: ImageAsset }
+  | { kind: 'image'; image: ImageAsset };
+
+export type GalleryItem = { image: ImageAsset; caption?: string };
+
+/** Items on one row share a height (widths follow their aspect ratios). */
+export type GalleryRow = GalleryItem[];
+
+export type GalleryBlock =
+  | { layout: 'rows'; rows: GalleryRow[] }
+  /** One tall item beside a stack of rows, e.g. Take Pride's "Women Improvement Loan". */
+  | { layout: 'beside'; tallSide: 'left' | 'right'; tall: GalleryItem; rows: GalleryRow[] };
+
+export type CaseStudyPage = {
+  slug: string;
+  seo: PageSeo;
+  clientLabel: string;      // 'CLIENT:'
+  client: string;
+  title: string;
+  media: CaseMedia;
+  headline: string;
+  story: { label?: string; body: string }[];
+  gallery: GalleryBlock[];
+};

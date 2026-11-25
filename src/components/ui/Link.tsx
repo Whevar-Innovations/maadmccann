@@ -20,8 +20,18 @@ function isNativeHref(href: string, external?: boolean): boolean {
   );
 }
 
-/** Routes that exist so far. Every other internal link renders disabled until its page ships. */
-const ENABLED_ROUTES = new Set(['/', '/what-we-do', '/the-maad-ones']);
+/**
+ * Routes that exist so far. Every other internal link renders disabled until its page ships.
+ * Entries with a `:param` segment match any single segment there ('/work/:slug' matches '/work/gotv').
+ */
+const ENABLED_ROUTES = new Set(['/', '/what-we-do', '/the-maad-ones', '/work', '/work/:slug']);
+
+const ROUTE_PATTERNS = [...ENABLED_ROUTES]
+  .filter((route) => route.includes(':'))
+  .map((route) => new RegExp(`^${route.replace(/:[^/]+/g, '[^/]+')}$`));
+
+const isEnabledRoute = (path: string) =>
+  ENABLED_ROUTES.has(path) || ROUTE_PATTERNS.some((pattern) => pattern.test(path));
 
 function pathOf(href: string): string {
   const path = (href.split('#')[0] ?? '').split('?')[0] ?? '';
@@ -38,7 +48,7 @@ export function Link({ href, external, children, className, onClick, ...rest }: 
   const { navigateWithTransition } = usePageTransition();
   const { pathname } = useLocation();
   const isNative = isNativeHref(href, external);
-  const isDisabledRoute = !isNative && !ENABLED_ROUTES.has(pathOf(href));
+  const isDisabledRoute = !isNative && !isEnabledRoute(pathOf(href));
   const isCurrent = !isNative && !href.includes('#') && pathOf(href) === pathOf(pathname);
 
   if (isNative) {
