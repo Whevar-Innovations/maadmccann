@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useLocation } from 'react-router';
+import { useLocation, useMatches } from 'react-router';
 import type { SiteSettings } from '@/content/types';
 import darkMotifBgSrc from '@/assets/img/dark-motif-bg.webp';
+import maadLogoBlackSrc from '@/assets/svg/maad-logo-black.svg';
 import maadLogoWhiteSrc from '@/assets/svg/maad-logo-white.svg';
 import { Button } from '@/components/ui/Button';
 import { ContentLink, Link } from '@/components/ui/Link';
@@ -14,6 +15,45 @@ import { DIST, DUR, EASE, HEADER_MENU, STAGGER } from '@/motion/tokens';
 export type HeaderProps = {
   settings: SiteSettings;
 };
+
+/** Routes opt into the light header (dark type on a paper page) with `handle: { headerTone: 'light' }`. */
+type HeaderTone = 'dark' | 'light';
+const useHeaderTone = (): HeaderTone =>
+  useMatches().some((m) => (m.handle as { headerTone?: HeaderTone } | undefined)?.headerTone === 'light')
+    ? 'light'
+    : 'dark';
+
+/** Fraction of the wordmark that is "MAAD" (set in red in the light header). */
+const MAAD_SHARE = 38;
+
+/**
+ * Two-tone wordmark for paper backgrounds: "MAAD" in service red, "McCANN" in ink. The black logo
+ * file is used twice as a CSS mask, each copy clipped to its half.
+ */
+function TwoToneLogo() {
+  const mask = {
+    maskImage: `url("${maadLogoBlackSrc}")`,
+    WebkitMaskImage: `url("${maadLogoBlackSrc}")`,
+    maskSize: '100% 100%',
+    WebkitMaskSize: '100% 100%',
+    maskRepeat: 'no-repeat',
+    WebkitMaskRepeat: 'no-repeat',
+  } as const;
+  return (
+    <span role="img" aria-label="MAAD McCANN" className="relative block aspect-[215/25] h-5 sm:h-6">
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 bg-service-red"
+        style={{ ...mask, clipPath: `inset(0 ${100 - MAAD_SHARE}% 0 0)` }}
+      />
+      <span
+        aria-hidden="true"
+        className="absolute inset-0 bg-ink"
+        style={{ ...mask, clipPath: `inset(0 0 0 ${MAAD_SHARE}%)` }}
+      />
+    </span>
+  );
+}
 
 /**
  * Site header (SPEC §7 #1 & §8.6).
@@ -31,6 +71,7 @@ export function Header({ settings }: HeaderProps) {
   const drawerRef = useRef<HTMLDivElement | null>(null);
   const hiddenRef = useRef(false);
   const { stopScroll, startScroll } = useSmoothScroll();
+  const light = useHeaderTone() === 'light';
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -144,7 +185,9 @@ export function Header({ settings }: HeaderProps) {
           menuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
         } ${
           scrolledPastThreshold && !menuOpen
-            ? 'bg-crimson-950/90 backdrop-blur-md'
+            ? light
+              ? 'bg-paper/90 backdrop-blur-md'
+              : 'bg-crimson-950/90 backdrop-blur-md'
             : 'bg-transparent'
         }`}
       >
@@ -156,13 +199,17 @@ export function Header({ settings }: HeaderProps) {
             className="relative z-50 shrink-0"
             onClick={() => setMenuOpen(false)}
           >
-            <img
-              src={maadLogoWhiteSrc}
-              alt="MAAD McCANN"
-              width={215}
-              height={25}
-              className="h-5 w-auto sm:h-6"
-            />
+            {light ? (
+              <TwoToneLogo />
+            ) : (
+              <img
+                src={maadLogoWhiteSrc}
+                alt="MAAD McCANN"
+                width={215}
+                height={25}
+                className="h-5 w-auto sm:h-6"
+              />
+            )}
           </Link>
 
           {/* Desktop navigation (routes disabled per project constraints) */}
@@ -172,13 +219,17 @@ export function Header({ settings }: HeaderProps) {
                 <li key={item.href} data-header-item>
                   <ContentLink
                     link={item}
-                    className="group relative inline-block py-1 whitespace-nowrap text-small font-medium text-paper/95 aria-disabled:cursor-default transition-colors duration-300 hover:text-maroon-200 focus-visible:text-maroon-200 aria-[current=page]:text-maroon-200"
+                    className={`group relative inline-block py-1 whitespace-nowrap text-small font-medium aria-disabled:cursor-default transition-colors duration-300 ${
+                      light
+                        ? 'text-ink hover:text-impact-red focus-visible:text-impact-red aria-[current=page]:text-impact-red'
+                        : 'text-paper/95 hover:text-maroon-200 focus-visible:text-maroon-200 aria-[current=page]:text-maroon-200'
+                    }`}
                   >
                     <span>{item.label}</span>
                     {/* Underline indicator */}
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 bg-paper transition-transform duration-500 ease-brand group-hover:scale-x-100 group-focus-visible:scale-x-100 group-aria-[current=page]:scale-x-100"
+                      className={`pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 transition-transform duration-500 ease-brand group-hover:scale-x-100 group-focus-visible:scale-x-100 group-aria-[current=page]:scale-x-100 ${light ? 'bg-ink' : 'bg-paper'}`}
                     />
                   </ContentLink>
                 </li>
@@ -191,7 +242,8 @@ export function Header({ settings }: HeaderProps) {
               <Button
                 link={{ label: settings.navCta.label, href: '#footer' }}
                 size="sm"
-                className="px-7 py-2.5 font-bold text-ink"
+                variant={light ? 'pill-dark' : 'pill-light'}
+                className={`px-7 py-2.5 font-bold ${light ? '' : 'text-ink'}`}
               />
             </Magnetic>
           </div>
@@ -203,7 +255,7 @@ export function Header({ settings }: HeaderProps) {
             aria-controls="mobile-nav-drawer"
             aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="relative z-50 inline-flex h-11 w-11 items-center justify-center rounded-full border border-paper/30 text-paper min-[75rem]:hidden"
+            className={`relative z-50 inline-flex h-11 w-11 items-center justify-center rounded-full border min-[75rem]:hidden ${light ? 'border-ink/30 text-ink' : 'border-paper/30 text-paper'}`}
           >
             <span className="sr-only">{menuOpen ? 'Close menu' : 'Open menu'}</span>
             <svg

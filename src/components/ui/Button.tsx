@@ -4,7 +4,7 @@ import { Link } from './Link';
 
 export type ButtonProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> & {
   link: LinkType;
-  variant?: 'pill-light' | 'pill-outline';
+  variant?: 'pill-light' | 'pill-outline' | 'pill-dark';
   size?: 'sm' | 'md';
   children?: ReactNode;
 };
@@ -29,15 +29,18 @@ export function Button({
     e.currentTarget.style.setProperty('--fy', `${e.clientY - r.top}px`);
   };
   const base =
-    'group relative inline-flex items-center justify-center overflow-hidden rounded-full font-body font-semibold transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-0.5 hover:shadow-pill focus-visible:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper';
+    'group relative inline-flex items-center justify-center overflow-hidden rounded-full font-body font-semibold transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-0.5 hover:shadow-pill focus-visible:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4';
   const variants = {
-    'pill-light': 'bg-paper text-crimson-800',
-    'pill-outline': 'border border-paper/80 text-paper',
+    'pill-light': 'bg-paper text-crimson-800 focus-visible:outline-paper',
+    'pill-outline': 'border border-paper/80 text-paper focus-visible:outline-paper',
+    // For paper backgrounds (case-study header): ink pill that wipes to crimson.
+    'pill-dark': 'bg-ink text-paper focus-visible:outline-ink',
   } as const;
   // Colour the fill wipes to on hover, and the text colour that goes with it.
   const wipe = {
     'pill-light': { fill: 'bg-crimson-800', text: 'group-hover:text-paper group-focus-visible:text-paper' },
     'pill-outline': { fill: 'bg-paper', text: 'group-hover:text-crimson-800 group-focus-visible:text-crimson-800' },
+    'pill-dark': { fill: 'bg-crimson-800', text: '' },
   } as const;
   const sizes = {
     sm: 'px-5 py-2 text-small',
