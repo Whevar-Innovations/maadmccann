@@ -93,7 +93,7 @@ export function Hero({ hero }: HeroProps) {
               const delay = HERO_TIMELINE.trophyFloatDelays[index] ?? 0;
 
               gsap.to(floatEl, {
-                y: -6 * distFactor,
+                y: HERO_TIMELINE.trophyFloatY * distFactor,
                 duration: dur,
                 delay,
                 ease: EASE.float,
@@ -120,15 +120,15 @@ export function Hero({ hero }: HeroProps) {
             // Motif #mA and #mV opposing slow float (Motion Lab line 64)
             if (motifA && motifV) {
               gsap.to(motifA, {
-                y: -12,
-                duration: 4,
+                y: -HERO_TIMELINE.motifFloatY,
+                duration: HERO_TIMELINE.motifFloatDurs[0],
                 ease: EASE.float,
                 yoyo: true,
                 repeat: -1,
               });
               gsap.to(motifV, {
-                y: 12,
-                duration: 5,
+                y: HERO_TIMELINE.motifFloatY,
+                duration: HERO_TIMELINE.motifFloatDurs[1],
                 ease: EASE.float,
                 yoyo: true,
                 repeat: -1,
@@ -157,7 +157,7 @@ export function Hero({ hero }: HeroProps) {
             // --- FIRST VISIT SCENARIO (plays timed with loader exit) ---
             const tl = gsap.timeline({
               defaults: { ease: EASE.out },
-              delay: skippedLoader ? 0.15 : 0,
+              delay: skippedLoader ? HERO_TIMELINE.skippedLoaderLead : 0,
             });
 
             // t = 0.0: Background scale 1.08 -> 1 (1.8s)
@@ -175,7 +175,7 @@ export function Hero({ hero }: HeroProps) {
               const av = [motifA, motifV];
               gsap.set(av, {
                 fillOpacity: 0,
-                stroke: '#ffffff',
+                stroke: 'var(--color-paper)',
                 strokeOpacity: 0.4,
                 strokeWidth: 2.5,
                 strokeDasharray: '1 1',
@@ -183,21 +183,21 @@ export function Hero({ hero }: HeroProps) {
               });
               tl.fromTo(
                 motifA,
-                { x: -160 * distFactor },
-                { x: 0, duration: 2.2 },
+                { x: HERO_TIMELINE.motifFromX * distFactor },
+                { x: 0, duration: HERO_TIMELINE.motifSlideDur },
                 HERO_TIMELINE.motifStart,
               )
                 .fromTo(
                   motifV,
-                  { x: -160 * distFactor },
-                  { x: 0, duration: 2.2 },
-                  HERO_TIMELINE.motifStart + 0.15,
+                  { x: HERO_TIMELINE.motifFromX * distFactor },
+                  { x: 0, duration: HERO_TIMELINE.motifSlideDur },
+                  HERO_TIMELINE.motifStart + HERO_TIMELINE.motifVLag,
                 )
                 .to(
                   av,
                   {
                     strokeDashoffset: 0,
-                    duration: 1.8,
+                    duration: HERO_TIMELINE.motifDrawDur,
                     ease: EASE.SineInOut,
                   },
                   HERO_TIMELINE.motifStart,
@@ -210,7 +210,7 @@ export function Hero({ hero }: HeroProps) {
                     duration: DUR.text,
                     ease: EASE.soft,
                   },
-                  HERO_TIMELINE.motifStart + 1.3,
+                  HERO_TIMELINE.motifStart + HERO_TIMELINE.motifFillAt,
                 );
             }
 
@@ -218,7 +218,7 @@ export function Hero({ hero }: HeroProps) {
             if (lines.length > 0) {
               tl.fromTo(
                 lines,
-                { xPercent: 40 * distFactor, opacity: 0 },
+                { xPercent: HERO_TIMELINE.headlineFromXPercent * distFactor, opacity: 0 },
                 {
                   xPercent: 0,
                   opacity: 1,
@@ -288,7 +288,7 @@ export function Hero({ hero }: HeroProps) {
             if (headerItems.length > 0) {
               tl.fromTo(
                 headerItems,
-                { y: -12, opacity: 0 },
+                { y: HERO_TIMELINE.headerFromY, opacity: 0 },
                 {
                   y: 0,
                   opacity: 1,
@@ -375,9 +375,8 @@ export function Hero({ hero }: HeroProps) {
         <path
           id="mA"
           pathLength={1}
-          fill="#0f0f0f"
+          className="fill-ink-soft stroke-paper"
           fillOpacity={0}
-          stroke="#ffffff"
           strokeOpacity={0}
           strokeWidth={2.5}
           strokeDasharray="1 1"
@@ -387,9 +386,8 @@ export function Hero({ hero }: HeroProps) {
         <path
           id="mV"
           pathLength={1}
-          fill="#0f0f0f"
+          className="fill-ink-soft stroke-paper"
           fillOpacity={0}
-          stroke="#ffffff"
           strokeOpacity={0}
           strokeWidth={2.5}
           strokeDasharray="1 1"
@@ -470,7 +468,7 @@ export function Hero({ hero }: HeroProps) {
       >
         <span
           data-hero-ghost
-          className="mx-auto block w-full max-w-[1780px] text-center font-display text-[clamp(2.8rem,9.5vw,11.6rem)] leading-[0.84] font-bold tracking-[-0.025em] whitespace-nowrap text-[#240610]/50 uppercase mix-blend-multiply will-change-transform"
+          className="mx-auto block w-full max-w-[1780px] text-center font-display text-[clamp(2.8rem,9.5vw,11.6rem)] leading-[0.84] font-bold tracking-[-0.025em] whitespace-nowrap text-crimson-975/50 uppercase mix-blend-multiply will-change-transform"
         >
           {hero.ghostText}
         </span>

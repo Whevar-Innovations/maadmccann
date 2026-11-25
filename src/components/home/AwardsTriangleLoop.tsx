@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import type { ImageAsset } from '@/content/types';
 import { Img } from '@/components/ui/Img';
 import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
-import { EASE, HERO_TIMELINE } from '@/motion/tokens';
+import { AWARDS_LOOP, EASE, HERO_TIMELINE } from '@/motion/tokens';
 
 /**
  * Triangle points, relative to the stage (xPercent / yPercent = % of the stage box,
@@ -68,11 +68,11 @@ export function AwardsTriangleLoop({
   images,
   play = true,
   startDelay = HERO_TIMELINE.idleStart,
-  moveDuration = 1.2,
-  holdDuration = 2,
-  ease = 'power3.inOut',
-  backScale = 0.83,
-  backBrightness = 0.85,
+  moveDuration = AWARDS_LOOP.moveDuration,
+  holdDuration = AWARDS_LOOP.holdDuration,
+  ease = EASE.softInOut,
+  backScale = AWARDS_LOOP.backScale,
+  backBrightness = AWARDS_LOOP.backBrightness,
   bob = true,
   className = '',
 }: AwardsTriangleLoopProps) {
@@ -180,9 +180,9 @@ export function AwardsTriangleLoop({
 
           // Smoothly pause on hover, resume on leave.
           const onEnter = () =>
-            gsap.to(tl, { timeScale: 0, duration: 0.4, ease: 'power2.out', overwrite: true });
+            gsap.to(tl, { timeScale: 0, duration: AWARDS_LOOP.hoverPause, ease: EASE.quadOut, overwrite: true });
           const onLeave = () =>
-            gsap.to(tl, { timeScale: 1, duration: 0.4, ease: 'power2.in', overwrite: true });
+            gsap.to(tl, { timeScale: 1, duration: AWARDS_LOOP.hoverPause, ease: EASE.quadIn, overwrite: true });
 
           stage.addEventListener('mouseenter', onEnter);
           stage.addEventListener('mouseleave', onLeave);
@@ -246,7 +246,7 @@ export function AwardsTriangleLoop({
                     image={image}
                     priority
                     sizes="(min-width: 1024px) 330px, 42vw"
-                    className="h-auto w-full drop-shadow-[0_20px_24px_rgba(0,0,0,0.62)]"
+                    className="h-auto w-full drop-shadow-trophy"
                   />
                 </div>
               </div>

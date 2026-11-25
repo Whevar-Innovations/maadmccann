@@ -12,7 +12,7 @@ export const PlayButton = forwardRef<HTMLButtonElement, PlayButtonProps>(
       <button
         ref={ref}
         type="button"
-        className={`group/play absolute top-1/2 left-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-cream text-crimson-800 shadow-[0_12px_40px_rgb(0_0_0/0.35)] transition-[scale,box-shadow,background-color,color] duration-500 ease-out hover:scale-110 hover:bg-crimson-800 hover:text-cream focus-visible:scale-110 focus-visible:bg-crimson-800 focus-visible:text-cream focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cream sm:h-32 sm:w-32 lg:h-40 lg:w-40 ${className}`.trim()}
+        className={`group/play absolute top-1/2 left-1/2 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-cream text-crimson-800 shadow-play transition-[scale,box-shadow,background-color,color] duration-500 ease-out hover:scale-110 hover:bg-crimson-800 hover:text-cream focus-visible:scale-110 focus-visible:bg-crimson-800 focus-visible:text-cream focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cream sm:h-32 sm:w-32 lg:h-40 lg:w-40 ${className}`.trim()}
         {...props}
       >
         <span

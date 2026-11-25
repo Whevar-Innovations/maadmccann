@@ -8,6 +8,7 @@ import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
 import { RevealImage } from '@/motion/RevealImage';
 import { RevealText } from '@/motion/RevealText';
 import { useSmoothScroll } from '@/motion/SmoothScroll';
+import { EASE, SHOWREEL } from '@/motion/tokens';
 
 export type ShowreelProps = {
   showreel: HomePage['showreel'];
@@ -136,11 +137,11 @@ export function Showreel({ showreel }: ShowreelProps) {
             { width: '62vw' },
             {
               width: '90vw',
-              ease: 'none',
+              ease: EASE.linear,
               scrollTrigger: {
                 trigger: frame,
-                start: 'top 88%',
-                end: 'top 20%',
+                start: SHOWREEL.widenStart,
+                end: SHOWREEL.widenEnd,
                 scrub: 0.6,
               },
             },
@@ -257,7 +258,7 @@ export function Showreel({ showreel }: ShowreelProps) {
                 title={showreel.heading}
                 preload="metadata"
                 playsInline
-                accentColor="#8e1b3b"
+                accentColor="var(--color-berry)"
                 style={{ width: '100%', height: '100%' }}
               />
             ) : (

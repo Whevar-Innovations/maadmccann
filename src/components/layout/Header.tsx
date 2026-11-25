@@ -9,7 +9,7 @@ import { ContentLink, Link } from '@/components/ui/Link';
 import { gsap, MEDIA_QUERIES, ScrollTrigger, useGSAP } from '@/motion/gsap-setup';
 import { Magnetic } from '@/motion/Magnetic';
 import { useSmoothScroll } from '@/motion/SmoothScroll';
-import { DIST, DUR, EASE, STAGGER } from '@/motion/tokens';
+import { DIST, DUR, EASE, HEADER_MENU, STAGGER } from '@/motion/tokens';
 
 export type HeaderProps = {
   settings: SiteSettings;
@@ -103,7 +103,7 @@ export function Header({ settings }: HeaderProps) {
       const items = drawer.querySelectorAll<HTMLElement>('[data-mobile-nav-item]');
 
       if (reduced) {
-        gsap.fromTo(drawer, { opacity: 0 }, { opacity: 1, duration: 0.2 });
+        gsap.fromTo(drawer, { opacity: 0 }, { opacity: 1, duration: HEADER_MENU.reducedFade });
         return;
       }
 
@@ -113,7 +113,7 @@ export function Header({ settings }: HeaderProps) {
         { clipPath: 'inset(0% 0% 100% 0%)' },
         {
           clipPath: 'inset(0% 0% 0% 0%)',
-          duration: 0.45,
+          duration: HEADER_MENU.wipe,
           ease: EASE.inOut,
         },
       );
@@ -124,11 +124,11 @@ export function Header({ settings }: HeaderProps) {
           {
             y: 0,
             opacity: 1,
-            duration: 0.4,
+            duration: DUR.ui,
             stagger: STAGGER.items * 0.5,
             ease: EASE.out,
           },
-          '-=0.2',
+          HEADER_MENU.itemsOverlap,
         );
       }
     },
@@ -178,7 +178,7 @@ export function Header({ settings }: HeaderProps) {
                     {/* Underline indicator */}
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 bg-paper transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100 group-aria-[current=page]:scale-x-100"
+                      className="pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 bg-paper transition-transform duration-500 ease-brand group-hover:scale-x-100 group-focus-visible:scale-x-100 group-aria-[current=page]:scale-x-100"
                     />
                   </ContentLink>
                 </li>
@@ -234,7 +234,7 @@ export function Header({ settings }: HeaderProps) {
             role="dialog"
             aria-modal="true"
             aria-label="Navigation menu"
-            className="fixed inset-0 z-[9950] flex h-dvh min-h-svh w-screen flex-col justify-between overflow-y-auto bg-[#0E0E10] text-paper min-[75rem]:hidden"
+            className="fixed inset-0 z-[9950] flex h-dvh min-h-svh w-screen flex-col justify-between overflow-y-auto bg-menu-ink text-paper min-[75rem]:hidden"
           >
             {/* Subtle embossed dark motif background matching Screenshot 15-52-54.png */}
             <div

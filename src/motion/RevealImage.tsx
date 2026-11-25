@@ -105,7 +105,7 @@ export function RevealImage({
               { yPercent: -REVEAL.parallaxPercent },
               {
                 yPercent: REVEAL.parallaxPercent,
-                ease: 'none',
+                ease: EASE.linear,
                 scrollTrigger: {
                   trigger: wrap,
                   start: 'top bottom',

@@ -29,7 +29,7 @@ export function Button({
     e.currentTarget.style.setProperty('--fy', `${e.clientY - r.top}px`);
   };
   const base =
-    'group relative inline-flex items-center justify-center overflow-hidden rounded-full font-body font-semibold transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgb(0_0_0/0.28)] focus-visible:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper';
+    'group relative inline-flex items-center justify-center overflow-hidden rounded-full font-body font-semibold transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-0.5 hover:shadow-pill focus-visible:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper';
   const variants = {
     'pill-light': 'bg-paper text-crimson-800',
     'pill-outline': 'border border-paper/80 text-paper',
@@ -62,7 +62,7 @@ export function Button({
       <span
         aria-hidden="true"
         style={{ left: 'var(--fx, 50%)', top: 'var(--fy, 50%)' }}
-        className={`pointer-events-none absolute aspect-square w-[240%] -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-100 group-focus-visible:scale-100 ${wipe[variant].fill}`}
+        className={`pointer-events-none absolute aspect-square w-[240%] -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full transition-transform duration-700 ease-brand group-hover:scale-100 group-focus-visible:scale-100 ${wipe[variant].fill}`}
       />
       <span
         className={`relative z-10 transition-colors duration-300 ${wipe[variant].text}`}
