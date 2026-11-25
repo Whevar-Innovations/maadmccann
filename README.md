@@ -20,11 +20,11 @@ All digital assets, layouts, typography, and motifs are derived directly from th
 | Folder / Package | Design Source Files | Digital Implementation | Content & Components |
 |---|---|---|---|
 | **`The MAADness/`** | `MAAD McCANN Website Homepage.ai`<br>• `Homepage Awards/` (Gorilla trophies)<br>• `Ka Weekie/` (GOtv TVC & posters)<br>• `PrideBank/` (Campaign posters & TVC)<br>• `CCBU/` (Coca-Cola Beverages Uganda)<br>• `Showreel/` (`MAAD REEL.mp4`) | **Homepage Core**<br>• Hero master timeline<br>• 3D-float awards trophies<br>• Fullscreen Showreel video modal<br>• Continuous footer motif stage | • `src/routes/home.tsx`<br>• `src/components/home/Hero.tsx`<br>• `src/components/home/Trophies.tsx`<br>• `src/components/home/Showreel.tsx`<br>• `src/components/home/Impact.tsx`<br>• `src/components/home/CtaBand.tsx` |
-| **`What We Do/`** | `MAAD McCANN Website Services.ai`<br>• `Services Motif.png`<br>• Font packages | **Services & Capabilities**<br>• Brand Strategy & Development<br>• Creative & Art Direction<br>• PR & Reputation Management<br>• Experiential & Events<br>• Media Planning & Buying<br>• Production, Digital & SBCC | • `src/content/types.ts` (`Service`)<br>• `src/content/static/settings.ts`<br>• Footer services grid in `Footer.tsx` |
+| **`What We Do/`** | `MAAD McCANN Website Services.ai`<br>• `Services Motif.png`<br>• Font packages | **Services & Capabilities**<br>• Brand Strategy & Development<br>• Creative & Art Direction<br>• PR & Reputation Management<br>• Experiential & Events<br>• Media Planning & Buying<br>• Production, Digital & SBCC | • `src/routes/what-we-do.tsx`<br>• `src/components/what-we-do/*`<br>• `src/content/types.ts` (`WhatWeDoPage`)<br>• `src/content/static/whatWeDo.ts`<br>• Footer services grid in `Footer.tsx` |
 | **`Our Work/`** | `MAAD McCANN Website Our Work.ai`<br>• High-res campaign key visuals | **Portfolio Grid**<br>• Zero-gap modular card layout<br>• Parallax image clipping<br>• Magnetic line-stretch hover interaction | • `src/components/home/WorkGrid.tsx`<br>• `src/components/home/WorkCard.tsx`<br>• `src/assets/img/work/*` |
 | **`CSR/`** | `MAAD McCANN CSR.ai`<br>• `Run For The Nile/`<br>• `Iron Sharpens Iron/`<br>• `CSR Motif.png` | **Corporate Social Responsibility**<br>• Purpose-driven campaigns<br>• Master dark line-art motif backdrop | • `src/assets/img/dark-motif-bg.webp`<br>• Mobile header menu backdrop<br>• Transition curtain styling |
 | **`Our Partners/`** | `MAAD McCANN Website Our Clients.ai`<br>• Partner brand marks | **Client Roster**<br>• Dual-tier trust display<br>• Staggered fade-up reveal | • `src/components/home/ClientsRow.tsx`<br>• `src/assets/img/clients/*` |
-| **`The Maad Ones/`** | `The MAAD Ones.ai`<br>• `People Page.docx`<br>• Leadership portraits | **Agency Team & Culture**<br>• Creative leadership<br>• Department heads & culture | • `src/content/types.ts` (`TeamMember`)<br>• Agency bio & ethos records |
+| **`The Maad Ones/`** | `The MAAD Ones.ai`<br>• `People Page.docx`<br>• Leadership portraits | **Agency Team & Culture**<br>• Creative leadership<br>• Department heads & culture | • `src/routes/the-maad-ones.tsx`<br>• `src/components/team/*`<br>• `src/content/types.ts` (`TeamPage`, `TeamMember`)<br>• `src/content/static/team.ts` |
 | **`Blog/`** | `MAAD McCANN Website BLOG.ai`<br>• Gayaza High School workshop assets | **Insights & Thought Leadership**<br>• Creative masterclasses<br>• Community engagement articles | • `src/content/types.ts` (`Article`) |
 | **`Awards/`** | `MAAD McCANN Website Awards.ai`<br>• Silverback Awards photo archive | **Awards & Recognition**<br>• Grand Prix, Agency of the Year<br>• Category plaques & certificates | • `src/components/home/Trophies.tsx`<br>• `public/trophies/*` |
 | **`Talk To Us/`** | `MAAD McCANN Website Contact Us.ai`<br>• `Contact Us Motif.png` | **Contact & Location**<br>• Ntinda headquarters details<br>• Interactive contact pill CTA | • `src/components/layout/Footer.tsx`<br>• Desktop & mobile nav CTAs |
@@ -47,20 +47,22 @@ All digital assets, layouts, typography, and motifs are derived directly from th
 ## 4. Architectural Highlights
 
 ### A. Decoupled Content Layer (Zero-Static-Import Rule)
-Components and routes **never** import static mock files directly. All content flows through an async data-fetching contract (`src/content/api.ts`) consumed by React Router data loaders (`rootLoader`, `homeLoader`).
+Only files inside `src/content/` may import `src/content/static/`. All content flows through an async data-fetching contract (`src/content/api.ts`: `getHomePage`, `getSiteSettings`, `getWhatWeDoPage`, `getTeamPage`), consumed by React Router data loaders (`rootLoader`, `homeLoader`, `whatWeDoLoader`, `theMaadOnesLoader`) and passed to section components as props. Content types live in `src/content/types.ts`. Site-wide content (nav, footer, and the CTA band via `SiteSettings.cta`) comes from `rootLoader`, so every page gets the CTA band and footer without extra wiring.
+- **Enforced:** `npm run check:rules` (run automatically by `npm run build`) fails on static-content imports outside `src/content/`, raw colour literals in components, string eases outside `src/motion/tokens.ts`, and routes missing from `ENABLED_ROUTES`/`SITEMAP_ROUTES`. See `CLAUDE.md` for the fix for each.
 - **Production Mode:** Fetches from the headless CMS endpoint.
 - **Mock Mode (`VITE_CONTENT_SOURCE=mock`):** Uses an asynchronous in-memory clone of `mock/source.ts` to simulate CMS latency and verify zero build regressions.
 
 ### B. Sticky Desktop Header & Mobile Drawer
 - **Desktop Header:** Fixed at `top: 0` (`h-20 lg:h-28`), transitioning from transparent to ink blur (`bg-ink/80 backdrop-blur-md`) past `80px` scroll. Smoothly hides on downward scroll past `120px` (`yPercent: -100`) and reveals instantly on upward scroll (`yPercent: 0`).
 - **Viewport Anchoring:** The `<Header>` is placed directly under the root container outside any CSS `transform` or `will-change` wrappers, ensuring its containing block is always the browser viewport.
-- **Mobile Menu Drawer:** Portaled directly to `document.body` (`fixed inset-0 z-[9950]`). Uses a 100% solid, fully opaque dark blackish background (`#0E0E10`) with an embossed line-art motif overlay from `CSR Motif.png`. When open, the main desktop header is hidden to prevent double-logo/button ghosting.
+- **Mobile Menu Drawer:** Portaled directly to `document.body` (`fixed inset-0 z-[9950]`). Uses a 100% solid, fully opaque dark blackish background (`bg-menu-ink`, `#0E0E10`) with an embossed line-art motif overlay from `CSR Motif.png`. When open, the main desktop header is hidden to prevent double-logo/button ghosting.
 
 ### C. Continuous Footer Motif Stage
 A unified red metallic texture stage (`src/components/layout/FooterMotifStage.tsx`) spans both the `CtaBand` and `Footer` sections seamlessly, eliminating horizontal seams. An interactive SVG motif bloom runs on scroll entry, with a pointer-tracking radial spotlight.
 
 ### D. Motion System & Accessibility
-- All motion values (durations, staggers, eases, distances) are centralized in `src/motion/tokens.ts`.
+- All motion values (durations, staggers, eases, distances, ScrollTrigger starts) are centralized in `src/motion/tokens.ts`: shared groups (`DUR`, `EASE`, `REVEAL`, …) plus one named group per component with bespoke choreography (`SERVICE_CARD`, `TEAM_GRID`, `PROFILE_DIALOG`, …).
+- All colours, shadows and CSS easings are theme tokens in `src/styles/globals.css`. Components contain no raw hex/rgb values.
 - Only `transform`, `opacity`, and `clip-path` are animated for 60fps GPU performance.
 - Honors `prefers-reduced-motion: reduce`: instantly skips loader timeouts, replaces curtain wipes with 0.2s crossfades, and cancels floating trophy idle loops.
 
@@ -78,14 +80,17 @@ A unified red metallic texture stage (`src/components/layout/FooterMotifStage.ts
 │   │   ├── img/                  # Optimized WebP campaign & motif assets
 │   │   └── svg/                  # Cleaned vector logos & marks
 │   ├── components/
-│   │   ├── home/                 # Homepage sections (Hero, Showreel, WorkGrid, etc.)
+│   │   ├── home/                 # Homepage sections (Hero, Showreel, WorkGrid, CtaBand, etc.)
 │   │   ├── layout/               # Shell layout (Header, Footer, FooterMotifStage, RootLayout)
-│   │   └── ui/                   # Shared UI primitives (Button, Link, Img)
+│   │   ├── what-we-do/           # What We Do sections (WhatWeDoHero, Services, ServiceCard, SbccOrbit, OrgChart)
+│   │   ├── team/                 # The MAAD Ones sections (TeamHero, TeamIntro, TeamGrid, TeamCard, BioPanel, ProfileDialog)
+│   │   └── ui/                   # Shared UI primitives (Button, Link, Img, PlayButton)
 │   ├── content/
-│   │   ├── api.ts                # Content fetcher interface
-│   │   ├── types.ts              # CMS schema type definitions
-│   │   ├── static/               # Source content definitions (settings, home)
-│   │   └── mock/                 # Mock CMS source adapter
+│   │   ├── api.ts                # Content fetchers (getHomePage, getSiteSettings, getWhatWeDoPage, getTeamPage)
+│   │   ├── types.ts              # CMS schema type definitions (the contract)
+│   │   ├── static/               # Source content (settings, home, whatWeDo, team): imported only by src/content/
+│   │   ├── mock/                 # Mock CMS source adapter
+│   │   └── sanity/               # Sanity document types + mappers
 │   ├── motion/
 │   │   ├── tokens.ts             # Centralized motion constants (DUR, EASE, STAGGER)
 │   │   ├── gsap-setup.ts         # GSAP plugin registration & media queries
@@ -97,15 +102,23 @@ A unified red metallic texture stage (`src/components/layout/FooterMotifStage.ts
 │   │   ├── FadeUp.tsx            # Fluid translateY fade-up primitive
 │   │   ├── Counter.tsx           # Layout-stable numerical metric counter
 │   │   └── Magnetic.tsx          # Cursor-attraction spring physics primitive
+│   ├── lib/
+│   │   ├── useSeo.ts             # Per-route SEO tags
+│   │   └── site.ts               # Site-wide SEO defaults (mirrors index.html)
 │   ├── routes/
 │   │   ├── home.tsx              # Homepage data loader & route view
+│   │   ├── what-we-do.tsx        # What We Do loader & route view
+│   │   ├── the-maad-ones.tsx     # The MAAD Ones loader & route view
 │   │   └── RouteError.tsx        # Top-level error boundary
 │   ├── styles/
 │   │   └── globals.css           # Tailwind v4 theme & typography tokens
 │   ├── main.tsx                  # App bootstrapper
 │   └── router.tsx                # React Router v7 configuration
+├── scripts/
+│   └── check-rules.mjs           # Project rule guard (runs before every build)
 ├── docs/
 │   └── spec.md                   # Complete architectural specification
+├── CLAUDE.md                     # Grounding rules, page checklist & design direction
 └── package.json
 ```
 
@@ -120,10 +133,13 @@ npm install
 # Start local development server (runs on http://localhost:5173)
 npm run dev
 
+# Check project rules (static imports, raw colours, string eases, route registry)
+npm run check:rules
+
 # Run strict TypeScript typechecking
 npm run typecheck
 
-# Build for production
+# Build for production (runs check:rules first)
 npm run build
 
 # Dev server with the mock CMS source (Sanity-shaped awards via src/content/sanity/mappers.ts)
@@ -157,7 +173,7 @@ npm run preview
 
 ## SEO
 
-- Static tags (title, description, canonical, Open Graph, Twitter, JSON-LD) live in `index.html` because scrapers don't run JS. Every absolute URL there is the `__SITE_URL__` placeholder, replaced at build time by `vite.config.ts` (also used to generate `robots.txt` and `sitemap.xml`). The URL is `VITE_SITE_URL` if set, else Vercel's `VERCEL_PROJECT_PRODUCTION_URL` (switches to the custom domain automatically once it is attached in Vercel), else `https://maadmccann.vercel.app`. The share image is served from `public/og-image.jpg`. Site-wide defaults are mirrored in `src/content/static/site.ts`.
+- Static tags (title, description, canonical, Open Graph, Twitter, JSON-LD) live in `index.html` because scrapers don't run JS. Every absolute URL there is the `__SITE_URL__` placeholder, replaced at build time by `vite.config.ts` (also used to generate `robots.txt` and `sitemap.xml`). The URL is `VITE_SITE_URL` if set, else Vercel's `VERCEL_PROJECT_PRODUCTION_URL` (switches to the custom domain automatically once it is attached in Vercel), else `https://maadmccann.vercel.app`. The share image is served from `public/og-image.jpg`. Site-wide defaults are mirrored in `src/lib/site.ts`.
 - Per-route updates: call `useSeo({ title, description, path, image, noindex })` from `src/lib/useSeo.ts` in each route component (see `src/routes/home.tsx`). Keep placeholder routes `noindex`.
 - `public/` holds `favicon.ico`, PNG icons, `site.webmanifest` and `og-image.jpg` (1200×630). `robots.txt` and `sitemap.xml` are generated by `vite.config.ts`; add real routes to its `routes` list as they ship.
 - Hosting must serve `index.html` for every path (SPA fallback) so deep links don't 404.

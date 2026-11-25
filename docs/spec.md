@@ -18,10 +18,11 @@ Do not mix in Motion/framer-motion. GSAP owns all animation so timing stays cons
 src/
   content/
     types.ts            // TS types = future Sanity schema shape
-    api.ts              // getHomePage(), getSiteSettings(), getProjects()...
-    static/             // static source (deleted or kept as fallback later)
-      home.ts  settings.ts
-    sanity/             // added later: client.ts, queries.ts, mappers.ts
+    api.ts              // getHomePage(), getSiteSettings(), getWhatWeDoPage(), getTeamPage()...
+    static/             // static source; only src/content/ may import it (check:rules)
+      home.ts  settings.ts  whatWeDo.ts  team.ts
+    mock/               // Sanity-shaped mock source (VITE_CONTENT_SOURCE=mock)
+    sanity/             // mappers.ts now; client.ts, queries.ts later
   motion/
     tokens.ts  gsap-setup.ts
     SmoothScroll.tsx  LoaderProvider.tsx  PageTransition.tsx
@@ -31,8 +32,12 @@ src/
     layout/  Header.tsx  Footer.tsx  RootLayout.tsx
     home/  Hero.tsx  Trophies.tsx  Showreel.tsx  ClientsRow.tsx
            WorkGrid.tsx  WorkCard.tsx  Impact.tsx  CtaBand.tsx
-  routes/  home.tsx (loader + page)
+    what-we-do/  WhatWeDoHero.tsx  Services.tsx  ServiceCard.tsx  SbccOrbit.tsx  OrgChart.tsx
+    team/  TeamHero.tsx  TeamIntro.tsx  TeamGrid.tsx  TeamCard.tsx  BioPanel.tsx  ProfileDialog.tsx
+  routes/  home.tsx  what-we-do.tsx  the-maad-ones.tsx (loader + page each)
+  lib/     useSeo.ts  site.ts (site-wide SEO defaults)
   styles/  globals.css (tokens)
+scripts/check-rules.mjs   // rule guard, runs before every build
 public/trophies/   grand-prix-{700,1400}.webp  digital-social-{700,1400}.webp  creative-director-{700,1400}.webp
 src/assets/svg/    maad-logo-white.svg  a-pattern.svg  lower-pattern.svg
 src/assets/img/    hero-bg.jpg  cta-bg.jpg  work/*.jpg
@@ -48,6 +53,8 @@ src/assets/img/    hero-bg.jpg  cta-bg.jpg  work/*.jpg
 - **Motion and layout are not content.** Editors control copy, images, links and order. Animation, grid layout and timings live in code only.
 - **Images go through one component** (`<Img>`) fed by an `ImageAsset` object, so the Sanity image URL builder can replace local imports without touching layouts.
 - **Switch by env var:** `VITE_CONTENT_SOURCE=static | sanity`.
+- **Site-wide content is settings, not page content.** Nav, footer and the CTA band (`SiteSettings.cta`) load once in the root loader. Page loaders only fetch their own page.
+- **Enforced, not just documented.** `npm run check:rules` (`scripts/check-rules.mjs`, run by `npm run build`) fails if any file outside `src/content/` imports `content/static`, and also on raw colours, string eases and unregistered routes (§6, §8.1).
 
 ### 5.2 Types (`src/content/types.ts`)
 
@@ -86,11 +93,14 @@ export type HomePage = {
   clients: { heading: string; logos: ClientLogo[] };
   featuredProjects: Project[];   // exactly 5
   impact: { heading: string; body: string; stats: Stat[] };  // 4 stats
-  cta: { headlineLines: string[]; body: string; button: Link };
 };
+
+/** Site-wide CTA band rendered above the footer on every page. */
+export type CtaContent = { headlineLines: string[]; body: string; button: Link };
 
 export type SiteSettings = {
   nav: Link[]; navCta: Link;
+  cta: CtaContent;
   footer: {
     navigation: Link[]; services: Link[];
     contact: { email: string; phone: string; landline: string; address: string[] };
@@ -98,6 +108,25 @@ export type SiteSettings = {
     copyright: string;
   };
 };
+
+export type PageSeo = { title: string; description: string };
+
+// What We Do: one object per service card; each carries `id`, its deep-link anchor
+export type WhatWeDoPage = {
+  seo: PageSeo;
+  hero: { headlineLines: string[]; bodyLines: string[] };
+  sbcc: { id; title; tagline; body; bullets; approaches; humanCentered; strength; experience };
+  digital: { id; title; tagline; intro; pills: string[][]; leftParagraphs; rightParagraphs };
+  accountManagement, media, experiential, brandStrategy, pr, creative, production: { id; … };
+};  // full definition in src/content/types.ts
+
+// The MAAD Ones
+export type TeamBio = { paragraphs: string[]; brands?: string; projects?: string };
+export type TeamPerson = { name: string; bio?: TeamBio };
+export type TeamMember = TeamPerson & { slug: string; title: string; image: ImageAsset };
+export type TeamSection = { id: string; title: string; columns: number; members: TeamMember[] };
+export type TeamRow = TeamSection | [TeamSection, TeamSection];  // a pair renders side by side
+export type TeamPage = { seo: PageSeo; hero: ImageAsset; intro: { accent; headline; body }; rows: TeamRow[] };
 ```
 
 ### 5.3 API layer (`src/content/api.ts`)
@@ -114,6 +143,10 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   if (source === 'sanity') return (await import('./sanity/queries')).getSiteSettings();
   return (await import('./static/settings')).settings;
 }
+// Same pattern for every page: getWhatWeDoPage(): WhatWeDoPage, getTeamPage(): TeamPage.
+// Each fetcher passes its result through an assertXxx() that throws on structural problems
+// (wrong number of featured projects, a missing service section, an empty team section).
+// mock/source.ts exports a structuredClone version of each.
 ```
 
 The dynamic imports keep the Sanity client out of the bundle in static mode. Loaders:
@@ -121,7 +154,10 @@ The dynamic imports keep the Sanity client out of the bundle in static mode. Loa
 ```ts
 // routes/home.tsx
 export const homeLoader = async () => ({ home: await getHomePage() });
-// RootLayout route loader
+// routes/what-we-do.tsx, routes/the-maad-ones.tsx
+export const whatWeDoLoader = async () => ({ page: await getWhatWeDoPage() });
+export const theMaadOnesLoader = async () => ({ page: await getTeamPage() });
+// RootLayout route loader: settings.cta feeds the CTA band on every page
 export const rootLoader = async () => ({ settings: await getSiteSettings() });
 ```
 
@@ -170,11 +206,6 @@ export const home: HomePage = {
       { value: 18,  suffix: '+',  label: 'Years of expertise',      description: 'Decades of experience in delivering impactful digital solutions.' },
     ],
   },
-  cta: {
-    headlineLines: ['Got something in mind?', 'Let’s make something MAAD.'],
-    body: 'Bring us the brief, the challenge or even the “we know something needs to change but we’re not quite sure what.” We’ll take it from there.',
-    button: { label: 'Let’s Talk', href: '/contact' },
-  },
 };
 
 export const settings: SiteSettings = {
@@ -185,6 +216,11 @@ export const settings: SiteSettings = {
     { label: 'Blog', href: '/blog' }, { label: 'Awards', href: '/awards' },
   ],
   navCta: { label: 'Talk To Us', href: '/contact' },
+  cta: {
+    headlineLines: ['Got something in mind?', 'Let’s make something MAAD.'],
+    body: 'Bring us the brief, the challenge or even the “we know something needs to change but we’re not quite sure what.” We’ll take it from there.',
+    button: { label: 'Let’s Talk', href: '/contact' },
+  },
   footer: {
     navigation: [/* Let’s Talk, The MAADness, What We Do, Our Work, Corporate Social Responsibility, Our Partners, The MAAD Ones, Blog, Awards */],
     services: [/* Creative, PR & Reputation Mgt, Brand Strategy & Dev’t, Experiential Marketing, Account Management, Production, Media, Digital, SBCC */],
@@ -193,7 +229,7 @@ export const settings: SiteSettings = {
       address: ['Plot 2436, Ntinda', '(off Bukoto–Ntinda Road),', 'Kampala, Uganda'],
     },
     socials: [/* x, facebook, youtube, linkedin, instagram: URLs TBC */],
-    copyright: '© 2026 MAAD McCANN. All rights reserved.',
+    copyright: '© {year} MAAD McCANN. All rights reserved.',  // {year} filled in at render time
   },
 };
 ```
@@ -202,8 +238,11 @@ export const settings: SiteSettings = {
 
 | Sanity document | Maps to | Notes |
 | --- | --- | --- |
-| `siteSettings` (singleton) | `SiteSettings` | nav, footer columns, contact, socials |
-| `homePage` (singleton) | `HomePage` | hero, showreel, clients, impact, cta objects |
+| `siteSettings` (singleton) | `SiteSettings` | nav, footer columns, contact, socials, CTA band |
+| `homePage` (singleton) | `HomePage` | hero, showreel, clients, impact objects |
+| `whatWeDoPage` (singleton) | `WhatWeDoPage` | seo, hero, one object per service (with anchor `id`) |
+| `teamPage` (singleton) | `TeamPage` | seo, hero image, intro, rows of sections referencing `teamMember` |
+| `teamMember` (collection) | `TeamMember` | portrait (hotspot, required `alt`), bio; title is set per section |
 | `project` (collection) | `Project` | `client`, `title`, `slug`, `image` (hotspot, required `alt`) |
 | `award` (collection) | `Award` | referenced from `homePage.hero.awards` |
 | `clientLogo` (collection) | `ClientLogo` | SVG or PNG upload |
@@ -221,7 +260,7 @@ Schema rules that keep the swap painless:
   hero{ headlineLines, subheading, cta, ghostText,
     'awards': awards[]->{ _id, title, year,
       image{ alt, asset->{ _id, url, metadata{ lqip, dimensions } } } } },  // raw shape -> mapAward()
-  showreel{ ... }, clients{ ... }, impact{ ... }, cta{ ... },
+  showreel{ ... }, clients{ ... }, impact{ ... },
   'featuredProjects': featuredProjects[]->{ ... }
 }
 ```
@@ -240,6 +279,28 @@ Values are approximate, sampled from the design. **Confirm with the designer or 
 | `--color-charcoal` | `#222222` | footer block |
 | `--color-paper` | `#FFFFFF` | light sections |
 | `--color-gold-500` | `#D9A93A` | trophy glow only |
+
+**Page-specific tokens** (exact values from the built pages, added in `globals.css` so no component carries a raw colour):
+
+| Token | Value | Use |
+| --- | --- | --- |
+| `--color-crimson-975` / `-990` | `#240610` / `#16020B` | hero ghost text; footer motif base lines |
+| `--color-blush` | `#FFCCD8` | footer motif spotlight lines |
+| `--color-berry` | `#8E1B3B` | showreel player accent (equals this table's crimson-800; the built crimson-800 is `#8D1819`, so confirm with the designer) |
+| `--color-ink-soft` | `#0F0F0F` | hero A/V motif fill |
+| `--color-menu-ink` | `#0E0E10` | mobile menu drawer |
+| `--color-service-red` / `-hover` | `#880000` / `#9A0000` | What We Do red cards and creative tiles |
+| `--color-graphite` | `#1E1E1E` | What We Do dark cards |
+| `--color-wwd-ink`, `bg-wwd-glow` | `#121312`, radial `#2A2B2A → #161716 → #0B0C0B` | What We Do hero |
+| `--color-ash` | `#A3A5A4` | What We Do hero motif |
+| `--color-line` | `#D9D9D9` | ring borders |
+| `--color-slate` | `#2B2D33` | org chart icon |
+| `--color-placeholder` | `#D6D6D6` | portrait loading background |
+| `--color-mist` | `#EEF3F5` | team bio hover panel |
+| `--shadow-pill` / `-play` / `-panel`, `--drop-shadow-trophy` | | button lift, play button, bio panel, trophies |
+| `--ease-brand` / `--ease-expo` | `cubic-bezier(.22,1,.36,1)` / `(.16,1,.3,1)` | CSS transitions (hover wipes, link underline) |
+
+**Rule:** components never contain hex, `rgb()` or `hsl()` literals (enforced by `check:rules`). A new colour is added here and in `@theme` first.
 
 **Typography is supplied.** The PDF is 1920 units wide, so the sizes below read as px at a 1920px viewport. Display type is uppercase for the hero headline, ghost text and OUR IMPACT, with line-height about 0.95 and letter-spacing about -0.02em (check against the design). Body line-height 1.5. Container: max-width 1440px, side padding `clamp(20px, 5vw, 72px)`. Breakpoints: 640 / 1024 / 1440.
 
@@ -295,6 +356,8 @@ export const DIST = { rise: 32, slide: 60, maskFrom: 100 };   // px or percent a
 export const STAGGER = { lines: 0.1, words: 0.04, items: 0.08, trophies: 0.18 };
 export const SCROLL = { start: 'top 85%', lerp: 0.1 };
 ```
+
+The file also holds `REVEAL`, `HERO_TIMELINE`, `LOADER`, `TRANSITION` and `MOTIF_LAB`, plus one named group per component with its own choreography (`SERVICE_CARD`, `SBCC_ORBIT`, `ORG_CHART`, `TEAM_GRID`, `TEAM_INTRO`, `TEAM_HERO`, `BIO_PANEL`, `PROFILE_DIALOG`, `HEADER_MENU`, `AWARDS_LOOP`, `SHOWREEL`, `FALL_IN`). Components contain no literal durations, eases, offsets or ScrollTrigger starts. A new value is added as a token first. String eases (`ease: 'power3.out'`) fail `check:rules`, so use `EASE.*`.
 
 ### 8.2 Loader
 
