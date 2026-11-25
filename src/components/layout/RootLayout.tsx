@@ -5,6 +5,7 @@ import { LoaderProvider } from '@/motion/LoaderProvider';
 import { PageTransition } from '@/motion/PageTransition';
 import { SmoothScroll } from '@/motion/SmoothScroll';
 import type { homeLoader } from '@/routes/home';
+import type { theMaadOnesLoader } from '@/routes/the-maad-ones';
 import type { whatWeDoLoader } from '@/routes/what-we-do';
 import { Footer } from './Footer';
 import { FooterMotifStage } from './FooterMotifStage';
@@ -28,7 +29,10 @@ export function RootLayout() {
   const whatWeDoData = useRouteLoaderData('what-we-do') as
     | Awaited<ReturnType<typeof whatWeDoLoader>>
     | undefined;
-  const cta = homeData?.home.cta ?? whatWeDoData?.cta;
+  const teamData = useRouteLoaderData('the-maad-ones') as
+    | Awaited<ReturnType<typeof theMaadOnesLoader>>
+    | undefined;
+  const cta = homeData?.home.cta ?? whatWeDoData?.cta ?? teamData?.cta;
 
   return (
     <SmoothScroll>

@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 /** Public routes that belong in the sitemap. Add real routes as they ship. */
-const SITEMAP_ROUTES = ['/', '/what-we-do'];
+const SITEMAP_ROUTES = ['/', '/what-we-do', '/the-maad-ones'];
 
 /**
  * Domain-agnostic SEO URLs. The site URL is, in order:

@@ -54,7 +54,7 @@ export function SbccOrbit() {
         });
 
         if (ring) {
-          tl.fromTo(ring, { strokeDasharray: '1 1', strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.6, ease: EASE.SineInOut }, 0)
+          tl.fromTo(ring, { strokeDasharray: '1 1', strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.6, ease: EASE.SineInOut, autoRound: false }, 0)
             // drop the dash once drawn so no hairline seam is left at 12 o'clock
             .set(ring, { strokeDasharray: 'none' }, 1.6);
         }
