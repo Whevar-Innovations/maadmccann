@@ -133,6 +133,8 @@ export const TRANSITION = {
   pageRecedeY: -24,
   pageEnterY: 24,
   pageScale: 0.985,
+  reducedFade: 0.2, // reduced motion: plain crossfade
+  releaseMs: 1500, // safety: give scrolling back if a navigation never lands
 } as const;
 
 /* ---------- Component choreography (values specific to one component) ---------- */

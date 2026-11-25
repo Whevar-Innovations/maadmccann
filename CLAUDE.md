@@ -75,7 +75,7 @@ Never weaken the guard to get a build through. Fix the code, or ask.
    `check:rules` fails if one is missing. Call `useSeo({ ...page.seo, path })` in the route
    component. Placeholder pages get `noindex`.
 7. **Always use `ui/Link` or `ui/Button`** for internal navigation, never a bare `<a>` or
-   `RouterLink`. Those components run the curtain page transition.
+   `RouterLink`. Those components run the page transition (`motion/PageTransition.tsx`).
 8. Navigation labels, hrefs and footer columns live in `content/static/settings.ts`. The
    planned pages are `/work`, `/csr`, `/partners`, `/blog`, `/awards` and Talk To Us (`#footer`).
 
@@ -163,7 +163,7 @@ Follow this order. `routes/the-maad-ones.tsx` is the reference implementation.
 template-y. The work and the trophies are the heroes. The UI frames them and stays out of the way.
 
 **Colour story.** The brand runs on **deep crimson-to-maroon metallic red** (hero, CTA band,
-footer stage, page-transition curtain), set against **ink/near-black** (showreel, mobile menu,
+footer stage), set against **ink/near-black** (showreel, mobile menu,
 dark service cards) and **paper white** (clients, impact, team). Sections alternate between these
 three worlds to set the rhythm. Crimson sections hold white type and white pill buttons. Paper
 sections use ink type, with `impact-red` for display accents. Keep it to these: no blues, greens
@@ -190,8 +190,8 @@ continuous red motif stage.
 put: masked line reveals for headings, clip-path reveals for images, gentle rises for groups.
 The hero is the only place with continuous idle motion (trophy float, glow, shine). Interactions
 feel physical: magnetic pills, a fill that wipes from the pointer's entry point, a work-tile
-line that stretches on hover, a cursor-following WATCH button. Page changes use a crimson curtain
-with the logo mark. When in doubt, make it slower, softer and do less.
+line that stretches on hover, a cursor-following WATCH button. Page changes recede the old page and
+rise the new one in; a project tile expands into its case-study hero. When in doubt, make it slower, softer and do less.
 
 **Voice.** Copy is confident, warm, a little cheeky ("Got something in mind?", "The MAAD Ones",
 "Ka Weekie"), and proudly Ugandan. Keep the brand names and capitalisation exactly as given:
