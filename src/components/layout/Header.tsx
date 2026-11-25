@@ -166,13 +166,13 @@ export function Header({ settings }: HeaderProps) {
           </Link>
 
           {/* Desktop navigation (routes disabled per project constraints) */}
-          <nav aria-label="Primary" className="hidden items-center lg:flex">
+          <nav aria-label="Primary" className="hidden items-center min-[75rem]:flex">
             <ul className="flex items-center gap-6 xl:gap-8">
               {settings.nav.map((item) => (
                 <li key={item.href} data-header-item>
                   <ContentLink
                     link={item}
-                    className="group relative inline-block py-1 text-small font-medium text-paper/95 aria-disabled:cursor-default transition-colors duration-300 hover:text-maroon-200 focus-visible:text-maroon-200 aria-[current=page]:text-maroon-200"
+                    className="group relative inline-block py-1 whitespace-nowrap text-small font-medium text-paper/95 aria-disabled:cursor-default transition-colors duration-300 hover:text-maroon-200 focus-visible:text-maroon-200 aria-[current=page]:text-maroon-200"
                   >
                     <span>{item.label}</span>
                     {/* Underline indicator */}
@@ -186,7 +186,7 @@ export function Header({ settings }: HeaderProps) {
             </ul>
           </nav>
 
-          <div data-header-item className="hidden lg:block">
+          <div data-header-item className="hidden min-[75rem]:block">
             <Magnetic>
               <Button
                 link={{ label: settings.navCta.label, href: '#footer' }}
@@ -203,7 +203,7 @@ export function Header({ settings }: HeaderProps) {
             aria-controls="mobile-nav-drawer"
             aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="relative z-50 inline-flex h-11 w-11 items-center justify-center rounded-full border border-paper/30 text-paper lg:hidden"
+            className="relative z-50 inline-flex h-11 w-11 items-center justify-center rounded-full border border-paper/30 text-paper min-[75rem]:hidden"
           >
             <span className="sr-only">{menuOpen ? 'Close menu' : 'Open menu'}</span>
             <svg
@@ -234,7 +234,7 @@ export function Header({ settings }: HeaderProps) {
             role="dialog"
             aria-modal="true"
             aria-label="Navigation menu"
-            className="fixed inset-0 z-[9950] flex h-dvh min-h-svh w-screen flex-col justify-between overflow-y-auto bg-[#0E0E10] text-paper lg:hidden"
+            className="fixed inset-0 z-[9950] flex h-dvh min-h-svh w-screen flex-col justify-between overflow-y-auto bg-[#0E0E10] text-paper min-[75rem]:hidden"
           >
             {/* Subtle embossed dark motif background matching Screenshot 15-52-54.png */}
             <div

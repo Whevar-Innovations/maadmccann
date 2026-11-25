@@ -143,7 +143,7 @@ export function WhatWeDoHero() {
     <section
       ref={sectionRef}
       aria-labelledby="wwd-hero-heading"
-      className="relative isolate flex min-h-[34rem] items-center overflow-hidden bg-[#121312] pt-28 pb-20 text-paper sm:min-h-[38rem] lg:min-h-[42rem] lg:pt-32"
+      className="relative isolate flex min-h-[34rem] items-center overflow-hidden bg-[#121312] pt-28 pb-20 text-paper sm:min-h-[38rem] lg:min-h-[42rem] lg:pt-32 [@media(orientation:landscape)_and_(max-height:540px)]:min-h-svh [@media(orientation:landscape)_and_(max-height:540px)]:pt-24 [@media(orientation:landscape)_and_(max-height:540px)]:pb-10"
     >
       {/* Soft vignette like the design: lighter charcoal centre, darker edges */}
       <div
@@ -185,7 +185,7 @@ export function WhatWeDoHero() {
         >
           {hero.headlineLines.map((line) => (
             <span key={line} className="block overflow-hidden pb-[0.06em]">
-              <span data-hero-line className="block will-change-transform">
+              <span data-hero-line className="block text-balance will-change-transform">
                 {line}
               </span>
             </span>

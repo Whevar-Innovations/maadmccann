@@ -39,7 +39,8 @@ export function Services() {
                 className="mt-5 list-disc pl-5 text-[clamp(0.875rem,0.85vw,1.05rem)] leading-[1.6] font-semibold marker:text-paper sm:grid sm:grid-flow-col sm:grid-rows-4 sm:justify-start sm:gap-x-10"
               >
                 {sbcc.bullets.map((b) => (
-                  <li key={b} className="sm:whitespace-nowrap">
+                  // One line where there's room; at lg the left column is narrow, so wrap there.
+                  <li key={b} className="sm:whitespace-nowrap lg:whitespace-normal xl:whitespace-nowrap">
                     {b}
                   </li>
                 ))}
