@@ -12,17 +12,26 @@ export type PartnerLogoTileProps = {
 const LOGO_BOX = 'flex h-12 w-full items-center justify-center px-1 md:h-14 lg:h-16';
 const LOGO_IMG = 'h-auto max-h-full w-auto max-w-full object-contain';
 const SIZES = '(min-width: 768px) 128px, 30vw';
+/**
+ * Hover lift shared by every logo (fine pointers only, so taps don't leave a logo stuck up).
+ * Linked logos also lift on keyboard focus. Transform only; off under reduced motion.
+ */
+const LOGO_LIFT =
+  'transition-transform duration-500 ease-brand [@media(hover:hover)]:group-hover:-translate-y-1 [@media(hover:hover)]:group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:transform-none';
 
 /**
- * One client logo. With an `href` it links to that client's case study: a small arrow badge marks
- * it on every device, and on fine pointers the logo lifts on hover/focus while a "View case study"
- * hint fades in below. Transform and opacity only.
+ * One client logo. Every logo lifts slightly on hover (fine pointers). With an `href` it also links
+ * to that client's case study: a small arrow badge marks it on every device, it lifts on keyboard
+ * focus too, and a "View case study" hint fades in below. Unlinked logos get the lift only (no
+ * pointer, badge or hint), so nothing looks clickable that isn't. Transform and opacity only.
  */
 export function PartnerLogoTile({ logo, hint }: PartnerLogoTileProps) {
   if (!logo.href) {
     return (
-      <div className={LOGO_BOX}>
-        <Img image={logo.image} sizes={SIZES} className={LOGO_IMG} />
+      <div className="group w-full">
+        <div className={`${LOGO_BOX} ${LOGO_LIFT}`}>
+          <Img image={logo.image} sizes={SIZES} className={LOGO_IMG} />
+        </div>
       </div>
     );
   }
@@ -34,7 +43,7 @@ export function PartnerLogoTile({ logo, hint }: PartnerLogoTileProps) {
       className="group relative block rounded-lg outline-offset-4 focus-visible:outline-2 focus-visible:outline-impact-red"
     >
       <span
-        className={`${LOGO_BOX} transition-transform duration-500 ease-brand [@media(hover:hover)]:group-hover:-translate-y-1 [@media(hover:hover)]:group-hover:scale-[1.04] group-focus-visible:-translate-y-1 group-focus-visible:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:transform-none`}
+        className={`${LOGO_BOX} ${LOGO_LIFT} group-focus-visible:-translate-y-1 group-focus-visible:scale-[1.04]`}
       >
         <Img image={logo.image} sizes={SIZES} className={LOGO_IMG} />
       </span>
