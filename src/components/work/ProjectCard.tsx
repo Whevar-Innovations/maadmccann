@@ -15,9 +15,17 @@ export type ProjectCardProps = {
 
 const SIZES = '(min-width: 1024px) 400px, (min-width: 768px) 45vw, 100vw';
 
+/** Cards fill service red on hover (fine pointers), or on keyboard focus when linked, like the blog cards. */
+const HOVER_PANEL =
+  'transition-colors duration-500 ease-brand hover:bg-service-red has-focus-visible:bg-service-red';
+const HOVER_TEXT =
+  'transition-colors duration-500 ease-brand group-hover:text-paper group-has-focus-visible:text-paper';
+
 /**
  * Our Work grid card: image over a light caption panel (title, then client in red).
- * Cards with a case study link to it and zoom the image on hover; the rest are inert.
+ * Every card's panel turns service red with white type on hover (same as the blog cards).
+ * Cards with a case study also link to it, zoom the image and fill on keyboard focus; the rest are
+ * not links, so they keep the default cursor.
  */
 export function ProjectCard({ project, index }: ProjectCardProps) {
   const cardRef = useRef<HTMLElement | null>(null);
@@ -69,8 +77,8 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
         </div>
       </RevealImage>
       <div className="px-2 pt-3 pb-2.5">
-        <h3 className="text-connect leading-snug font-semibold text-ink">{project.title}</h3>
-        <p className="text-small text-impact-red">{project.client}</p>
+        <h3 className={`text-connect leading-snug font-semibold text-ink ${HOVER_TEXT}`}>{project.title}</h3>
+        <p className={`text-small text-impact-red ${HOVER_TEXT}`}>{project.client}</p>
       </div>
     </>
   );
@@ -79,7 +87,7 @@ export function ProjectCard({ project, index }: ProjectCardProps) {
     <article
       ref={cardRef}
       data-work-card
-      className="rounded-2xl bg-tile-grey p-1.5"
+      className={`group rounded-2xl bg-tile-grey p-1.5 ${HOVER_PANEL}`}
     >
       {project.hasCaseStudy ? (
         <Link
