@@ -50,14 +50,18 @@ function pathOf(href: string): string {
  * Router-aware link primitive.
  * Only routes in ENABLED_ROUTES (plus hash, external, mailto/tel links) are navigable;
  * the rest render with aria-disabled and do nothing on click.
- * The link to the current page gets aria-current="page".
+ * The link to the current page gets aria-current="page"; the link to its parent section (e.g.
+ * "/work" on a "/work/:slug" case study) gets aria-current="true", so the nav still shows where you are.
  */
 export function Link({ href, external, children, className, onClick, ...rest }: LinkProps) {
   const { navigateWithTransition } = usePageTransition();
   const { pathname } = useLocation();
   const isNative = isNativeHref(href, external);
   const isDisabledRoute = !isNative && !isEnabledRoute(pathOf(href));
-  const isCurrent = !isNative && !href.includes('#') && pathOf(href) === pathOf(pathname);
+  const linkPath = pathOf(href);
+  const isCurrent = !isNative && !href.includes('#') && linkPath === pathOf(pathname);
+  const isSection =
+    !isNative && !isCurrent && !href.includes('#') && linkPath !== '/' && pathOf(pathname).startsWith(`${linkPath}/`);
 
   if (isNative) {
     return (
@@ -100,7 +104,7 @@ export function Link({ href, external, children, className, onClick, ...rest }: 
     <RouterLink
       to={isDisabledRoute ? '#' : href}
       aria-disabled={isDisabledRoute ? 'true' : undefined}
-      aria-current={isCurrent ? 'page' : undefined}
+      aria-current={isCurrent ? 'page' : isSection ? 'true' : undefined}
       className={className}
       onClick={handleClick}
       {...rest}

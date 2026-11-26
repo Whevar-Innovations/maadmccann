@@ -221,15 +221,15 @@ export function Header({ settings }: HeaderProps) {
                     link={item}
                     className={`group relative inline-block py-1 whitespace-nowrap text-small font-medium aria-disabled:cursor-default transition-colors duration-300 ${
                       light
-                        ? 'text-ink hover:text-impact-red focus-visible:text-impact-red aria-[current=page]:text-impact-red'
-                        : 'text-paper/95 hover:text-maroon-200 focus-visible:text-maroon-200 aria-[current=page]:text-maroon-200'
+                        ? 'text-ink hover:text-impact-red focus-visible:text-impact-red aria-[current]:text-impact-red'
+                        : 'text-paper/95 hover:text-maroon-200 focus-visible:text-maroon-200 aria-[current]:text-maroon-200'
                     }`}
                   >
                     <span>{item.label}</span>
                     {/* Underline indicator */}
                     <span
                       aria-hidden="true"
-                      className={`pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 transition-transform duration-500 ease-brand group-hover:scale-x-100 group-focus-visible:scale-x-100 group-aria-[current=page]:scale-x-100 ${light ? 'bg-ink' : 'bg-paper'}`}
+                      className={`pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 transition-transform duration-500 ease-brand group-hover:scale-x-100 group-focus-visible:scale-x-100 group-aria-[current]:scale-x-100 ${light ? 'bg-ink' : 'bg-paper'}`}
                     />
                   </ContentLink>
                 </li>
