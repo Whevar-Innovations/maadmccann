@@ -2,9 +2,18 @@ import { fileURLToPath, URL } from 'node:url';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import { blog } from './src/content/static/blog.ts';
 
 /** Public routes that belong in the sitemap. Add real routes as they ship. */
-const SITEMAP_ROUTES = ['/', '/what-we-do', '/the-maad-ones'];
+const SITEMAP_ROUTES = [
+  '/',
+  '/what-we-do',
+  '/csr',
+  '/the-maad-ones',
+  '/blog',
+  // Read from the blog content so new articles are listed automatically.
+  ...blog.posts.map((post) => `/blog/${post.slug}`),
+];
 
 /**
  * Domain-agnostic SEO URLs. The site URL is, in order:

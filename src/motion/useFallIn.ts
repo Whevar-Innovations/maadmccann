@@ -46,7 +46,7 @@ export function useFallIn<T extends HTMLElement>(
             opacity: 0,
             transformOrigin: '50% 60%',
           });
-          gsap.set(captions, { y: 18, opacity: 0 });
+          if (captions.length) gsap.set(captions, { y: 18, opacity: 0 });
 
           const tl = gsap.timeline({
             delay,

@@ -4,7 +4,7 @@ import { Link } from './Link';
 
 export type ButtonProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'href'> & {
   link: LinkType;
-  variant?: 'pill-light' | 'pill-outline';
+  variant?: 'pill-light' | 'pill-dark' | 'pill-outline';
   size?: 'sm' | 'md';
   children?: ReactNode;
 };
@@ -32,11 +32,14 @@ export function Button({
     'group relative inline-flex items-center justify-center overflow-hidden rounded-full font-body font-semibold transition-[translate,box-shadow] duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_10px_28px_rgb(0_0_0/0.28)] focus-visible:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-paper';
   const variants = {
     'pill-light': 'bg-paper text-crimson-800',
+    /** On white surfaces (the light header on blog articles). */
+    'pill-dark': 'bg-ink text-paper focus-visible:outline-ink',
     'pill-outline': 'border border-paper/80 text-paper',
   } as const;
   // Colour the fill wipes to on hover, and the text colour that goes with it.
   const wipe = {
     'pill-light': { fill: 'bg-crimson-800', text: 'group-hover:text-paper group-focus-visible:text-paper' },
+    'pill-dark': { fill: 'bg-crimson-800', text: 'group-hover:text-paper group-focus-visible:text-paper' },
     'pill-outline': { fill: 'bg-paper', text: 'group-hover:text-crimson-800 group-focus-visible:text-crimson-800' },
   } as const;
   const sizes = {

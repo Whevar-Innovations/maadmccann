@@ -168,8 +168,10 @@ export function CsrServices({ id, title, services }: CsrServicesProps) {
             data-service
             className="group grid grid-cols-[5.5rem_minmax(0,1fr)] items-start gap-x-5 sm:grid-cols-[6.5rem_minmax(0,1fr)] sm:gap-x-6 lg:grid-cols-[24%_minmax(0,1fr)] lg:gap-x-[7.6%]"
           >
-            <div data-icon className="will-change-transform">
-              <div data-icon-float className="will-change-transform">
+            {/* No permanent will-change: GSAP promotes these only while they animate, so idle
+                icons don't each hold a GPU layer (measurably smoother scrolling on phones). */}
+            <div data-icon>
+              <div data-icon-float>
                 <img
                   src={ICONS[service.icon]}
                   alt=""

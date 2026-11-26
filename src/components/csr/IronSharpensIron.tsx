@@ -12,7 +12,7 @@ function Poster({ image, index }: { image: ImageAsset; index: number }) {
   const ref = useRef<HTMLLIElement | null>(null);
   useFallIn(ref, { delay: index * 0.08 });
   return (
-    <li ref={ref} className="will-change-transform">
+    <li ref={ref}>
       <Img
         image={image}
         sizes="(min-width: 1024px) 16vw, (min-width: 768px) 23vw, 46vw"

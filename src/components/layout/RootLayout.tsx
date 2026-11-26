@@ -4,6 +4,8 @@ import { CtaBand } from '@/components/home/CtaBand';
 import { LoaderProvider } from '@/motion/LoaderProvider';
 import { PageTransition } from '@/motion/PageTransition';
 import { SmoothScroll } from '@/motion/SmoothScroll';
+import type { blogLoader } from '@/routes/blog';
+import type { blogPostLoader } from '@/routes/blog-post';
 import type { csrLoader } from '@/routes/csr';
 import type { homeLoader } from '@/routes/home';
 import type { theMaadOnesLoader } from '@/routes/the-maad-ones';
@@ -36,7 +38,19 @@ export function RootLayout() {
   const csrData = useRouteLoaderData('csr') as
     | Awaited<ReturnType<typeof csrLoader>>
     | undefined;
-  const cta = homeData?.home.cta ?? whatWeDoData?.cta ?? teamData?.cta ?? csrData?.cta;
+  const blogData = useRouteLoaderData('blog') as
+    | Awaited<ReturnType<typeof blogLoader>>
+    | undefined;
+  const blogPostData = useRouteLoaderData('blog-post') as
+    | Awaited<ReturnType<typeof blogPostLoader>>
+    | undefined;
+  const cta =
+    homeData?.home.cta ??
+    whatWeDoData?.cta ??
+    teamData?.cta ??
+    csrData?.cta ??
+    blogData?.cta ??
+    blogPostData?.cta;
 
   return (
     <SmoothScroll>

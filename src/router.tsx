@@ -1,5 +1,7 @@
 import { createBrowserRouter } from 'react-router';
 import { RootLayout, rootLoader } from '@/components/layout/RootLayout';
+import { BlogRoute, blogLoader } from '@/routes/blog';
+import { BlogPostError, BlogPostRoute, blogPostHandle, blogPostLoader } from '@/routes/blog-post';
 import { BootFallback } from '@/routes/BootFallback';
 import { CsrRoute, csrLoader } from '@/routes/csr';
 import { HomeRoute, homeLoader } from '@/routes/home';
@@ -39,6 +41,20 @@ export const router = createBrowserRouter([
         path: 'the-maad-ones',
         loader: theMaadOnesLoader,
         Component: TheMaadOnesRoute,
+      },
+      {
+        id: 'blog',
+        path: 'blog',
+        loader: blogLoader,
+        Component: BlogRoute,
+      },
+      {
+        id: 'blog-post',
+        path: 'blog/:slug',
+        loader: blogPostLoader,
+        Component: BlogPostRoute,
+        ErrorBoundary: BlogPostError,
+        handle: blogPostHandle,
       },
     ],
   },

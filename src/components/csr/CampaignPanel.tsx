@@ -34,7 +34,7 @@ export function CampaignPanel({ id, toneClassName, children, poster }: CampaignP
         data-poster
         className="mx-auto w-full max-w-[24rem] overflow-hidden md:mx-0 md:ml-auto md:w-[38%] md:max-w-none lg:w-[35.5%]"
       >
-        <div data-poster-img className="will-change-transform">
+        <div data-poster-img>
           <Img
             image={poster}
             sizes="(min-width: 1024px) 21vw, (min-width: 768px) 32vw, 24rem"

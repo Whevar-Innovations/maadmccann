@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { useLocation } from 'react-router';
+import { useLocation, useMatches } from 'react-router';
 import type { SiteSettings } from '@/content/types';
 import darkMotifBgSrc from '@/assets/img/dark-motif-bg.webp';
+import maadLogoBlackSrc from '@/assets/svg/maad-logo-black.svg';
 import maadLogoWhiteSrc from '@/assets/svg/maad-logo-white.svg';
 import { Button } from '@/components/ui/Button';
 import { ContentLink, Link } from '@/components/ui/Link';
@@ -15,10 +16,17 @@ export type HeaderProps = {
   settings: SiteSettings;
 };
 
+/** Route `handle` a page sets to get the light header (white bar, ink links, two-tone logo). */
+export type HeaderHandle = { headerTheme?: 'light' };
+
+/** Where "MAAD" ends in the wordmark (x ≈ 791 of its 207–1713 viewBox), for the two-tone logo. */
+const LOGO_SPLIT = '38.8%';
+
 /**
  * Site header (SPEC §7 #1 & §8.6).
  * - Logo left, 8 nav links centered (disabled per route constraints, home active), white pill "Talk To Us" button right.
- * - Transparent at top, then deep brand maroon (crimson-950) at 90% blur after 80px scroll.
+ * - Transparent at top, then deep brand maroon (crimson-950) at 95% after 80px scroll (no blur).
+ * - Light variant (route handle `headerTheme: 'light'`, blog articles): white bar, ink links, two-tone logo.
  * - Hover/focus/active links: maroon-200 tint (≈11.5:1 on crimson-950, ≈5.7:1 over the hero; WCAG AA).
  * - Hides on scroll down, shows on scroll up (0.4s power3.out).
  * - Mobile drawer: 100% opaque solid dark blackish (#0E0E10) with embossed line-art motif matching Screenshot 15-52-54.png.
@@ -31,6 +39,8 @@ export function Header({ settings }: HeaderProps) {
   const drawerRef = useRef<HTMLDivElement | null>(null);
   const hiddenRef = useRef(false);
   const { stopScroll, startScroll } = useSmoothScroll();
+  // White-background pages (blog articles) ask for the light header through their route handle.
+  const light = useMatches().some((m) => (m.handle as HeaderHandle | undefined)?.headerTheme === 'light');
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -140,12 +150,16 @@ export function Header({ settings }: HeaderProps) {
       <header
         ref={headerRef}
         data-site-header
-        className={`fixed inset-x-0 top-0 z-40 transition-[background-color,backdrop-filter,opacity] duration-300 will-change-transform ${
+        className={`fixed inset-x-0 top-0 z-40 transition-[background-color,opacity,border-color] duration-300 will-change-transform ${
           menuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
         } ${
-          scrolledPastThreshold && !menuOpen
-            ? 'bg-crimson-950/90 backdrop-blur-md'
-            : 'bg-transparent'
+          light
+            ? `border-b border-ink/25 ${scrolledPastThreshold && !menuOpen ? 'bg-paper/95' : 'bg-paper'}`
+            : scrolledPastThreshold && !menuOpen
+              ? // No backdrop blur: re-blurring the motif / photos under the bar every frame stalled
+                // the start of each scroll; at 95% opacity the bar reads the same without it.
+                'border-b border-transparent bg-crimson-950/95'
+              : 'border-b border-transparent bg-transparent'
         }`}
       >
         <div className="mx-auto flex h-20 w-full max-w-[1760px] items-center justify-between gap-6 px-6 sm:px-10 lg:h-28 lg:px-16">
@@ -156,13 +170,28 @@ export function Header({ settings }: HeaderProps) {
             className="relative z-50 shrink-0"
             onClick={() => setMenuOpen(false)}
           >
-            <img
-              src={maadLogoWhiteSrc}
-              alt="MAAD McCANN"
-              width={215}
-              height={25}
-              className="h-5 w-auto sm:h-6"
-            />
+            {light ? (
+              // Two-tone wordmark: the black logo used as a mask over a crimson | ink hard-stop gradient.
+              <span
+                role="img"
+                aria-label="MAAD McCANN"
+                className="block aspect-[1506/173] h-5 sm:h-6"
+                style={{
+                  background: `linear-gradient(90deg, #890000 ${LOGO_SPLIT}, var(--color-ink) ${LOGO_SPLIT})`,
+                  // Quoted: Vite inlines this small SVG as a data: URI, which breaks an unquoted url().
+                  WebkitMask: `url("${maadLogoBlackSrc}") center / contain no-repeat`,
+                  mask: `url("${maadLogoBlackSrc}") center / contain no-repeat`,
+                }}
+              />
+            ) : (
+              <img
+                src={maadLogoWhiteSrc}
+                alt="MAAD McCANN"
+                width={215}
+                height={25}
+                className="h-5 w-auto sm:h-6"
+              />
+            )}
           </Link>
 
           {/* Desktop navigation (routes disabled per project constraints) */}
@@ -172,13 +201,19 @@ export function Header({ settings }: HeaderProps) {
                 <li key={item.href} data-header-item>
                   <ContentLink
                     link={item}
-                    className="group relative inline-block py-1 whitespace-nowrap text-small font-medium text-paper/95 aria-disabled:cursor-default transition-colors duration-300 hover:text-maroon-200 focus-visible:text-maroon-200 aria-[current=page]:text-maroon-200"
+                    className={`group relative inline-block py-1 whitespace-nowrap text-small font-medium aria-disabled:cursor-default transition-colors duration-300 ${
+                      light
+                        ? 'text-ink hover:text-crimson-800 focus-visible:text-crimson-800 aria-[current=page]:text-crimson-800 aria-[current=true]:text-crimson-800'
+                        : 'text-paper/95 hover:text-maroon-200 focus-visible:text-maroon-200 aria-[current=page]:text-maroon-200 aria-[current=true]:text-maroon-200'
+                    }`}
                   >
                     <span>{item.label}</span>
                     {/* Underline indicator */}
                     <span
                       aria-hidden="true"
-                      className="pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 bg-paper transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100 group-aria-[current=page]:scale-x-100"
+                      className={`pointer-events-none absolute inset-x-0 bottom-0 h-[1.5px] origin-left scale-x-0 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100 group-focus-visible:scale-x-100 group-aria-[current=page]:scale-x-100 group-aria-[current=true]:scale-x-100 ${
+                        light ? 'bg-crimson-800' : 'bg-paper'
+                      }`}
                     />
                   </ContentLink>
                 </li>
@@ -191,7 +226,8 @@ export function Header({ settings }: HeaderProps) {
               <Button
                 link={{ label: settings.navCta.label, href: '#footer' }}
                 size="sm"
-                className="px-7 py-2.5 font-bold text-ink"
+                variant={light ? 'pill-dark' : 'pill-light'}
+                className={`px-7 py-2.5 font-bold ${light ? 'text-paper' : 'text-ink'}`}
               />
             </Magnetic>
           </div>
@@ -203,7 +239,9 @@ export function Header({ settings }: HeaderProps) {
             aria-controls="mobile-nav-drawer"
             aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
             onClick={() => setMenuOpen((prev) => !prev)}
-            className="relative z-50 inline-flex h-11 w-11 items-center justify-center rounded-full border border-paper/30 text-paper min-[75rem]:hidden"
+            className={`relative z-50 inline-flex h-11 w-11 items-center justify-center rounded-full border min-[75rem]:hidden ${
+              light ? 'border-ink/30 text-ink' : 'border-paper/30 text-paper'
+            }`}
           >
             <span className="sr-only">{menuOpen ? 'Close menu' : 'Open menu'}</span>
             <svg

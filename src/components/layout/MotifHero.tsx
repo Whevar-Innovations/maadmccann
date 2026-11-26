@@ -1,4 +1,5 @@
 import { useRef, type CSSProperties } from 'react';
+import heroBgSrc from '@/assets/jpg/hero-bg.jpg';
 import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
 import { useLoaderState } from '@/motion/LoaderProvider';
 import { DUR, EASE, MOTIF_LAB, STAGGER } from '@/motion/tokens';
@@ -26,7 +27,17 @@ export type MotifHeroProps = {
   bodyClassName?: string;
   /** Banner min-heights per breakpoint. */
   heightClassName?: string;
+  /**
+   * `charcoal` (What We Do, CSR): light grey lines on charcoal.
+   * `crimson` (Blog): the CTA/footer red texture with pale pink lines, as in the Blog design.
+   */
+  tone?: 'charcoal' | 'crimson';
 };
+
+const TONES = {
+  charcoal: { section: 'bg-[#121312]', base: 'text-[#a3a5a4]', bright: 'text-paper' },
+  crimson: { section: 'bg-crimson-950', base: 'text-[#ffccd8]', bright: 'text-paper' },
+} as const;
 
 /**
  * Charcoal page-header banner with an animated doodle motif (What We Do, CSR).
@@ -47,7 +58,9 @@ export function MotifHero({
   headlineClassName = 'text-[clamp(2.1rem,4.3vw,5.2rem)] leading-[1.02] tracking-[-0.03em]',
   bodyClassName = 'mt-6 max-w-[62ch] text-[clamp(0.95rem,1.05vw,1.3rem)] leading-snug font-medium sm:mt-7 lg:max-w-none',
   heightClassName = 'min-h-[34rem] sm:min-h-[38rem] lg:min-h-[42rem]',
+  tone = 'charcoal',
 }: MotifHeroProps) {
+  const colors = TONES[tone];
   const sectionRef = useRef<HTMLElement | null>(null);
   const baseSvgRef = useRef<SVGSVGElement | null>(null);
   const brightSvgRef = useRef<SVGSVGElement | null>(null);
@@ -170,13 +183,27 @@ export function MotifHero({
     <section
       ref={sectionRef}
       aria-labelledby={headingId}
-      className={`relative isolate flex ${heightClassName} items-center overflow-hidden bg-[#121312] pt-28 pb-20 text-paper lg:pt-32 [@media(orientation:landscape)_and_(max-height:540px)]:min-h-svh [@media(orientation:landscape)_and_(max-height:540px)]:pt-24 [@media(orientation:landscape)_and_(max-height:540px)]:pb-10`}
+      className={`relative isolate flex ${heightClassName} items-center overflow-hidden ${colors.section} pt-28 pb-20 text-paper lg:pt-32 [@media(orientation:landscape)_and_(max-height:540px)]:min-h-svh [@media(orientation:landscape)_and_(max-height:540px)]:pt-24 [@media(orientation:landscape)_and_(max-height:540px)]:pb-10`}
     >
-      {/* Soft vignette like the design: lighter charcoal centre, darker edges */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_60%_35%,#2a2b2a_0%,#161716_55%,#0b0c0b_100%)]"
-      />
+      {tone === 'crimson' ? (
+        // Same red metallic texture as the CTA band + footer stage, so the page opens and closes in one material.
+        <img
+          src={heroBgSrc}
+          alt=""
+          aria-hidden="true"
+          width={1922}
+          height={1674}
+          decoding="async"
+          fetchPriority="high"
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
+        />
+      ) : (
+        // Soft vignette like the design: lighter charcoal centre, darker edges
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_60%_35%,#2a2b2a_0%,#161716_55%,#0b0c0b_100%)]"
+        />
+      )}
 
       {/* Base motif: hidden until the bloom starts (no flash under the loader) */}
       <svg
@@ -184,7 +211,7 @@ export function MotifHero({
         viewBox={motif.viewBox}
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 h-full w-full text-[#a3a5a4] opacity-0"
+        className={`pointer-events-none absolute inset-0 h-full w-full ${colors.base} opacity-0`}
       >
         <g id={patternId} fill="currentColor" fillRule="evenodd">
           {motif.paths.map((d, idx) => (
@@ -200,7 +227,7 @@ export function MotifHero({
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
         style={brightMaskStyle}
-        className="pointer-events-none absolute inset-0 h-full w-full text-paper opacity-0"
+        className={`pointer-events-none absolute inset-0 h-full w-full ${colors.bright} opacity-0`}
       >
         <use href={`#${patternId}`} />
       </svg>

@@ -21,12 +21,17 @@ function isNativeHref(href: string, external?: boolean): boolean {
 }
 
 /** Routes that exist so far. Every other internal link renders disabled until its page ships. */
-const ENABLED_ROUTES = new Set(['/', '/what-we-do', '/csr', '/the-maad-ones']);
+const ENABLED_ROUTES = new Set(['/', '/what-we-do', '/csr', '/the-maad-ones', '/blog']);
+/** Sections whose child pages exist too (e.g. /blog/:slug). */
+const ENABLED_PREFIXES = ['/blog/'];
 
 function pathOf(href: string): string {
   const path = (href.split('#')[0] ?? '').split('?')[0] ?? '';
   return path === '' ? '/' : path.replace(/(.)\/$/, '$1');
 }
+
+const isEnabledPath = (path: string) =>
+  ENABLED_ROUTES.has(path) || ENABLED_PREFIXES.some((prefix) => path.startsWith(prefix));
 
 /**
  * Router-aware link primitive.
@@ -38,8 +43,15 @@ export function Link({ href, external, children, className, onClick, ...rest }: 
   const { navigateWithTransition } = usePageTransition();
   const { pathname } = useLocation();
   const isNative = isNativeHref(href, external);
-  const isDisabledRoute = !isNative && !ENABLED_ROUTES.has(pathOf(href));
+  const isDisabledRoute = !isNative && !isEnabledPath(pathOf(href));
   const isCurrent = !isNative && !href.includes('#') && pathOf(href) === pathOf(pathname);
+  // The section link (e.g. "Blog") while on one of its child pages (/blog/:slug).
+  const isCurrentSection =
+    !isNative &&
+    !isCurrent &&
+    !href.includes('#') &&
+    pathOf(href) !== '/' &&
+    pathOf(pathname).startsWith(`${pathOf(href)}/`);
 
   if (isNative) {
     return (
@@ -79,7 +91,7 @@ export function Link({ href, external, children, className, onClick, ...rest }: 
     <RouterLink
       to={isDisabledRoute ? '#' : href}
       aria-disabled={isDisabledRoute ? 'true' : undefined}
-      aria-current={isCurrent ? 'page' : undefined}
+      aria-current={isCurrent ? 'page' : isCurrentSection ? 'true' : undefined}
       className={className}
       onClick={handleClick}
       {...rest}
