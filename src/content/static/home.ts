@@ -15,9 +15,12 @@ import multichoiceLogo from '@/assets/img/clients/multichoice.webp';
 
 type RawProject = Omit<Project, 'href'>;
 
+/** Projects with a case study open /work/{slug}; the rest open the Our Work grid. */
+const WITHOUT_CASE_STUDY = new Set(['cocacola-digital']);
+
 const withProjectHref = (project: RawProject): Project => ({
   ...project,
-  href: '#work',
+  href: WITHOUT_CASE_STUDY.has(project.slug) ? '/work' : `/work/${project.slug}`,
 });
 
 const rawProjects: RawProject[] = [
@@ -161,10 +164,5 @@ export const home: HomePage = {
         description: 'Decades of experience in delivering impactful digital solutions.',
       },
     ],
-  },
-  cta: {
-    headlineLines: ['Got something in mind?', 'Let’s make something MAAD.'],
-    body: 'Bring us the brief, the challenge or even the “we know something needs to change but we’re not quite sure what.” We’ll take it from there.',
-    button: { label: 'Let’s Talk', href: '#footer' },
   },
 };

@@ -7,11 +7,11 @@ import {
   useSyncExternalStore,
 } from 'react';
 import { createPortal } from 'react-dom';
-import type { TeamMember } from '@/content/static/team';
+import type { TeamMember } from '@/content/types';
 import { Img, preloadImage } from '@/components/ui/Img';
 import { gsap, MEDIA_QUERIES } from '@/motion/gsap-setup';
 import { useSmoothScroll } from '@/motion/SmoothScroll';
-import { EASE } from '@/motion/tokens';
+import { EASE, PROFILE_DIALOG } from '@/motion/tokens';
 import { BioContent } from './BioContent';
 
 export type ProfileDialogProps = {
@@ -102,13 +102,13 @@ export function ProfileDialog({ people, startIndex, groupLabel, onClosed }: Prof
       .to(
         sheet,
         reduced
-          ? { opacity: 0, duration: 0.2 }
+          ? { opacity: 0, duration: PROFILE_DIALOG.reducedFade }
           : mobile
-            ? { yPercent: 100, duration: 0.45, ease: 'power3.in' }
-            : { y: 30, opacity: 0, scale: 0.98, duration: 0.35, ease: 'power3.in' },
+            ? { yPercent: 100, duration: PROFILE_DIALOG.closeMobile, ease: EASE.in }
+            : { y: PROFILE_DIALOG.closeDrop, opacity: 0, scale: PROFILE_DIALOG.sheetScale, duration: PROFILE_DIALOG.closeDesktop, ease: EASE.in },
         0,
       )
-      .to(root.querySelector('[data-dialog-overlay]'), { opacity: 0, duration: 0.35 }, 0.05);
+      .to(root.querySelector('[data-dialog-overlay]'), { opacity: 0, duration: PROFILE_DIALOG.overlayOut }, PROFILE_DIALOG.overlayOutAt);
   }, [onClosed]);
 
   // Entrance
@@ -124,24 +124,24 @@ export function ProfileDialog({ people, startIndex, groupLabel, onClosed }: Prof
 
     // Promote to GPU layers up front so the first frames don't hitch.
     const tl = gsap.timeline({ defaults: { force3D: true } });
-    tl.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.45, ease: EASE.soft }, 0);
+    tl.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: PROFILE_DIALOG.overlayIn, ease: EASE.soft }, 0);
     if (reduced) {
-      tl.fromTo(sheet, { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0);
+      tl.fromTo(sheet, { opacity: 0 }, { opacity: 1, duration: PROFILE_DIALOG.reducedIn }, 0);
     } else {
       tl.fromTo(
         sheet,
-        mobile ? { yPercent: 100 } : { y: 28, opacity: 0, scale: 0.98 },
+        mobile ? { yPercent: 100 } : { y: PROFILE_DIALOG.enterRise, opacity: 0, scale: PROFILE_DIALOG.sheetScale },
         mobile
-          ? { yPercent: 0, duration: 0.7, ease: 'expo.out' }
-          : { y: 0, opacity: 1, scale: 1, duration: 0.7, ease: 'expo.out' },
-        0.04,
+          ? { yPercent: 0, duration: PROFILE_DIALOG.enter, ease: EASE.out }
+          : { y: 0, opacity: 1, scale: 1, duration: PROFILE_DIALOG.enter, ease: EASE.out },
+        PROFILE_DIALOG.enterAt,
       )
-        .fromTo(photos, { scale: 1.08 }, { scale: 1, duration: 1.2, ease: 'expo.out' }, 0.04)
+        .fromTo(photos, { scale: PROFILE_DIALOG.photoScaleFrom }, { scale: 1, duration: PROFILE_DIALOG.photoIn, ease: EASE.out }, PROFILE_DIALOG.enterAt)
         .fromTo(
           items,
-          { y: 16, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.7, stagger: 0.05, ease: EASE.out },
-          0.25,
+          { y: PROFILE_DIALOG.itemRise, opacity: 0 },
+          { y: 0, opacity: 1, duration: PROFILE_DIALOG.itemIn, stagger: PROFILE_DIALOG.itemStagger, ease: EASE.out },
+          PROFILE_DIALOG.itemsAt,
         );
     }
     return () => {
@@ -165,13 +165,13 @@ export function ProfileDialog({ people, startIndex, groupLabel, onClosed }: Prof
     const dir = dirRef.current || 1;
     gsap.fromTo(
       person,
-      { x: 48 * dir, opacity: 0 },
-      { x: 0, opacity: 1, duration: 0.6, ease: EASE.out, overwrite: 'auto' },
+      { x: PROFILE_DIALOG.pageShift * dir, opacity: 0 },
+      { x: 0, opacity: 1, duration: PROFILE_DIALOG.pageIn, ease: EASE.out, overwrite: 'auto' },
     );
     gsap.fromTo(
       root.querySelectorAll('[data-dialog-photo]'),
-      { scale: 1.08 },
-      { scale: 1, duration: 1, ease: EASE.out, overwrite: 'auto' },
+      { scale: PROFILE_DIALOG.photoScaleFrom },
+      { scale: 1, duration: PROFILE_DIALOG.pagePhotoIn, ease: EASE.out, overwrite: 'auto' },
     );
   }, [index]);
 
@@ -240,14 +240,14 @@ export function ProfileDialog({ people, startIndex, groupLabel, onClosed }: Prof
         if (dy > SWIPE_CLOSE_PX || velocity > 0.6) {
           requestClose();
         } else {
-          gsap.to(sheet, { y: 0, duration: 0.45, ease: EASE.out });
-          if (overlay) gsap.to(overlay, { opacity: 1, duration: 0.3 });
+          gsap.to(sheet, { y: 0, duration: PROFILE_DIALOG.snapBack, ease: EASE.out });
+          if (overlay) gsap.to(overlay, { opacity: 1, duration: PROFILE_DIALOG.overlayBack });
         }
       } else if (axis === 'x' && count > 1) {
         if (Math.abs(dx) > SWIPE_PAGE_PX) {
           go(dx < 0 ? 1 : -1);
         } else if (personRef.current) {
-          gsap.to(personRef.current, { x: 0, duration: 0.4, ease: EASE.out });
+          gsap.to(personRef.current, { x: 0, duration: PROFILE_DIALOG.pageSnapBack, ease: EASE.out });
         }
       }
       axis = null;
@@ -325,7 +325,7 @@ export function ProfileDialog({ people, startIndex, groupLabel, onClosed }: Prof
         className="relative flex h-[94svh] w-full flex-col overflow-hidden rounded-t-[1.25rem] bg-paper text-ink shadow-2xl will-change-transform md:h-[min(86svh,48rem)] md:max-w-[60rem] md:flex-row md:rounded-[1rem]"
       >
         {/* Portrait column (tablet/desktop) */}
-        <div className="relative hidden shrink-0 overflow-hidden bg-[#d6d6d6] md:block md:w-[38%]">
+        <div className="relative hidden shrink-0 overflow-hidden bg-placeholder md:block md:w-[38%]">
           <div key={member.slug} data-dialog-photo className="absolute inset-0 will-change-transform">
             <Img
               image={member.image}
@@ -357,7 +357,7 @@ export function ProfileDialog({ people, startIndex, groupLabel, onClosed }: Prof
               {/* Portrait header (phones) */}
               <div
                 ref={photoHeadRef}
-                className="relative h-[min(60svh,32rem)] w-full overflow-hidden bg-[#d6d6d6] md:hidden"
+                className="relative h-[min(60svh,32rem)] w-full overflow-hidden bg-placeholder md:hidden"
               >
                 <div data-dialog-photo className="absolute inset-0 will-change-transform">
                   <Img

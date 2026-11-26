@@ -1,6 +1,6 @@
 import { useId, useRef } from 'react';
 import { gsap, MEDIA_QUERIES, ScrollTrigger, useGSAP } from '@/motion/gsap-setup';
-import { EASE } from '@/motion/tokens';
+import { EASE, ORG_CHART, SCROLL } from '@/motion/tokens';
 
 const NODES = [
   [18, 132],
@@ -70,17 +70,17 @@ export function OrgChart() {
         // --- Entrance (unchanged) ---
         const tl = gsap.timeline({
           defaults: { ease: EASE.out },
-          scrollTrigger: { trigger: root, start: 'top 85%', once: true },
+          scrollTrigger: { trigger: root, start: SCROLL.start, once: true },
         });
         if (lead) {
-          tl.fromTo(lead, { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.9, ease: 'back.out(1.7)' }, 0);
+          tl.fromTo(lead, { scale: ORG_CHART.leadScaleFrom, opacity: 0 }, { scale: 1, opacity: 1, duration: ORG_CHART.leadIn, ease: EASE.popOrbit }, 0);
         }
-        tl.fromTo(wires, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.1, stagger: 0.12, ease: EASE.SineInOut, autoRound: false }, 0.35)
+        tl.fromTo(wires, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: ORG_CHART.wiresIn, stagger: ORG_CHART.wiresStagger, ease: EASE.SineInOut, autoRound: false }, ORG_CHART.wiresAt)
           .fromTo(
             nodes,
             { scale: 0, opacity: 0, transformOrigin: '50% 50%' },
-            { scale: 1, opacity: 1, duration: 0.6, stagger: 0.08, ease: 'back.out(2)' },
-            0.75,
+            { scale: 1, opacity: 1, duration: ORG_CHART.nodesIn, stagger: ORG_CHART.nodesStagger, ease: EASE.popNode },
+            ORG_CHART.nodesAt,
           );
 
         // --- Continuous flow: lead -> team ---
@@ -96,7 +96,7 @@ export function OrgChart() {
           flow.fromTo(
             pulse,
             { strokeDashoffset: seg },
-            { strokeDashoffset: -1, duration, ease: 'none', autoRound: false },
+            { strokeDashoffset: -1, duration, ease: EASE.linear, autoRound: false },
             branch.start,
           );
           branch.nodes.forEach((nodeIndex, k) => {
@@ -108,14 +108,14 @@ export function OrgChart() {
             flow.fromTo(
               halo,
               { opacity: 0 },
-              { opacity: 0.5, duration: 0.45, ease: 'sine.out', yoyo: true, repeat: 1 },
-              Math.max(0, at - 0.25),
+              { opacity: ORG_CHART.haloPeak, duration: ORG_CHART.haloIn, ease: EASE.pulse, yoyo: true, repeat: 1 },
+              Math.max(0, at - ORG_CHART.haloLead),
             );
           });
         });
 
         const breathe = lead
-          ? gsap.to(lead, { scale: 1.04, duration: 1.8, ease: EASE.float, yoyo: true, repeat: -1, paused: true })
+          ? gsap.to(lead, { scale: ORG_CHART.breatheScale, duration: ORG_CHART.breatheDur, ease: EASE.float, yoyo: true, repeat: -1, paused: true })
           : null;
 
         tl.add(() => {
@@ -171,7 +171,7 @@ export function OrgChart() {
           </filter>
         </defs>
 
-        <g fill="none" stroke="#ffffff" strokeOpacity="0.85" strokeWidth="0.9">
+        <g fill="none" className="stroke-paper" strokeOpacity="0.85" strokeWidth="0.9">
           {/* trunk + top rail with rounded shoulders */}
           <path data-wire pathLength={1} strokeDasharray="1 1" d="M100 52 V178" />
           <path
@@ -183,7 +183,7 @@ export function OrgChart() {
         </g>
 
         {/* Flow pulses: hidden until the loop starts (offset parks the dash before the path) */}
-        <g fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" filter={`url(#${glowId})`}>
+        <g fill="none" className="stroke-paper" strokeWidth="2" strokeLinecap="round" filter={`url(#${glowId})`}>
           {BRANCHES.map((branch) => {
             const seg = PULSE_LEN / branch.len;
             return (
@@ -200,7 +200,7 @@ export function OrgChart() {
         </g>
 
         {/* Soft halos behind each box, lit as a pulse passes */}
-        <g fill="#ffffff" filter={`url(#${haloId})`}>
+        <g className="fill-paper" filter={`url(#${haloId})`}>
           {NODES.map(([cx, cy]) => (
             <rect
               data-halo
@@ -214,7 +214,7 @@ export function OrgChart() {
           ))}
         </g>
 
-        <g fill="#ffffff">
+        <g className="fill-paper">
           {NODES.map(([cx, cy]) => (
             <rect data-node key={`${cx}-${cy}`} x={cx - NODE / 2} y={cy - NODE / 2} width={NODE} height={NODE} />
           ))}
@@ -224,9 +224,9 @@ export function OrgChart() {
       {/* Account lead avatar (sits over the top of the trunk, hiding where pulses start) */}
       <div
         data-lead
-        className="absolute top-0 left-1/2 flex aspect-square w-[26%] -translate-x-1/2 items-center justify-center rounded-full border-[5px] border-[#d9d9d9] bg-paper"
+        className="absolute top-0 left-1/2 flex aspect-square w-[26%] -translate-x-1/2 items-center justify-center rounded-full border-[5px] border-line bg-paper"
       >
-        <svg viewBox="0 0 24 24" aria-hidden="true" className="w-[46%] fill-[#2b2d33]">
+        <svg viewBox="0 0 24 24" aria-hidden="true" className="w-[46%] fill-slate">
           <circle cx="12" cy="7.5" r="5" />
           <path d="M2.5 22c0-5 4.2-8.6 9.5-8.6s9.5 3.6 9.5 8.6z" />
         </svg>

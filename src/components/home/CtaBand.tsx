@@ -1,11 +1,11 @@
-import type { HomePage } from '@/content/types';
+import type { CtaContent } from '@/content/types';
 import { Button } from '@/components/ui/Button';
 import { FadeUp } from '@/motion/FadeUp';
 import { Magnetic } from '@/motion/Magnetic';
 import { RevealText } from '@/motion/RevealText';
 
 export type CtaBandProps = {
-  cta: HomePage['cta'];
+  cta: CtaContent;
 };
 
 /**

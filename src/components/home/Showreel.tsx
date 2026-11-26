@@ -4,19 +4,16 @@ import MuxPlayer from '@mux/mux-player-react';
 import type MuxPlayerElement from '@mux/mux-player';
 import { Img } from '@/components/ui/Img';
 import { PlayButton } from '@/components/ui/PlayButton';
+import { toMuxPlaybackId } from '@/lib/mux';
 import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
 import { RevealImage } from '@/motion/RevealImage';
 import { RevealText } from '@/motion/RevealText';
 import { useSmoothScroll } from '@/motion/SmoothScroll';
+import { EASE, SHOWREEL } from '@/motion/tokens';
 
 export type ShowreelProps = {
   showreel: HomePage['showreel'];
 };
-
-function toMuxPlaybackId(rawUrl: string): string | null {
-  const m = rawUrl.match(/^https:\/\/player\.mux\.com\/(?:watch\/)?([A-Za-z0-9]+)/);
-  return m?.[1] ?? null;
-}
 
 /**
  * Showreel section (SPEC §7 #3, §8.5 & §8.6).
@@ -136,11 +133,11 @@ export function Showreel({ showreel }: ShowreelProps) {
             { width: '62vw' },
             {
               width: '90vw',
-              ease: 'none',
+              ease: EASE.linear,
               scrollTrigger: {
                 trigger: frame,
-                start: 'top 88%',
-                end: 'top 20%',
+                start: SHOWREEL.widenStart,
+                end: SHOWREEL.widenEnd,
                 scrub: 0.6,
               },
             },
@@ -257,7 +254,7 @@ export function Showreel({ showreel }: ShowreelProps) {
                 title={showreel.heading}
                 preload="metadata"
                 playsInline
-                accentColor="#8e1b3b"
+                accentColor="var(--color-berry)"
                 style={{ width: '100%', height: '100%' }}
               />
             ) : (

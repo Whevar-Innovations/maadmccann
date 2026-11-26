@@ -70,11 +70,11 @@ export function FooterMotifStage({ children }: FooterMotifStageProps) {
         if (ctaBg && window.matchMedia(MEDIA_QUERIES.desktop).matches) {
           gsap.fromTo(
             ctaBg,
-            { yPercent: -REVEAL.ctaParallaxPercent, scale: 1.12 },
+            { yPercent: -REVEAL.ctaParallaxPercent, scale: REVEAL.ctaBgScale },
             {
               yPercent: REVEAL.ctaParallaxPercent,
-              scale: 1.12,
-              ease: 'none',
+              scale: REVEAL.ctaBgScale,
+              ease: EASE.linear,
               scrollTrigger: {
                 trigger: stage,
                 start: 'top bottom',
@@ -172,8 +172,8 @@ export function FooterMotifStage({ children }: FooterMotifStageProps) {
   const brightMaskStyle: CSSProperties = {
     ['--x' as string]: 400,
     ['--y' as string]: 260,
-    WebkitMaskImage: `radial-gradient(circle ${MOTIF_LAB.spotRadiusPx}px at calc(var(--x, 400) * 1px) calc(var(--y, 260) * 1px), #000, transparent)`,
-    maskImage: `radial-gradient(circle ${MOTIF_LAB.spotRadiusPx}px at calc(var(--x, 400) * 1px) calc(var(--y, 260) * 1px), #000, transparent)`,
+    WebkitMaskImage: `radial-gradient(circle ${MOTIF_LAB.spotRadiusPx}px at calc(var(--x, 400) * 1px) calc(var(--y, 260) * 1px), black, transparent)`,
+    maskImage: `radial-gradient(circle ${MOTIF_LAB.spotRadiusPx}px at calc(var(--x, 400) * 1px) calc(var(--y, 260) * 1px), black, transparent)`,
   };
 
   return (
@@ -201,7 +201,7 @@ export function FooterMotifStage({ children }: FooterMotifStageProps) {
         viewBox={FOOTER_MOTIF_VIEWBOX}
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 h-full w-full text-[#16020b] opacity-[0.13] mix-blend-multiply"
+        className="pointer-events-none absolute inset-0 h-full w-full text-crimson-990 opacity-[0.13] mix-blend-multiply"
       >
         <g id="footer-motif-pattern" fill="currentColor">
           {FOOTER_MOTIF_PATHS.map((d, idx) => (
@@ -218,7 +218,7 @@ export function FooterMotifStage({ children }: FooterMotifStageProps) {
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
         style={brightMaskStyle}
-        className="pointer-events-none absolute inset-0 h-full w-full text-[#ffccd8] opacity-0"
+        className="pointer-events-none absolute inset-0 h-full w-full text-blush opacity-0"
       >
         <use href="#footer-motif-pattern" />
       </svg>

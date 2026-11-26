@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef, useState, type RefObject } from 'react';
-import type { TeamMember } from '@/content/static/team';
-import { gsap } from '@/motion/gsap-setup';
-import { EASE } from '@/motion/tokens';
+import type { TeamMember } from '@/content/types';
+import { gsap, MEDIA_QUERIES } from '@/motion/gsap-setup';
+import { BIO_PANEL, EASE } from '@/motion/tokens';
 import { BioContent } from './BioContent';
 
 export type BioPanelTarget = { cardId: string; member: TeamMember; el: HTMLElement };
@@ -35,15 +35,15 @@ export function BioPanel({ target, containerRef, onPointerEnter, onPointerLeave 
     const panel = panelRef.current;
     const container = containerRef.current;
     if (!panel || !container) return;
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduced = window.matchMedia(MEDIA_QUERIES.reducedMotion).matches;
 
     if (!target) {
       if (!visibleRef.current) return;
       visibleRef.current = false;
       gsap.to(panel, {
         autoAlpha: 0,
-        y: reduced ? 0 : 8,
-        duration: 0.25,
+        y: reduced ? 0 : BIO_PANEL.hideDrop,
+        duration: BIO_PANEL.hide,
         ease: EASE.soft,
         overwrite: 'auto',
       });
@@ -83,8 +83,8 @@ export function BioPanel({ target, containerRef, onPointerEnter, onPointerLeave 
       gsap.set(panel, { left, top });
       gsap.fromTo(
         panel,
-        { autoAlpha: 0, y: reduced ? 0 : 14, scale: reduced ? 1 : 0.98 },
-        { autoAlpha: 1, y: 0, scale: 1, duration: 0.45, ease: EASE.out, overwrite: 'auto' },
+        { autoAlpha: 0, y: reduced ? 0 : BIO_PANEL.enterRise, scale: reduced ? 1 : BIO_PANEL.enterScale },
+        { autoAlpha: 1, y: 0, scale: 1, duration: BIO_PANEL.enter, ease: EASE.out, overwrite: 'auto' },
       );
     } else {
       gsap.to(panel, {
@@ -93,7 +93,7 @@ export function BioPanel({ target, containerRef, onPointerEnter, onPointerLeave 
         autoAlpha: 1,
         y: 0,
         scale: 1,
-        duration: reduced ? 0 : 0.55,
+        duration: reduced ? 0 : BIO_PANEL.move,
         ease: EASE.out,
         overwrite: 'auto',
       });
@@ -101,8 +101,8 @@ export function BioPanel({ target, containerRef, onPointerEnter, onPointerLeave 
     if (!reduced) {
       gsap.fromTo(
         items,
-        { opacity: 0, y: 8 },
-        { opacity: 1, y: 0, duration: 0.45, stagger: 0.035, ease: EASE.out, delay: 0.05, overwrite: 'auto' },
+        { opacity: 0, y: BIO_PANEL.itemRise },
+        { opacity: 1, y: 0, duration: BIO_PANEL.items, stagger: BIO_PANEL.itemStagger, ease: EASE.out, delay: BIO_PANEL.itemDelay, overwrite: 'auto' },
       );
     }
   }, [target, containerRef]);
@@ -117,7 +117,7 @@ export function BioPanel({ target, containerRef, onPointerEnter, onPointerLeave 
       role="tooltip"
       onPointerEnter={onPointerEnter}
       onPointerLeave={onPointerLeave}
-      className="invisible absolute top-0 left-0 z-30 w-[min(34rem,100%)] origin-top rounded-[4px] bg-[#eef3f5]/95 shadow-[0_30px_70px_-25px_rgba(0,0,0,0.55)] ring-1 ring-black/5 backdrop-blur-md opacity-0 xl:w-[min(36rem,100%)]"
+      className="invisible absolute top-0 left-0 z-30 w-[min(34rem,100%)] origin-top rounded-[4px] bg-mist/95 shadow-panel ring-1 ring-black/5 backdrop-blur-md opacity-0 xl:w-[min(36rem,100%)]"
     >
       <div
         ref={scrollRef}

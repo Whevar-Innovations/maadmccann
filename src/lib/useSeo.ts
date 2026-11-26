@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { siteConfig } from '@/content/static/site';
+import { siteConfig } from '@/lib/site';
 
 export type SeoOptions = {
   /** Page title. Omit on the homepage to use the default. A suffix is added automatically. */

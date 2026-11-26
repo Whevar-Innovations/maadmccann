@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
 import { gsap, ScrollTrigger } from './gsap-setup';
-import { REVEAL } from './tokens';
+import { EASE, REVEAL } from './tokens';
 
 const MOBILE_QUERY = '(max-width: 767px)';
 const subscribeMobile = (cb: () => void) => {
@@ -73,7 +73,7 @@ export function LogoCarousel<T>({
     gsap.set(track, { x: 0 });
     const tl = gsap.timeline({ repeat: -1, delay: REVEAL.carouselHold });
     for (let i = 1; i <= items.length; i += 1) {
-      tl.to(track, { x: -i * slot, duration: REVEAL.carouselStep, ease: 'power3.inOut' });
+      tl.to(track, { x: -i * slot, duration: REVEAL.carouselStep, ease: EASE.softInOut });
       tl.to({}, { duration: REVEAL.carouselHold });
     }
     tl.set(track, { x: 0 });
@@ -196,7 +196,7 @@ export function LogoCarousel<T>({
   return (
     <div
       ref={rootRef}
-      className={`overflow-hidden py-3 ${animated ? '[mask-image:linear-gradient(to_right,transparent,#000_6%,#000_94%,transparent)]' : ''} ${className}`.trim()}
+      className={`overflow-hidden py-3 ${animated ? '[mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)]' : ''} ${className}`.trim()}
     >
       <ul
         ref={trackRef}

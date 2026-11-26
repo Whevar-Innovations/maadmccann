@@ -1,3 +1,5 @@
+import type { WhatWeDoPage } from '../types';
+
 /**
  * What We Do page copy (from design/MAAD McCANN Website-what_we_do.jpg).
  * Section ids double as deep-link anchors used by the footer SERVICES column.
@@ -14,7 +16,7 @@ export const WHAT_WE_DO_IDS = {
   production: 'production',
 } as const;
 
-export const whatWeDo = {
+export const whatWeDo: WhatWeDoPage = {
   seo: {
     title: 'What We Do',
     description:
@@ -30,6 +32,7 @@ export const whatWeDo = {
   },
 
   sbcc: {
+    id: WHAT_WE_DO_IDS.sbcc,
     title: 'SBCC',
     tagline: 'Change Starts With Understanding People.',
     body: 'We combine research, human insight and community participation to create communication that doesn’t just inform people, but helps shift attitudes, behaviours and social norms for meaningful, lasting change.',
@@ -64,6 +67,7 @@ export const whatWeDo = {
   },
 
   digital: {
+    id: WHAT_WE_DO_IDS.digital,
     title: 'Digital',
     tagline: 'Stop The Scroll. Start Something.',
     intro:
@@ -85,12 +89,14 @@ export const whatWeDo = {
   },
 
   accountManagement: {
+    id: WHAT_WE_DO_IDS.accountManagement,
     title: 'Account Management',
     taglineLines: ['Good Work Starts With People', 'Who Get Your Business.'],
     body: 'We get to know your business inside out, then bring the right people, thinking and expertise together to move your brand forward.',
   },
 
   media: {
+    id: WHAT_WE_DO_IDS.media,
     title: 'Media',
     taglineLines: ['Right Message. Right Place.', 'Right Moment.'],
     body: 'We don’t buy media just to be seen. We use data, audience insight and smart planning to find the moments that matter and make every placement count.',
@@ -98,18 +104,21 @@ export const whatWeDo = {
   },
 
   experiential: {
+    id: WHAT_WE_DO_IDS.experiential,
     titleLines: ['Experiential', 'Marketing'],
     taglineLines: ['Some Brands You See.', 'Great Ones You Experience.'],
     body: 'We take brands off the screen and into the real world, creating experiences that bring people closer, get them involved and give them something worth remembering.',
   },
 
   brandStrategy: {
+    id: WHAT_WE_DO_IDS.brandStrategy,
     titleLines: ['Brand Strategy', '& Development'],
     tagline: 'Great Brands Don’t Happen By Accident.',
     body: 'We help brands define what they stand for, understand the people they need to connect with and find a clear, compelling place in the market. From strategy to identity, we build brands designed to stay relevant and grow.',
   },
 
   pr: {
+    id: WHAT_WE_DO_IDS.pr,
     titleLines: ['Public Relations', '& Reputation', 'Management'],
     taglineLines: ['Be Seen. Be Heard.', 'Be Remembered Right.'],
     body: 'We shape stories, build relationships and protect reputations, helping brands show up in the conversations that matter and be remembered for the right reasons.',
@@ -117,6 +126,7 @@ export const whatWeDo = {
   },
 
   creative: {
+    id: WHAT_WE_DO_IDS.creative,
     title: 'Creative',
     tagline: 'The Box Was Never The Point. The Idea Is.',
     body: 'From the first scribble to the final execution, we turn strategy and human insight into ideas people actually want to look at, listen to and talk about.',
@@ -129,9 +139,10 @@ export const whatWeDo = {
   },
 
   production: {
+    id: WHAT_WE_DO_IDS.production,
     title: 'Production',
     tagline: 'From “What If?” To “Watch This.”',
     body: 'We take ideas from “imagine if…” to “there it is,” bringing together the right craft, people and production expertise to turn creative thinking into beautifully executed work across every format.',
     circles: [['Film & TV', 'Radio', 'Photography'], ['Print', 'OOH'], ['Digital & Content Production']],
   },
-} as const;
+};

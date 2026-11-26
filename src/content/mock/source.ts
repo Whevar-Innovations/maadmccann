@@ -1,6 +1,9 @@
-import type { HomePage, SiteSettings } from '../types';
+import type { CaseStudyPage, HomePage, SiteSettings, TeamPage, WhatWeDoPage, WorkPage } from '../types';
 import { home } from '../static/home';
 import { settings } from '../static/settings';
+import { team } from '../static/team';
+import { whatWeDo } from '../static/whatWeDo';
+import { caseStudies, work } from '../static/work';
 import { mapAward } from '../sanity/mappers';
 import { mockAwards } from './data/awards';
 import { mockImageUrl } from './imageUrl';
@@ -20,4 +23,25 @@ export async function getHomePage(): Promise<HomePage> {
 export async function getSiteSettings(): Promise<SiteSettings> {
   await Promise.resolve();
   return structuredClone(settings);
+}
+
+export async function getWhatWeDoPage(): Promise<WhatWeDoPage> {
+  await Promise.resolve();
+  return structuredClone(whatWeDo);
+}
+
+export async function getTeamPage(): Promise<TeamPage> {
+  await Promise.resolve();
+  return structuredClone(team);
+}
+
+export async function getWorkPage(): Promise<WorkPage> {
+  await Promise.resolve();
+  return structuredClone(work);
+}
+
+export async function getCaseStudy(slug: string): Promise<CaseStudyPage | undefined> {
+  await Promise.resolve();
+  const found = caseStudies.find((c) => c.slug === slug);
+  return found ? structuredClone(found) : undefined;
 }

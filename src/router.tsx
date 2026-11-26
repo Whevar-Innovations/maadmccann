@@ -5,6 +5,8 @@ import { HomeRoute, homeLoader } from '@/routes/home';
 import { RouteError } from '@/routes/RouteError';
 import { TheMaadOnesRoute, theMaadOnesLoader } from '@/routes/the-maad-ones';
 import { WhatWeDoRoute, whatWeDoLoader } from '@/routes/what-we-do';
+import { WorkRoute, workLoader } from '@/routes/work';
+import { WorkDetailRoute, workDetailLoader } from '@/routes/work-detail';
 
 export const router = createBrowserRouter([
   {
@@ -32,6 +34,19 @@ export const router = createBrowserRouter([
         path: 'the-maad-ones',
         loader: theMaadOnesLoader,
         Component: TheMaadOnesRoute,
+      },
+      {
+        id: 'work',
+        path: 'work',
+        loader: workLoader,
+        Component: WorkRoute,
+      },
+      {
+        id: 'work-detail',
+        path: 'work/:slug',
+        loader: workDetailLoader,
+        Component: WorkDetailRoute,
+        handle: { headerTone: 'light' },
       },
     ],
   },

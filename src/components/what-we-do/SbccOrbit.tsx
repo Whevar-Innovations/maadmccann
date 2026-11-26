@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { gsap, MEDIA_QUERIES, ScrollTrigger, useGSAP } from '@/motion/gsap-setup';
-import { EASE } from '@/motion/tokens';
+import { EASE, SBCC_ORBIT, SCROLL } from '@/motion/tokens';
 import crowdSrc from '@/assets/svg/services/crowd.svg';
 import tvSrc from '@/assets/svg/services/tv.svg';
 import presenterSrc from '@/assets/svg/services/presenter.svg';
@@ -50,33 +50,33 @@ export function SbccOrbit() {
       mm.add(MEDIA_QUERIES.motionOk, () => {
         const tl = gsap.timeline({
           defaults: { ease: EASE.out },
-          scrollTrigger: { trigger: root, start: 'top 85%', once: true },
+          scrollTrigger: { trigger: root, start: SCROLL.start, once: true },
         });
 
         if (ring) {
-          tl.fromTo(ring, { strokeDasharray: '1 1', strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.6, ease: EASE.SineInOut, autoRound: false }, 0)
+          tl.fromTo(ring, { strokeDasharray: '1 1', strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: SBCC_ORBIT.ringDraw, ease: EASE.SineInOut, autoRound: false }, 0)
             // drop the dash once drawn so no hairline seam is left at 12 o'clock
-            .set(ring, { strokeDasharray: 'none' }, 1.6);
+            .set(ring, { strokeDasharray: 'none' }, SBCC_ORBIT.ringDraw);
         }
         if (center) {
-          tl.fromTo(center, { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.9, ease: 'back.out(1.7)' }, 0.2);
+          tl.fromTo(center, { scale: SBCC_ORBIT.centerScaleFrom, opacity: 0 }, { scale: 1, opacity: 1, duration: SBCC_ORBIT.centerIn, ease: EASE.popOrbit }, SBCC_ORBIT.centerAt);
         }
         tl.fromTo(
           icons,
           {
             opacity: 0,
-            scale: 0.3,
+            scale: SBCC_ORBIT.iconScaleFrom,
             // start at the centre: offset each icon back towards the middle
             x: (i: number) => -Math.cos(((CHANNELS[i]?.angle ?? 0) * Math.PI) / 180) * root.offsetWidth * (ORBIT_RADIUS / 100),
             y: (i: number) => -Math.sin(((CHANNELS[i]?.angle ?? 0) * Math.PI) / 180) * root.offsetWidth * (ORBIT_RADIUS / 100),
           },
-          { opacity: 1, scale: 1, x: 0, y: 0, duration: 1.1, stagger: 0.07 },
-          0.45,
+          { opacity: 1, scale: 1, x: 0, y: 0, duration: SBCC_ORBIT.iconsIn, stagger: SBCC_ORBIT.iconsStagger },
+          SBCC_ORBIT.iconsAt,
         );
 
         // Once landed, the channel ring orbits slowly around the community; each icon
         // counter-rotates at the same rate so it stays upright.
-        const spin = gsap.timeline({ paused: true, repeat: -1, defaults: { ease: 'none' } });
+        const spin = gsap.timeline({ paused: true, repeat: -1, defaults: { ease: EASE.linear } });
         if (orbit) {
           spin
             .to(orbit, { rotation: 360, duration: ORBIT_SECONDS }, 0)
@@ -119,7 +119,7 @@ export function SbccOrbit() {
           cy="50"
           r="49.6"
           fill="none"
-          stroke="#ffffff"
+          className="stroke-paper"
           strokeWidth="0.35"
           pathLength={1}
           transform="rotate(-90 50 50)"

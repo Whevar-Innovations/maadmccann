@@ -1,6 +1,6 @@
 import { useRef, type RefObject } from 'react';
 import { gsap, MEDIA_QUERIES, useGSAP } from './gsap-setup';
-import { DUR, EASE, REVEAL } from './tokens';
+import { DUR, EASE, FALL_IN, REVEAL } from './tokens';
 
 export type UseFallInOptions = {
   /** Extra delay so tiles entering together land in reading order. */
@@ -44,13 +44,13 @@ export function useFallIn<T extends HTMLElement>(
             y: isDesktop ? REVEAL.fallY : REVEAL.fallYMobile,
             scale: REVEAL.fallScale,
             opacity: 0,
-            transformOrigin: '50% 60%',
+            transformOrigin: FALL_IN.origin,
           });
-          gsap.set(captions, { y: 18, opacity: 0 });
+          gsap.set(captions, { y: FALL_IN.captionRise, opacity: 0 });
 
           const tl = gsap.timeline({
             delay,
-            scrollTrigger: { trigger: el, start: 'top 95%', once: true },
+            scrollTrigger: { trigger: el, start: FALL_IN.start, once: true },
             onComplete: () => {
               landedRef.current = true;
               gsap.set(el, { clearProps: 'transform,opacity' });
@@ -63,14 +63,14 @@ export function useFallIn<T extends HTMLElement>(
             ease: EASE.out,
           }).to(
             el,
-            { opacity: 1, duration: REVEAL.fallDuration * 0.45, ease: EASE.soft },
+            { opacity: 1, duration: REVEAL.fallDuration * FALL_IN.fadeFactor, ease: EASE.soft },
             0,
           );
           if (captions.length) {
             tl.to(
               captions,
-              { y: 0, opacity: 1, duration: DUR.text * 0.7, ease: EASE.out, stagger: 0.12 },
-              REVEAL.fallCaptionDelay + 0.4,
+              { y: 0, opacity: 1, duration: DUR.text * FALL_IN.durationFactor, ease: EASE.out, stagger: FALL_IN.stagger },
+              REVEAL.fallCaptionDelay + FALL_IN.captionLag,
             );
           }
         },

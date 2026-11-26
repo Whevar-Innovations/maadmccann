@@ -66,6 +66,11 @@ export function RevealText({
           splitInstance = SplitText.create(containerRef.current, {
             type: 'lines',
             mask: 'lines',
+            // Keep no-break spaces in copy ("7\u00a0Days") so those words never split across lines:
+            // the default reduceWhiteSpace turns them into plain spaces, and the default delimiter
+            // splits on them. CSS still collapses ordinary whitespace.
+            reduceWhiteSpace: false,
+            wordDelimiter: ' ',
           });
 
           if (!splitInstance.lines || splitInstance.lines.length === 0) return;

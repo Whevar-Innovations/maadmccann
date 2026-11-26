@@ -1,7 +1,8 @@
 import { useRef, type CSSProperties } from 'react';
-import { whatWeDo } from '@/content/static/whatWeDo';
-import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
+import type { WhatWeDoPage } from '@/content/types';
+import { gsap } from '@/motion/gsap-setup';
 import { useLoaderState } from '@/motion/LoaderProvider';
+import { useMotifBloom } from '@/motion/useMotifBloom';
 import { DUR, EASE, MOTIF_LAB, STAGGER } from '@/motion/tokens';
 import {
   HEADER_MOTIF_CENTERS,
@@ -21,143 +22,82 @@ import {
  * (after the first-visit loader) instead of on scroll-enter, and the lines are light grey on
  * charcoal instead of dark on crimson. Everything is clipped to the banner.
  */
-export function WhatWeDoHero() {
+export type WhatWeDoHeroProps = { hero: WhatWeDoPage['hero'] };
+
+export function WhatWeDoHero({ hero }: WhatWeDoHeroProps) {
   const sectionRef = useRef<HTMLElement | null>(null);
   const baseSvgRef = useRef<SVGSVGElement | null>(null);
   const brightSvgRef = useRef<SVGSVGElement | null>(null);
   const { isHeroReady, skippedLoader } = useLoaderState();
-  const { hero } = whatWeDo;
   // First visit: wait for the loader to clear. In-site navigation: play as soon as the page enters.
   const canPlay = isHeroReady;
 
-  useGSAP(
-    () => {
+  useMotifBloom({
+    sectionRef,
+    baseRef: baseSvgRef,
+    brightRef: brightSvgRef,
+    patternSelector: '#header-motif-pattern',
+    centers: HEADER_MOTIF_CENTERS,
+    width: HEADER_MOTIF_W,
+    height: HEADER_MOTIF_H,
+    canPlay,
+    skippedLoader,
+    onReduced: () => {
       const section = sectionRef.current;
-      const base = baseSvgRef.current;
-      const bright = brightSvgRef.current;
-      if (!section || !base || !bright || !canPlay) return;
-
-      const lines = section.querySelectorAll<HTMLElement>('[data-hero-line]');
-      const body = section.querySelectorAll<HTMLElement>('[data-hero-body]');
-      const paths = Array.from(base.querySelectorAll<SVGPathElement>('#header-motif-pattern path'));
-
-      // Radial distance from the focal point [W/2, H*0.55], as the footer computes it, but from
-      // precomputed centres: no getBBox() layout reads while the page mounts.
-      const focalX = HEADER_MOTIF_W / 2;
-      const focalY = HEADER_MOTIF_H * 0.55;
-      const maxDist = Math.hypot(HEADER_MOTIF_W, HEADER_MOTIF_H) / 2;
-      const centerOf = (i: number) => HEADER_MOTIF_CENTERS[i] ?? [focalX, focalY];
-      const distOf = (i: number) => {
-        const [cx, cy] = centerOf(i);
-        return Math.hypot(cx - focalX, cy - focalY) / maxDist;
-      };
-
-      const mm = gsap.matchMedia();
-
-      mm.add(MEDIA_QUERIES.reducedMotion, () => {
-        gsap.set(base, { opacity: MOTIF_LAB.restOpacity });
-        gsap.fromTo([lines, body], { opacity: 0 }, { opacity: 1, duration: DUR.ui });
-      });
-
-      mm.add(
-        { motionOk: MEDIA_QUERIES.motionOk, isMobile: MEDIA_QUERIES.mobile },
-        (context) => {
-          const { motionOk, isMobile } = context.conditions ?? {};
-          if (!motionOk) return;
-
-          // --- Bloom (identical to FooterMotifStage) ---
-          const st = gsap.timeline({ delay: skippedLoader ? 0.05 : 0 });
-          st.set(base, { opacity: MOTIF_LAB.bloomPeakOpacity }, 0);
-          st.from(
-            paths,
-            {
-              opacity: 0,
-              scale: 0.9,
-              // Same visual as transformOrigin '50% 50%', without GSAP measuring each path.
-              svgOrigin: (i: number) => centerOf(i).join(' '),
-              duration: DUR.bloomPath,
-              ease: EASE.out,
-              delay: (i: number) => distOf(i) * MOTIF_LAB.bloomDistanceDelayFactor,
-            },
-            0,
-          );
-          st.to(
-            base,
-            { opacity: MOTIF_LAB.restOpacity, duration: DUR.bloomSettle, ease: EASE.SineInOut },
-            MOTIF_LAB.bloomSettleDelay,
-          );
-
-          // --- Headline: masked line rise, body fades up ---
-          st.fromTo(
-            lines,
-            { yPercent: 105 },
-            { yPercent: 0, duration: DUR.hero, stagger: STAGGER.lines, ease: EASE.out },
-            0.15,
-          ).fromTo(
-            body,
-            { y: isMobile ? 12 : 24, opacity: 0 },
-            { y: 0, opacity: 1, duration: DUR.text, stagger: STAGGER.lines, ease: EASE.out },
-            0.5,
-          );
-
-          // --- Pointer spotlight (identical to FooterMotifStage) ---
-          const mx = gsap.quickTo(bright, '--x', { duration: DUR.spotlight, ease: EASE.soft });
-          const my = gsap.quickTo(bright, '--y', { duration: DUR.spotlight, ease: EASE.soft });
-
-          const onPointerMove = (e: PointerEvent) => {
-            const r = section.getBoundingClientRect();
-            mx(e.clientX - r.left);
-            my(e.clientY - r.top);
-          };
-          const onPointerEnter = (e: PointerEvent) => {
-            const r = section.getBoundingClientRect();
-            gsap.set(bright, { '--x': e.clientX - r.left, '--y': e.clientY - r.top });
-            gsap.to(bright, { opacity: MOTIF_LAB.spotOpacity, duration: DUR.ui, ease: EASE.soft });
-          };
-          const onPointerLeave = () => {
-            gsap.to(bright, { opacity: 0, duration: DUR.ui, ease: EASE.soft });
-          };
-
-          section.addEventListener('pointermove', onPointerMove);
-          section.addEventListener('pointerenter', onPointerEnter);
-          section.addEventListener('pointerleave', onPointerLeave);
-          return () => {
-            section.removeEventListener('pointermove', onPointerMove);
-            section.removeEventListener('pointerenter', onPointerEnter);
-            section.removeEventListener('pointerleave', onPointerLeave);
-          };
-        },
+      if (!section) return;
+      gsap.fromTo(
+        section.querySelectorAll('[data-hero-line], [data-hero-body]'),
+        { opacity: 0 },
+        { opacity: 1, duration: DUR.ui },
       );
     },
-    { scope: sectionRef, dependencies: [canPlay, skippedLoader] },
-  );
+    // Headline: masked line rise, body fades up.
+    onTimeline: (tl, { isMobile }) => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const lines = section.querySelectorAll<HTMLElement>('[data-hero-line]');
+      const body = section.querySelectorAll<HTMLElement>('[data-hero-body]');
+      tl.fromTo(
+        lines,
+        { yPercent: 105 },
+        { yPercent: 0, duration: DUR.hero, stagger: STAGGER.lines, ease: EASE.out },
+        0.15,
+      ).fromTo(
+        body,
+        { y: isMobile ? 12 : 24, opacity: 0 },
+        { y: 0, opacity: 1, duration: DUR.text, stagger: STAGGER.lines, ease: EASE.out },
+        0.5,
+      );
+    },
+  });
 
   const brightMaskStyle: CSSProperties = {
     ['--x' as string]: 400,
     ['--y' as string]: 260,
-    WebkitMaskImage: `radial-gradient(circle ${MOTIF_LAB.spotRadiusPx}px at calc(var(--x, 400) * 1px) calc(var(--y, 260) * 1px), #000, transparent)`,
-    maskImage: `radial-gradient(circle ${MOTIF_LAB.spotRadiusPx}px at calc(var(--x, 400) * 1px) calc(var(--y, 260) * 1px), #000, transparent)`,
+    WebkitMaskImage: `radial-gradient(circle ${MOTIF_LAB.spotRadiusPx}px at calc(var(--x, 400) * 1px) calc(var(--y, 260) * 1px), black, transparent)`,
+    maskImage: `radial-gradient(circle ${MOTIF_LAB.spotRadiusPx}px at calc(var(--x, 400) * 1px) calc(var(--y, 260) * 1px), black, transparent)`,
   };
 
   return (
     <section
       ref={sectionRef}
       aria-labelledby="wwd-hero-heading"
-      className="relative isolate flex min-h-[34rem] items-center overflow-hidden bg-[#121312] pt-28 pb-20 text-paper sm:min-h-[38rem] lg:min-h-[42rem] lg:pt-32 [@media(orientation:landscape)_and_(max-height:540px)]:min-h-svh [@media(orientation:landscape)_and_(max-height:540px)]:pt-24 [@media(orientation:landscape)_and_(max-height:540px)]:pb-10"
+      className="relative isolate flex min-h-[34rem] items-center overflow-hidden bg-wwd-ink pt-28 pb-20 text-paper sm:min-h-[38rem] lg:min-h-[42rem] lg:pt-32 [@media(orientation:landscape)_and_(max-height:540px)]:min-h-svh [@media(orientation:landscape)_and_(max-height:540px)]:pt-24 [@media(orientation:landscape)_and_(max-height:540px)]:pb-10"
     >
       {/* Soft vignette like the design: lighter charcoal centre, darker edges */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_60%_35%,#2a2b2a_0%,#161716_55%,#0b0c0b_100%)]"
+        className="pointer-events-none absolute inset-0 bg-wwd-glow"
       />
 
       {/* Base motif: hidden until the bloom starts (no flash under the loader) */}
       <svg
         ref={baseSvgRef}
+        data-page-parallax
         viewBox={HEADER_MOTIF_VIEWBOX}
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 h-full w-full text-[#a3a5a4] opacity-0"
+        className="pointer-events-none absolute inset-0 h-full w-full text-ash opacity-0"
       >
         <g id="header-motif-pattern" fill="currentColor" fillRule="evenodd">
           {HEADER_MOTIF_PATHS.map((d, idx) => (
@@ -169,6 +109,7 @@ export function WhatWeDoHero() {
       {/* Spotlight copy: masked 240px radial glow under the cursor */}
       <svg
         ref={brightSvgRef}
+        data-page-parallax
         viewBox={HEADER_MOTIF_VIEWBOX}
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
