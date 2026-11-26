@@ -9,9 +9,9 @@ export type PartnerLogoTileProps = {
 };
 
 /** Logos sit in fixed-height boxes so every shape (wordmark, badge, square) reads at a similar weight. */
-const LOGO_BOX = 'flex h-12 w-full items-center justify-center px-1 md:h-14 lg:h-16';
+const LOGO_BOX = 'flex h-12 w-full items-center justify-center px-1 md:h-14 lg:h-16 2xl:h-[clamp(4rem,3.3333vw,5.3333rem)]';
 const LOGO_IMG = 'h-auto max-h-full w-auto max-w-full object-contain';
-const SIZES = '(min-width: 768px) 128px, 30vw';
+const SIZES = '(min-width: 1920px) 9vw, (min-width: 768px) 128px, 30vw';
 /**
  * Hover lift shared by every logo (fine pointers only, so taps don't leave a logo stuck up).
  * Linked logos also lift on keyboard focus. Transform only; off under reduced motion.

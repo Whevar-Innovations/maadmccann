@@ -79,7 +79,7 @@ export function ProjectGrid({ page }: ProjectGridProps) {
           onChange={(id) => update({ category: id })}
         />
 
-        <div className="mx-auto mt-12 max-w-[76.5rem] md:mt-16">
+        <div className="mx-auto mt-12 max-w-grid md:mt-16">
           {visible.length > 0 ? (
             <>
               <p className="mb-4 text-small text-ink/60 tabular-nums">

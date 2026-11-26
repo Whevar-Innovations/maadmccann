@@ -328,16 +328,16 @@ Values are approximate, sampled from the design. **Confirm with the designer or 
 
 **Rule:** components never contain hex, `rgb()` or `hsl()` literals (enforced by `check:rules`). A new colour is added here and in `@theme` first.
 
-**Typography is supplied.** The PDF is 1920 units wide, so the sizes below read as px at a 1920px viewport. Display type is uppercase for the hero headline, ghost text and OUR IMPACT, with line-height about 0.95 and letter-spacing about -0.02em (check against the design). Body line-height 1.5. Container: max-width 1440px, side padding `clamp(20px, 5vw, 72px)`. Breakpoints: 640 / 1024 / 1440.
+**Typography is supplied.** The PDF is 1920 units wide, so the sizes below read as px at a 1920px viewport. Display type is uppercase for the hero headline, ghost text and OUR IMPACT, with line-height about 0.95 and letter-spacing about -0.02em (check against the design). Body line-height 1.5. Container: max-width 1440px, side padding `clamp(20px, 5vw, 72px)`. Breakpoints: 640 / 1024 / 1440 / 1920 (`2xl`).
 
 | Style | Font | Design size | Fluid size | Used for |
 | --- | --- | --- | --- | --- |
-| Display Bold | Haas Grot Disp R 75 Bold | 105.6px | `clamp(2.75rem, 5.5vw, 6.6rem)` | Hero headline |
-| Display Bold | Haas Grot Disp R 75 Bold | 204.5px | `clamp(4.5rem, 10.65vw, 12.8rem)` | Ghost text TRUTH WELL TOLD |
-| Display Bold | Haas Grot Disp R 75 Bold | 60px | `clamp(2rem, 3.125vw, 3.75rem)` | Showreel heading |
-| Display Black | Haas Grot Disp R 95 Black | 45.9px | `clamp(1.75rem, 2.4vw, 2.9rem)` | OUR IMPACT |
-| Display Black | Haas Grot Disp R 95 Black | 81.8px | `clamp(3rem, 4.26vw, 5.1rem)` | Stat numbers |
-| Display Medium | Haas Grot Disp R 65 Medium | 62px | `clamp(1.75rem, 3.23vw, 3.9rem)` | CTA band headline (sentence case) |
+| Display Bold | Haas Grot Disp R 75 Bold | 105.6px | `clamp(2.75rem, 5.5vw, 8.8rem)` | Hero headline |
+| Display Bold | Haas Grot Disp R 75 Bold | 204.5px | `clamp(4.5rem, 10.65vw, 17.04rem)` | Ghost text TRUTH WELL TOLD |
+| Display Bold | Haas Grot Disp R 75 Bold | 60px | `clamp(2rem, 3.125vw, 5rem)` | Showreel heading |
+| Display Black | Haas Grot Disp R 95 Black | 45.9px | `clamp(1.75rem, 2.4vw, 3.84rem)` | OUR IMPACT |
+| Display Black | Haas Grot Disp R 95 Black | 81.8px | `clamp(3rem, min(4.26vw, max(5.1rem, 4.25vw)), 6.8rem)` | Stat numbers |
+| Display Medium | Haas Grot Disp R 65 Medium | 62px | `clamp(1.75rem, 3.23vw, 5.168rem)` | CTA band headline (sentence case) |
 | Medium | Inter 18pt Medium | 18px, 15px | rule below | Hero subheading and Impact paragraph; stat descriptions |
 | Bold | Inter 18pt Bold | 26px, 23.5px, 19.2px | rule below | Footer Let’s Talk; stat labels; footer column titles |
 | SemiBold | Inter 18pt SemiBold | 30px, 20px, 17.3px, 14.1px | rule below | Work tile labels; showreel subheading; LET’S CONNECT; contact details |
@@ -345,7 +345,17 @@ Values are approximate, sampled from the design. **Confirm with the designer or 
 | Accent | Futura BT Medium | 16.7px | rule below | VIEW OUR WORK link only |
 | Fallback glyphs | Helvetica Neue Bold | 81.8px | same as stat numbers | The + and % in the stats only |
 
-Fluid rule for the Inter, Futura and Helvetica sizes: `clamp(0.8 × size, size ÷ 19.2 vw, 1.15 × size)`.
+Fluid rule for the Inter, Futura and Helvetica sizes: `clamp(0.8 × size, size ÷ 19.2 vw, 1.333 × size)`.
+
+**Large screens (above 1920).** The designs stop at 1920, so above that the site scales up as if the
+1920 artboard were zoomed: 2560 looks like the 1920 design at 1.333×, and growth stops at 2560.
+Every type size and layout width follows `clamp(size, size ÷ 19.2 vw, 1.333 × size)`, so nothing
+changes at or below 1920. Layout widths are `--container-*` tokens in `@theme` (`max-w-site`,
+`max-w-content`, `max-w-column`, …), one per design width; `container-site` uses `--container-site`
+(1440 → 1920). Where a size's old cap sat below its vw value at 1920, it is held to the 1920 value
+with `clamp(min, min(vw, max(cap, cap ÷ 19.2 vw)), 1.333 × cap)`. Full-bleed frames (showreel, work
+grid) stay full-bleed. Rasters that fill the viewport need a source at least 2560 wide. The ceilings
+are pending designer sign-off.
 
 **Licensing before launch**
 
@@ -502,7 +512,7 @@ Destination-led, no overlay. On click, `motion/pageSnapshot.ts` freezes a still 
 
 1. **Scaffold.** Vite, TypeScript, Tailwind, React Router data router, path alias `@`, tokens, fonts, `RootLayout`.
 2. **Content layer.** `types.ts`, `api.ts`, static content, `<Img>`, loaders. A page that renders raw static data through the loader.
-3. **Static layout, no motion.** All eight sections, responsive, matching the design at 1440, 1024, 768 and 390px.
+3. **Static layout, no motion.** All eight sections, responsive, matching the design at 1440, 1024, 768 and 390px, and scaling cleanly at 1920 and 2560 (§6 large screens).
 4. **Motion foundation.** `gsap-setup`, tokens, Lenis, `LoaderProvider` (placeholder logo) and gating.
 5. **Hero.** Timeline, trophies, glow, shine, parallax.
 6. **Reveal primitives and section application**, hovers, counters, header behaviour.

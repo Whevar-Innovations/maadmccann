@@ -398,13 +398,13 @@ export function Hero({ hero }: HeroProps) {
       </svg>
 
       {/* Main hero content grid */}
-      <div className="relative z-20 mx-auto mt-auto grid w-full max-w-[1680px] items-center gap-10 px-6 pt-6 pb-4 sm:px-12 md:grid-cols-12 lg:gap-4 lg:pt-10 lg:pb-6 lg:pl-[9.5%] lg:pr-[3.5%]">
+      <div className="relative z-20 mx-auto mt-auto grid w-full max-w-hero items-center gap-10 px-6 pt-6 pb-4 sm:px-12 md:grid-cols-12 lg:gap-4 lg:pt-10 lg:pb-6 lg:pl-[9.5%] lg:pr-[3.5%]">
         {/* Left column: Headline, subheading, VIEW OUR WORK link */}
         <div className="space-y-6 md:col-span-6 lg:col-span-5 lg:space-y-7">
           <h1
             id="hero-heading"
             data-hero-headline
-            className="font-display text-[clamp(2.5rem,4.9vw,6.15rem)] leading-[0.94] font-bold tracking-[-0.025em] text-paper uppercase"
+            className="font-display text-[clamp(2.5rem,4.9vw,7.84rem)] leading-[0.94] font-bold tracking-[-0.025em] text-paper uppercase"
           >
             {hero.headlineLines.map((line) => (
               <span key={line} className="block overflow-y-clip py-0.5">
@@ -420,7 +420,7 @@ export function Hero({ hero }: HeroProps) {
 
           <p
             data-hero-subheading
-            className="max-w-[32rem] text-body font-medium text-paper/85 will-change-transform"
+            className="max-w-[clamp(32rem,26.6667vw,42.6667rem)] text-body font-medium text-paper/85 will-change-transform"
           >
             {hero.subheading}
           </p>
@@ -469,7 +469,7 @@ export function Hero({ hero }: HeroProps) {
       >
         <span
           data-hero-ghost
-          className="mx-auto block w-full max-w-[1780px] text-center font-display text-[clamp(2.8rem,9.5vw,11.6rem)] leading-[0.84] font-bold tracking-[-0.025em] whitespace-nowrap text-crimson-975/50 uppercase mix-blend-multiply will-change-transform"
+          className="mx-auto block w-full max-w-ghost text-center font-display text-[clamp(2.8rem,9.5vw,15.2rem)] leading-[0.84] font-bold tracking-[-0.025em] whitespace-nowrap text-crimson-975/50 uppercase mix-blend-multiply will-change-transform"
         >
           {hero.ghostText}
         </span>

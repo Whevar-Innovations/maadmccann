@@ -14,7 +14,7 @@ const CREATIVE_ICONS: Record<CreativeIcon, string> = {
   animation: animationSrc,
 };
 
-const SUBHEAD = 'text-[clamp(1.05rem,1.2vw,1.45rem)] leading-[1.2] font-semibold';
+const SUBHEAD = 'text-[clamp(1.05rem,1.2vw,1.92rem)] leading-[1.2] font-semibold';
 
 /**
  * What We Do service cards (design: MAAD McCANN Website-what_we_do.jpg).
@@ -33,7 +33,7 @@ export function Services({ page }: ServicesProps) {
 
   return (
     <div className="bg-paper py-20 sm:py-28 lg:py-40">
-      <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-3 px-4 sm:gap-3.5 sm:px-8">
+      <div className="mx-auto flex w-full max-w-column flex-col gap-3 px-4 sm:gap-3.5 sm:px-8">
         {/* ---------------- SBCC ---------------- */}
         <ServiceCard id={sbcc.id} tone="dark" className="p-6 sm:p-10 lg:px-14 lg:py-14">
           <div className="grid gap-x-16 gap-y-10 lg:grid-cols-2">
@@ -46,7 +46,7 @@ export function Services({ page }: ServicesProps) {
                   <Body className="mt-3 max-w-[60ch] lg:max-w-[48ch]">{sbcc.body}</Body>
                   <ul
                     data-reveal
-                    className="mt-5 list-disc pl-5 text-[clamp(0.875rem,0.85vw,1.05rem)] leading-[1.6] font-semibold marker:text-paper sm:grid sm:grid-flow-col sm:grid-cols-[auto_minmax(0,1fr)] sm:grid-rows-4 sm:gap-x-10 md:grid-flow-row md:grid-cols-1 md:grid-rows-none lg:grid-flow-col lg:grid-cols-[auto_minmax(0,1fr)] lg:grid-rows-4"
+                    className="mt-5 list-disc pl-5 text-[clamp(0.875rem,0.85vw,1.36rem)] leading-[1.6] font-semibold marker:text-paper sm:grid sm:grid-flow-col sm:grid-cols-[auto_minmax(0,1fr)] sm:grid-rows-4 sm:gap-x-10 md:grid-flow-row md:grid-cols-1 md:grid-rows-none lg:grid-flow-col lg:grid-cols-[auto_minmax(0,1fr)] lg:grid-rows-4"
                   >
                     {/* Items wrap inside their column instead of spilling into the next one. */}
                     {sbcc.bullets.map((b) => (
@@ -182,7 +182,7 @@ export function Services({ page }: ServicesProps) {
             <h2
               id={`${brandStrategy.id}-title`}
               data-reveal
-              className="font-display text-[clamp(2rem,3.7vw,3.75rem)] leading-[0.98] font-black tracking-[-0.015em] uppercase"
+              className="font-display text-[clamp(2rem,min(3.7vw,max(3.75rem,3.125vw)),5rem)] leading-[0.98] font-black tracking-[-0.015em] uppercase"
             >
               {brandStrategy.titleLines.map((l) => (
                 <span key={l} className="block">
@@ -204,7 +204,7 @@ export function Services({ page }: ServicesProps) {
             <Body className="mt-3">{pr.body}</Body>
             <ul
               data-reveal
-              className="mt-6 list-disc pl-5 text-[clamp(0.875rem,0.85vw,1.05rem)] leading-[1.6] font-semibold marker:text-paper"
+              className="mt-6 list-disc pl-5 text-[clamp(0.875rem,0.85vw,1.36rem)] leading-[1.6] font-semibold marker:text-paper"
             >
               {pr.bullets.map((b) => (
                 <li key={b}>{b}</li>
@@ -237,7 +237,7 @@ export function Services({ page }: ServicesProps) {
                       className="h-auto w-[52%]"
                     />
                   </RingCircle>
-                  <span className="text-[clamp(0.85rem,0.95vw,1.05rem)] leading-[1.15] font-semibold">
+                  <span className="text-[clamp(0.85rem,min(0.95vw,max(1.05rem,0.875vw)),1.4rem)] leading-[1.15] font-semibold">
                     {tile.labelLines.map((l) => (
                       <span key={l} className="block">
                         {l}

@@ -55,11 +55,11 @@ export function TeamIntro({ intro }: TeamIntroProps) {
     <section
       ref={ref}
       aria-labelledby="team-intro-heading"
-      className="mx-auto w-full max-w-[1240px] px-5 pt-16 pb-4 text-center sm:px-10 sm:pt-24 lg:pt-28"
+      className="mx-auto w-full max-w-column px-5 pt-16 pb-4 text-center sm:px-10 sm:pt-24 lg:pt-28"
     >
       <h1
         id="team-intro-heading"
-        className="font-display text-[clamp(1.65rem,2.9vw,3.4rem)] leading-[1.08] font-bold tracking-[-0.025em]"
+        className="font-display text-[clamp(1.65rem,min(2.9vw,max(3.4rem,2.8333vw)),4.5333rem)] leading-[1.08] font-bold tracking-[-0.025em]"
       >
         <span className="block overflow-hidden pb-[0.06em]">
           <span data-intro-line className="block text-balance text-impact-red will-change-transform">
@@ -74,7 +74,7 @@ export function TeamIntro({ intro }: TeamIntroProps) {
       </h1>
       <p
         data-intro-body
-        className="mx-auto mt-5 max-w-[60ch] text-[clamp(0.9rem,0.95vw,1.15rem)] leading-[1.55] font-medium text-ink/85 sm:mt-6"
+        className="mx-auto mt-5 max-w-[60ch] text-[clamp(0.9rem,0.95vw,1.52rem)] leading-[1.55] font-medium text-ink/85 sm:mt-6"
       >
         {intro.body}
       </p>

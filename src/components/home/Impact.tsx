@@ -43,7 +43,7 @@ export function Impact({ impact }: ImpactProps) {
       className="bg-paper py-24 text-ink lg:py-32"
     >
       <div className="container-site">
-        <div className="mx-auto max-w-7xl">
+        <div className="mx-auto max-w-content">
           {/* Top 2 columns: OUR IMPACT left, paragraph right */}
           <div className="grid items-start gap-8 lg:grid-cols-12 lg:gap-10">
             <div className="lg:col-span-3">

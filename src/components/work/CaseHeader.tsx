@@ -15,7 +15,7 @@ export function CaseHeader({ clientLabel, client, title }: CaseHeaderProps) {
 
   return (
     <header ref={ref} className="container-site pt-32 pb-10 md:pt-40 md:pb-16 lg:pt-56 lg:pb-24">
-      <div className="mx-auto grid max-w-5xl gap-4 md:grid-cols-[13rem_1fr] md:gap-8">
+      <div className="mx-auto grid max-w-case gap-4 md:grid-cols-[13rem_1fr] md:gap-8">
         <p data-case-enter className="text-case-client text-ink">
           <span className="block font-semibold">{clientLabel}</span>
           <span className="block">{client}</span>

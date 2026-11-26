@@ -145,19 +145,19 @@ export function SectorTable({ sectors, filterLabel, allLabel, labels }: SectorTa
       </p>
 
       {/* Keyed by the filter: a new selection remounts the rows so their entrance replays. */}
-      <div key={selected?.id ?? 'all'} className="mx-auto mt-10 max-w-7xl border-b border-ink md:mt-14 md:border-x">
+      <div key={selected?.id ?? 'all'} className="mx-auto mt-10 max-w-content border-b border-ink md:mt-14 md:border-x">
         {visible.map((sector) => (
           <section
             key={sector.id}
             data-sector
             aria-labelledby={`sector-${sector.id}`}
-            className="relative md:grid md:grid-cols-[11rem_1fr] lg:grid-cols-[15rem_1fr]"
+            className="relative md:grid md:grid-cols-[11rem_1fr] lg:grid-cols-[clamp(15rem,12.5vw,20rem)_1fr]"
           >
             <span data-rule-top aria-hidden="true" className="absolute inset-x-0 top-0 h-px origin-left bg-ink" />
             <span
               data-rule-side
               aria-hidden="true"
-              className="absolute inset-y-0 left-[11rem] hidden w-px origin-top bg-ink md:block lg:left-[15rem]"
+              className="absolute inset-y-0 left-[11rem] hidden w-px origin-top bg-ink md:block lg:left-[clamp(15rem,12.5vw,20rem)]"
             />
 
             <div className="flex items-baseline justify-between gap-4 pt-5 pb-3 md:items-center md:justify-center md:px-6 md:py-10">
@@ -172,7 +172,7 @@ export function SectorTable({ sectors, filterLabel, allLabel, labels }: SectorTa
               <span className="text-small text-ink/60 tabular-nums md:hidden">{sector.logos.length}</span>
             </div>
 
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-6 pb-8 min-[380px]:grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(7rem,1fr))] md:gap-x-6 md:gap-y-10 md:px-8 md:py-10 lg:px-10">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-6 pb-8 min-[380px]:grid-cols-3 md:grid-cols-[repeat(auto-fill,minmax(clamp(7rem,5.8333vw,9.3333rem),1fr))] md:gap-x-6 md:gap-y-10 md:px-8 md:py-10 lg:px-10">
               {sector.logos.map((logo) => (
                 <li key={logo.id} data-logo className="flex items-center justify-center">
                   <PartnerLogoTile logo={logo} hint={labels.viewCaseStudy} />

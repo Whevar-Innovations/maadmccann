@@ -156,7 +156,7 @@ export function MotifHero({
             </span>
           ))}
         </h1>
-        <p data-hero-sub className="mx-auto mt-6 max-w-[50rem] text-sub font-medium md:mt-8">
+        <p data-hero-sub className="mx-auto mt-6 max-w-[clamp(50rem,41.6667vw,66.6667rem)] text-sub font-medium md:mt-8">
           {subheading}
         </p>
       </div>

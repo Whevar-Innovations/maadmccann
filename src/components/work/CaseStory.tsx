@@ -18,14 +18,14 @@ export function CaseStory({ headline, story }: CaseStoryProps) {
       <RevealText
         as="h2"
         id="case-story-heading"
-        className="mx-auto max-w-6xl text-center font-display text-case-title font-bold text-balance text-ink"
+        className="mx-auto max-w-story text-center font-display text-case-title font-bold text-balance text-ink"
       >
         {headline}
       </RevealText>
 
       <FadeUp
         stagger={CASE_STUDY.storyStagger}
-        className="mx-auto mt-8 flex max-w-6xl flex-col gap-6 text-center text-case-body text-ink md:mt-12"
+        className="mx-auto mt-8 flex max-w-story flex-col gap-6 text-center text-case-body text-ink md:mt-12"
       >
         {story.map((paragraph) => (
           <p key={`${paragraph.label ?? ''}${paragraph.body.slice(0, 24)}`}>

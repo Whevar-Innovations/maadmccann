@@ -156,7 +156,7 @@ export function Showreel({ showreel }: ShowreelProps) {
       className="bg-ink py-20 text-paper lg:py-28"
     >
       <div className="container-site">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-intro text-center">
           <RevealText
             as="h2"
             id="showreel-heading"

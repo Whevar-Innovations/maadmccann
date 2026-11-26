@@ -144,7 +144,7 @@ export function CardTitle({
     <h2
       id={id}
       data-reveal
-      className={`font-display text-[clamp(1.5rem,1.75vw,2.15rem)] leading-[1.05] font-bold tracking-[-0.01em] uppercase ${className}`}
+      className={`font-display text-[clamp(1.5rem,1.75vw,2.8rem)] leading-[1.05] font-bold tracking-[-0.01em] uppercase ${className}`}
     >
       {lines.map((l) => (
         <span key={l} className="block">
@@ -165,7 +165,7 @@ export function Tagline({
   return (
     <p
       data-reveal
-      className={`text-[clamp(1.05rem,1.2vw,1.45rem)] leading-[1.2] font-semibold ${className}`}
+      className={`text-[clamp(1.05rem,1.2vw,1.92rem)] leading-[1.2] font-semibold ${className}`}
     >
       {lines.map((l) => (
         <span key={l} className="block">
@@ -180,7 +180,7 @@ export function Body({ children, className = '' }: { children: ReactNode; classN
   return (
     <p
       data-reveal
-      className={`text-[clamp(0.875rem,0.82vw,1.02rem)] leading-[1.5] whitespace-pre-line text-paper/90 ${className}`}
+      className={`text-[clamp(0.875rem,0.82vw,1.312rem)] leading-[1.5] whitespace-pre-line text-paper/90 ${className}`}
     >
       {children}
     </p>
