@@ -127,12 +127,16 @@ export const REVEAL = {
 } as const;
 
 export const TRANSITION = {
-  coverDur: 0.6,
-  revealDur: 0.6,
-  layerLead: 0.04,
-  pageRecedeY: -24,
-  pageEnterY: 24,
-  pageScale: 0.985,
+  // The new page slides up over a still copy of the old one; its hero layers lag and settle last.
+  slideDur: 1.1,
+  cornerRadiusPx: 24, // the incoming page's top corners while it travels
+  oldDrift: 0.12, // × viewport height: the old page drifts up as it is covered
+  oldDimClick: 0.15, // immediate feedback while the next route loads
+  oldDim: 0.55,
+  parallaxLag: 0.35, // × viewport height: [data-page-parallax] layers start this much lower (halved on mobile)
+  parallaxExtra: 0.5, // they arrive this much later than the page
+  pageEnterY: 24, // back/forward rise-in
+  revealDur: 0.6, // back/forward rise-in
   reducedFade: 0.2, // reduced motion: plain crossfade
   releaseMs: 1500, // safety: give scrolling back if a navigation never lands
 } as const;

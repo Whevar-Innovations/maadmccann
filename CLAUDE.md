@@ -40,7 +40,7 @@ Never weaken the guard to get a build through. Fix the code, or ask.
 | `src/components/layout/` | `RootLayout` (shell, loader, transitions), `Header`, `Footer`, `FooterMotifStage` (CtaBand + Footer share one stage) |
 | `src/components/<page>/` | Page sections: `home/`, `what-we-do/`, `team/` |
 | `src/components/ui/` | Primitives: `Link`, `Button`, `Img`, `PlayButton` |
-| `src/motion/` | `tokens.ts`, `gsap-setup.ts`, `SmoothScroll`, `LoaderProvider`, `PageTransition`, reveal primitives (`RevealText`, `RevealImage`, `FadeUp`, `Counter`, `Magnetic`, `LogoCarousel`, `useFallIn`, `useHeroEntrance`, `useMotifBloom`, shared-element helpers) |
+| `src/motion/` | `tokens.ts`, `gsap-setup.ts`, `SmoothScroll`, `LoaderProvider`, `PageTransition`, reveal primitives (`RevealText`, `RevealImage`, `FadeUp`, `Counter`, `Magnetic`, `LogoCarousel`, `useFallIn`, `useHeroEntrance`, `useMotifBloom`), page-transition helpers (`pageSnapshot`, `sharedTransition`) |
 | `src/content/` | `types.ts` (CMS contract), `api.ts` (async fetchers), `static/` (content), `mock/` + `sanity/` (CMS adapter + mappers) |
 | `src/styles/globals.css` | Tailwind `@theme` with every colour, font, breakpoint and type size |
 | `src/lib/useSeo.ts`, `src/lib/site.ts` | Per-route title, description, canonical and OG tags. `site.ts` holds site-wide SEO defaults (build config, not CMS content). |
@@ -118,6 +118,9 @@ Never weaken the guard to get a build through. Fix the code, or ask.
 18. Reach for the existing primitives (`RevealText`, `RevealImage`, `FadeUp`, `Counter`,
     `Magnetic`, `useFallIn`, `useHeroEntrance` for above-the-fold items that must wait for the loader,
     `useMotifBloom` for motif heroes) before writing a bespoke timeline.
+    Mark a hero's motif, photo or trophy layer with `data-page-parallax` so it lags the page
+    transition and settles last. Put it on an element whose own tweens never touch `y` (the SVG
+    or a wrapper), because the transition owns that element's `y`.
 19. Lenis owns scrolling. Stop it for overlays (menu, modal, dialog) and resume it on close.
     Anything `position: fixed` (header, drawers, dialogs) must sit outside transformed wrappers,
     so portal it to `document.body` as `Header` and `ProfileDialog` do.
@@ -152,7 +155,8 @@ Follow this order. `routes/the-maad-ones.tsx` is the reference implementation.
    slices of `page` to section components.
 5. **Sections:** add `src/components/xxx/*`. They take typed props (`XxxPage['hero']`) and import
    only types from `@/content/types`. Use `<Img>`, `ui/Link`, the motion primitives, and theme
-   and motion tokens. Pick up the page's motif from `MAAD WEBSITE FILES/`.
+   and motion tokens. Pick up the page's motif from `MAAD WEBSITE FILES/` and tag the hero's
+   motif layer `data-page-parallax` (rule 18).
 6. **Register:** `router.tsx` + `ENABLED_ROUTES` (`ui/Link.tsx`) + `SITEMAP_ROUTES` (`vite.config.ts`).
 7. **Verify:** `npm run build` (runs `check:rules`), `VITE_CONTENT_SOURCE=mock npm run build`, then
    check it in the browser at four widths with reduced motion on and off.
@@ -191,8 +195,9 @@ continuous red motif stage.
 put: masked line reveals for headings, clip-path reveals for images, gentle rises for groups.
 The hero is the only place with continuous idle motion (trophy float, glow, shine). Interactions
 feel physical: magnetic pills, a fill that wipes from the pointer's entry point, a work-tile
-line that stretches on hover, a cursor-following WATCH button. Page changes recede the old page and
-rise the new one in; a project tile expands into its case-study hero. When in doubt, make it slower, softer and do less.
+line that stretches on hover, a cursor-following WATCH button. Page changes slide the new page up over
+a still of the old one, its hero motif (`data-page-parallax`) settling into place last; a project
+tile expands into its case-study hero. When in doubt, make it slower, softer and do less.
 
 **Voice.** Copy is confident, warm, a little cheeky ("Got something in mind?", "The MAAD Ones",
 "Ka Weekie"), and proudly Ugandan. Keep the brand names and capitalisation exactly as given:

@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { gsap, MEDIA_QUERIES, ScrollTrigger } from './gsap-setup';
+import { createPageSnapshot, type PageSnapshot } from './pageSnapshot';
 import { useSmoothScroll } from './SmoothScroll';
 import {
   boxOf,
@@ -18,7 +19,7 @@ import {
   viewportBox,
   type SharedOverlay,
 } from './sharedTransition';
-import { EASE, SHARED_TRANSITION, TRANSITION } from './tokens';
+import { DUR, EASE, SHARED_TRANSITION, TRANSITION } from './tokens';
 
 /** True while a tile image is expanding into the destination page (the page skips its own hero entrance). */
 export const SHARED_ACTIVE_ATTR = 'sharedTransition';
@@ -52,12 +53,20 @@ export type PageTransitionProps = {
 
 const prefersReducedMotion = () => window.matchMedia(MEDIA_QUERIES.reducedMotion).matches;
 
+/** Hero layers (motif, photo, trophies) that travel slower than the page and settle last. */
+const PARALLAX_SELECTOR = '[data-page-parallax]';
+/** Stage props set for the slide; all cleared once it lands so nothing lingers on the page. */
+const STAGE_SLIDE_PROPS = 'transform,clipPath,position,zIndex';
+
 /**
- * Page navigation: the current page recedes (slides up a touch, scales down, fades), the router
- * swaps the route, then the new page rises into place while its own entrances (hero, headings,
- * grids) play on top. The fixed header sits outside the stage so it never moves.
+ * Page navigation led by the destination: a still copy of the current page stays on screen while
+ * the router swaps the route underneath, then the new page slides up over it (rounded top corners)
+ * as the copy drifts up and darkens, like scrolling into the next page. Inside the new hero the
+ * `[data-page-parallax]` layers (motif, photo, trophies) start lower and arrive later, so they
+ * settle into place last, while the hero's own entrance (bloom, headline) plays as it arrives.
+ * - Work tile to case study: the tile image expands into the case-study hero instead.
  * - Same page + #anchor: smooth-scrolls to the anchor. Same page, no anchor: back to the top.
- * - Back/forward: no exit, the new page still rises in.
+ * - Back/forward: no snapshot, the new page rises in.
  * - Reduced motion: a plain 0.2s crossfade each way.
  */
 export function PageTransition({ children, outsideStage }: PageTransitionProps) {
@@ -71,6 +80,7 @@ export function PageTransition({ children, outsideStage }: PageTransitionProps) 
   const releaseTimerRef = useRef<number | undefined>(undefined);
   const lastPathRef = useRef(pathname);
   const sharedRef = useRef<SharedOverlay | null>(null);
+  const snapshotRef = useRef<PageSnapshot | null>(null);
 
   const lock = useCallback(() => {
     if (lockedRef.current) return;
@@ -112,13 +122,15 @@ export function PageTransition({ children, outsideStage }: PageTransitionProps) 
       // If the route never lands (loader error), give the page and scrolling back.
       releaseTimerRef.current = window.setTimeout(
         () => {
-          gsap.set(stage, { clearProps: 'transform,opacity' });
+          gsap.set(stage, { clearProps: `${STAGE_SLIDE_PROPS},opacity` });
           sharedRef.current?.remove();
           sharedRef.current = null;
+          snapshotRef.current?.remove();
+          snapshotRef.current = null;
           delete document.documentElement.dataset[SHARED_ACTIVE_ATTR];
           unlock();
         },
-        1000 * (TRANSITION.coverDur + SHARED_TRANSITION.expand) + SHARED_TRANSITION.readyTimeoutMs,
+        1000 * Math.max(TRANSITION.slideDur, SHARED_TRANSITION.expand) + SHARED_TRANSITION.readyTimeoutMs,
       );
 
       const reduced = prefersReducedMotion();
@@ -140,19 +152,22 @@ export function PageTransition({ children, outsideStage }: PageTransitionProps) 
         return;
       }
 
-      gsap.to(stage, {
-        opacity: 0,
-        ...(reduced
-          ? { duration: TRANSITION.reducedFade, ease: EASE.soft }
-          : {
-              y: TRANSITION.pageRecedeY,
-              scale: TRANSITION.pageScale,
-              duration: TRANSITION.coverDur,
-              ease: EASE.softInOut,
-            }),
-        overwrite: 'auto',
-        onComplete: () => navigate(to),
-      });
+      if (reduced) {
+        gsap.to(stage, {
+          opacity: 0,
+          duration: TRANSITION.reducedFade,
+          ease: EASE.soft,
+          overwrite: 'auto',
+          onComplete: () => navigate(to),
+        });
+        return;
+      }
+
+      // Freeze the current view over the live page, then swap the route underneath it.
+      const snapshot = createPageSnapshot(stage);
+      snapshotRef.current = snapshot;
+      gsap.to(snapshot.dim, { opacity: TRANSITION.oldDimClick, duration: DUR.ui, ease: EASE.soft });
+      navigate(to);
     },
     [pathname, navigate, scrollToHash, scrollToTop, lock, unlock],
   );
@@ -162,6 +177,8 @@ export function PageTransition({ children, outsideStage }: PageTransitionProps) 
     // Skip the initial mount (and StrictMode's second pass): only real route changes animate.
     if (lastPathRef.current === pathname) return;
     lastPathRef.current = pathname;
+    // The route landed: the "never lands" safety timer must not fire mid-entrance.
+    window.clearTimeout(releaseTimerRef.current);
     const stage = stageRef.current;
     if (!stage) return;
 
@@ -196,6 +213,48 @@ export function PageTransition({ children, outsideStage }: PageTransitionProps) 
       return () => cancelAnimationFrame(raf);
     }
 
+    const snapshot = snapshotRef.current;
+    if (snapshot) {
+      snapshotRef.current = null;
+      gsap.killTweensOf(stage);
+      const vh = window.innerHeight;
+      // Mobile halves the travel (rule 16).
+      const isMobile = window.matchMedia(MEDIA_QUERIES.mobile).matches;
+      const lag = (vh * TRANSITION.parallaxLag) / (isMobile ? 2 : 1);
+      const layers = stage.querySelectorAll<HTMLElement>(PARALLAX_SELECTOR);
+      // Same inset() shape at both ends so GSAP can tween the corner radius.
+      const roundTop = (r: number) => `inset(0px 0px 0px 0px round ${r}px ${r}px 0px 0px)`;
+
+      // Above the old copy (z-38), under the header (z-40).
+      gsap.set(stage, { position: 'relative', zIndex: 39, opacity: 1 });
+      gsap
+        .timeline({
+          onComplete: () => {
+            snapshot.remove();
+            gsap.set(stage, { clearProps: `${STAGE_SLIDE_PROPS},opacity` });
+            unlock();
+            ScrollTrigger.refresh();
+          },
+        })
+        .fromTo(
+          stage,
+          { y: vh, clipPath: roundTop(TRANSITION.cornerRadiusPx) },
+          // expo.out: the page moves the moment the route lands, then glides into place.
+          { y: 0, clipPath: roundTop(0), duration: TRANSITION.slideDur, ease: EASE.out },
+          0,
+        )
+        .to(snapshot.drift, { y: -vh * TRANSITION.oldDrift, duration: TRANSITION.slideDur, ease: EASE.out }, 0)
+        .to(snapshot.dim, { opacity: TRANSITION.oldDim, duration: TRANSITION.slideDur, ease: EASE.out }, 0)
+        // Hero layers travel further and land later: they "scroll into place" behind the page.
+        .fromTo(
+          layers,
+          { y: lag },
+          { y: 0, duration: TRANSITION.slideDur + TRANSITION.parallaxExtra, ease: EASE.out },
+          0,
+        );
+      return;
+    }
+
     const reduced = prefersReducedMotion();
     lock();
     gsap.fromTo(
@@ -217,12 +276,18 @@ export function PageTransition({ children, outsideStage }: PageTransitionProps) 
     );
   }, [pathname, lock, unlock]);
 
-  useEffect(() => () => window.clearTimeout(releaseTimerRef.current), []);
+  useEffect(
+    () => () => {
+      window.clearTimeout(releaseTimerRef.current);
+      snapshotRef.current?.remove();
+    },
+    [],
+  );
 
   return (
     <PageTransitionContext.Provider value={{ navigateWithTransition }}>
       {outsideStage}
-      <div ref={stageRef} data-page-stage className="w-full">
+      <div ref={stageRef} data-page-stage className="w-full bg-paper">
         {children}
       </div>
     </PageTransitionContext.Provider>

@@ -22,7 +22,7 @@ All digital assets, layouts, typography, and motifs are derived directly from th
 | **`The MAADness/`** | `MAAD McCANN Website Homepage.ai`<br>• `Homepage Awards/` (Gorilla trophies)<br>• `Ka Weekie/` (GOtv TVC & posters)<br>• `PrideBank/` (Campaign posters & TVC)<br>• `CCBU/` (Coca-Cola Beverages Uganda)<br>• `Showreel/` (`MAAD REEL.mp4`) | **Homepage Core**<br>• Hero master timeline<br>• 3D-float awards trophies<br>• Fullscreen Showreel video modal<br>• Continuous footer motif stage | • `src/routes/home.tsx`<br>• `src/components/home/Hero.tsx`<br>• `src/components/home/Trophies.tsx`<br>• `src/components/home/Showreel.tsx`<br>• `src/components/home/Impact.tsx`<br>• `src/components/home/CtaBand.tsx` |
 | **`What We Do/`** | `MAAD McCANN Website Services.ai`<br>• `Services Motif.png`<br>• Font packages | **Services & Capabilities**<br>• Brand Strategy & Development<br>• Creative & Art Direction<br>• PR & Reputation Management<br>• Experiential & Events<br>• Media Planning & Buying<br>• Production, Digital & SBCC | • `src/routes/what-we-do.tsx`<br>• `src/components/what-we-do/*`<br>• `src/content/types.ts` (`WhatWeDoPage`)<br>• `src/content/static/whatWeDo.ts`<br>• Footer services grid in `Footer.tsx` |
 | **`Our Work/`** | `MAAD McCANN Website Our Work.ai`<br>• `Our Work Motif.png`<br>• High-res campaign key visuals | **Our Work & Case Studies**<br>• Sector filter pills + paginated project grid (URL-driven)<br>• `/work/:slug` case studies: video or hero image, story, artwork mosaic<br>• Homepage tile grid (`WorkGrid`) links into them | • `src/routes/work.tsx`, `src/routes/work-detail.tsx`<br>• `src/components/work/*`<br>• `src/content/types.ts` (`WorkPage`, `CaseStudyPage`)<br>• `src/content/static/work.ts`, `workSlugs.ts`<br>• `src/components/home/WorkGrid.tsx`, `WorkCard.tsx`<br>• `src/assets/img/work/*` |
-| **`CSR/`** | `MAAD McCANN CSR.ai`<br>• `Run For The Nile/`<br>• `Iron Sharpens Iron/`<br>• `CSR Motif.png` | **Corporate Social Responsibility**<br>• Purpose-driven campaigns<br>• Master dark line-art motif backdrop | • `src/assets/img/dark-motif-bg.webp`<br>• Mobile header menu backdrop<br>• Page transition styling |
+| **`CSR/`** | `MAAD McCANN CSR.ai`<br>• `Run For The Nile/`<br>• `Iron Sharpens Iron/`<br>• `CSR Motif.png` | **Corporate Social Responsibility**<br>• Purpose-driven campaigns<br>• Master dark line-art motif backdrop | • `src/assets/img/dark-motif-bg.webp`<br>• Mobile header menu backdrop |
 | **`Our Partners/`** | `MAAD McCANN Website Our Clients.ai`<br>• Partner brand marks | **Client Roster**<br>• Dual-tier trust display<br>• Staggered fade-up reveal | • `src/components/home/ClientsRow.tsx`<br>• `src/assets/img/clients/*` |
 | **`The Maad Ones/`** | `The MAAD Ones.ai`<br>• `People Page.docx`<br>• Leadership portraits | **Agency Team & Culture**<br>• Creative leadership<br>• Department heads & culture | • `src/routes/the-maad-ones.tsx`<br>• `src/components/team/*`<br>• `src/content/types.ts` (`TeamPage`, `TeamMember`)<br>• `src/content/static/team.ts` |
 | **`Blog/`** | `MAAD McCANN Website BLOG.ai`<br>• Gayaza High School workshop assets | **Insights & Thought Leadership**<br>• Creative masterclasses<br>• Community engagement articles | • `src/content/types.ts` (`Article`) |
@@ -66,6 +66,13 @@ A unified red metallic texture stage (`src/components/layout/FooterMotifStage.ts
 - Only `transform`, `opacity`, and `clip-path` are animated for 60fps GPU performance.
 - Honors `prefers-reduced-motion: reduce`: instantly skips loader timeouts, replaces page transitions with 0.2s crossfades, and cancels floating trophy idle loops.
 
+### E. Page Transitions
+Led by the destination page, with no overlay or loader screen (`src/motion/PageTransition.tsx`, SPEC §8.8):
+- **Link navigation:** a still copy of the current view (`pageSnapshot.ts`) holds the screen while the route loads. The new page then slides up over it with rounded top corners (`expo.out`), while the copy drifts up and darkens, like scrolling into the next page.
+- **Hero layers settle last:** elements marked `data-page-parallax` (the home A/V motif and trophies, the What We Do and Our Work motifs, the team photo) start lower and land after the page, while the hero's own bloom and headline entrance play.
+- **Work tile → case study:** the tile image expands into the case-study hero instead (`sharedTransition.ts`).
+- **Back/forward:** quick rise-in. **Reduced motion:** 0.2s crossfade. All timings are in `TRANSITION` / `SHARED_TRANSITION` (`tokens.ts`).
+
 ---
 
 ## 5. Repository Structure
@@ -97,7 +104,9 @@ A unified red metallic texture stage (`src/components/layout/FooterMotifStage.ts
 │   │   ├── gsap-setup.ts         # GSAP plugin registration & media queries
 │   │   ├── SmoothScroll.tsx      # Lenis smooth scroll provider
 │   │   ├── LoaderProvider.tsx    # Session-aware initial asset/font preloader
-│   │   ├── PageTransition.tsx    # Page transition: recede/enter, plus the tile-to-case-study expand
+│   │   ├── PageTransition.tsx    # Page transition: new page slides up over a still of the old one; tile-to-case-study expand
+│   │   ├── pageSnapshot.ts       # Still copy of the page being left (the transition's underlay)
+│   │   ├── sharedTransition.ts   # Tile image overlay that expands into the case-study hero
 │   │   ├── RevealText.tsx        # SplitText masked line reveal
 │   │   ├── RevealImage.tsx       # Clip-path & scale-in image reveal
 │   │   ├── FadeUp.tsx            # Fluid translateY fade-up primitive

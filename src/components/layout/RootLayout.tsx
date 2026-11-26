@@ -14,8 +14,8 @@ export const rootLoader = async () => ({
 
 /**
  * App shell (SPEC §4, §7 & §8).
- * Wraps the site in Lenis SmoothScroll, LoaderProvider, and PageTransition (direct navigation,
- * no curtain). Header stays outside the page wrapper so its fixed positioning is unaffected.
+ * Wraps the site in Lenis SmoothScroll, LoaderProvider, and PageTransition (the new page slides up
+ * over a still of the old one, SPEC §8.8). Header stays outside the page wrapper so its fixed positioning is unaffected.
  * CtaBand (settings.cta, site-wide) and Footer share a single continuous FooterMotifStage with zero seam.
  */
 export function RootLayout() {

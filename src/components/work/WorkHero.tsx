@@ -100,6 +100,7 @@ export function WorkHero({ hero }: WorkHeroProps) {
       {/* Motif: tone-on-tone paper strokes over the metal, hidden until the hero is ready (no flash under the loader). */}
       <svg
         ref={baseSvgRef}
+        data-page-parallax
         viewBox={WORK_MOTIF_VIEWBOX}
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
@@ -115,6 +116,7 @@ export function WorkHero({ hero }: WorkHeroProps) {
       {/* Spotlight copy: masked radial glow under the cursor. */}
       <svg
         ref={brightSvgRef}
+        data-page-parallax
         viewBox={WORK_MOTIF_VIEWBOX}
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"

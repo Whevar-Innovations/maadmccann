@@ -93,6 +93,7 @@ export function WhatWeDoHero({ hero }: WhatWeDoHeroProps) {
       {/* Base motif: hidden until the bloom starts (no flash under the loader) */}
       <svg
         ref={baseSvgRef}
+        data-page-parallax
         viewBox={HEADER_MOTIF_VIEWBOX}
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
@@ -108,6 +109,7 @@ export function WhatWeDoHero({ hero }: WhatWeDoHeroProps) {
       {/* Spotlight copy: masked 240px radial glow under the cursor */}
       <svg
         ref={brightSvgRef}
+        data-page-parallax
         viewBox={HEADER_MOTIF_VIEWBOX}
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"

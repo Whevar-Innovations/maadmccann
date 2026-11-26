@@ -367,6 +367,7 @@ export function Hero({ hero }: HeroProps) {
       <svg
         id="avsvg"
         data-hero-motif
+        data-page-parallax
         viewBox="983.03 0 936.97 933.88"
         preserveAspectRatio="xMaxYMin meet"
         aria-hidden="true"
@@ -452,7 +453,7 @@ export function Hero({ hero }: HeroProps) {
         </div>
 
         {/* Right column: 3 Silverback Awards trophies in triangle formation */}
-        <div className="flex justify-center md:col-span-6 lg:col-span-7 lg:justify-end">
+        <div data-page-parallax className="flex justify-center md:col-span-6 lg:col-span-7 lg:justify-end">
           <AwardsTriangleLoop
             images={hero.awards.map((award) => award.image)}
             play={isHeroReady}

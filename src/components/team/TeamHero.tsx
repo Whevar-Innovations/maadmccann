@@ -79,7 +79,7 @@ export function TeamHero({ image }: TeamHeroProps) {
         data-hero-frame
         className="relative aspect-[5/3] w-full overflow-hidden sm:aspect-[2/1] lg:aspect-[2.6/1] lg:max-h-[88svh] lg:min-h-[30rem] [@media(orientation:landscape)_and_(max-height:540px)]:aspect-auto [@media(orientation:landscape)_and_(max-height:540px)]:h-svh"
       >
-        <div data-hero-drift className="absolute inset-0 will-change-transform">
+        <div data-hero-drift data-page-parallax className="absolute inset-0 will-change-transform">
           <div data-hero-zoom className="h-full w-full will-change-transform">
             <Img
               image={image}

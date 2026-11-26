@@ -25,7 +25,7 @@ src/
     sanity/             // mappers.ts now; client.ts, queries.ts later
   motion/
     tokens.ts  gsap-setup.ts
-    SmoothScroll.tsx  LoaderProvider.tsx  PageTransition.tsx
+    SmoothScroll.tsx  LoaderProvider.tsx  PageTransition.tsx  pageSnapshot.ts  sharedTransition.ts
     RevealText.tsx  RevealImage.tsx  FadeUp.tsx  Counter.tsx  Magnetic.tsx
   components/
     ui/   Img.tsx  Button.tsx  Link.tsx
@@ -440,7 +440,7 @@ Lenis with `lerp: 0.1`, synced to ScrollTrigger: `lenis.on('scroll', ScrollTrigg
 
 ### 8.8 Page transitions
 
-Fixed crimson overlay with the logo mark. Cover (0.6s, `expo.inOut`, from bottom) → navigate → wait until `useNavigation().state === 'idle'` (loader data ready) → reset scroll → reveal (0.6s, wipe up). Implemented in `PageTransition` plus a `TransitionLink`. Every component uses `useGSAP` with a `scope` so ScrollTriggers are killed on unmount.
+Destination-led, no overlay. On click, `motion/pageSnapshot.ts` freezes a still copy of the current view (fixed, inert, ids stripped) over the live page and the route swaps underneath it (the data router waits for the loader). The new page then slides up over the copy from one viewport below (1.1s, `expo.out`, 24px rounded top corners easing square) while the copy drifts up 12% of the viewport and darkens under an ink layer. Inside the new hero, `[data-page-parallax]` layers (home motif and trophies, What We Do and Our Work motifs, the team photo) start 35vh lower (halved on mobile) and land 0.5s after the page, so they settle into place last while the hero's own entrance (motif bloom, headline) plays as it arrives. A work tile linking to its case study expands its image into the case-study hero instead. Back/forward: no snapshot, the page rises in. Reduced motion: a 0.2s crossfade. Timings live in `TRANSITION` (`tokens.ts`). Every component uses `useGSAP` with a `scope` so ScrollTriggers are killed on unmount.
 
 ### 8.9 Reduced motion and mobile
 
