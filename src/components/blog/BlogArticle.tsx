@@ -3,14 +3,14 @@ import cancerRunLogoSrc from '@/assets/svg/blog/cancer-run-2027-logo.svg';
 import ironLogoRedSrc from '@/assets/svg/blog/iron-sharpens-iron-logo-red.svg';
 import rotaryLogoSrc from '@/assets/svg/blog/rotary-clubs-of-uganda.svg';
 import runForTheNileLogoSrc from '@/assets/svg/csr/run-for-the-nile-logo.svg';
-import type { BlogLockup, BlogPost } from '@/content/static/blog';
+import type { BlogLockup, BlogPost } from '@/content/types';
 import { Img } from '@/components/ui/Img';
 import { gsap, MEDIA_QUERIES, ScrollTrigger, useGSAP } from '@/motion/gsap-setup';
 import { useLoaderState } from '@/motion/LoaderProvider';
-import { DUR, EASE, STAGGER } from '@/motion/tokens';
+import { BLOG_ARTICLE as A, DUR, EASE, STAGGER } from '@/motion/tokens';
 
 /** Design red for the title lead and the Iron Sharpens Iron lockup. */
-const RED = 'text-[#890000]';
+const RED = 'text-service-red';
 /** Hero + photo row width: 1582px of 1920 on desktop, gutters below that. */
 const WIDE = 'mx-auto px-5 sm:px-10 lg:w-[82.5vw] lg:px-0';
 const RADIUS = 'rounded-[clamp(0.9rem,1.25vw,1.75rem)]';
@@ -53,7 +53,7 @@ function Lockup({ kind }: { kind: BlogLockup }) {
             height={135}
             className="h-[clamp(2.75rem,7vw,9.6rem)] w-auto"
           />
-          <span aria-hidden="true" className="h-[clamp(3.4rem,8.75vw,12rem)] w-[2px] bg-[#17478f] lg:w-[3px]" />
+          <span aria-hidden="true" className="h-[clamp(3.4rem,8.75vw,12rem)] w-[2px] bg-rotary-blue lg:w-[3px]" />
           <img
             src={cancerRunLogoSrc}
             alt="Cancer Run 2027"
@@ -93,7 +93,7 @@ function useArticleMotion(ref: RefObject<HTMLElement | null>) {
 
       mm.add(MEDIA_QUERIES.reducedMotion, () => {
         gsap.fromTo([words, hero, photos, pops], { opacity: 0 }, { opacity: 1, duration: DUR.ui });
-        gsap.fromTo(reveals, { opacity: 0 }, { opacity: 1, duration: DUR.ui, delay: 0.1 });
+        gsap.fromTo(reveals, { opacity: 0 }, { opacity: 1, duration: DUR.ui, delay: A.revealDelay });
       });
 
       mm.add(
@@ -109,7 +109,7 @@ function useArticleMotion(ref: RefObject<HTMLElement | null>) {
             words,
             { yPercent: 110 },
             { yPercent: 0, duration: DUR.hero, stagger: STAGGER.words, ease: EASE.out },
-            0.1,
+            A.wordsAt,
           );
           if (hero) {
             tl.fromTo(
@@ -117,19 +117,19 @@ function useArticleMotion(ref: RefObject<HTMLElement | null>) {
               { clipPath: 'inset(0% 0% 100% 0%)' },
               {
                 clipPath: 'inset(0% 0% 0% 0%)',
-                duration: DUR.heroBg * 0.75,
+                duration: DUR.heroBg * A.heroWipe,
                 ease: EASE.inOut,
                 clearProps: 'clipPath',
               },
-              0.3,
+              A.heroAt,
             );
           }
           if (heroImg) {
             tl.fromTo(
               heroImg,
-              { scale: 1.12 },
+              { scale: A.imageZoomFrom },
               { scale: 1, duration: DUR.heroBg, ease: EASE.out, clearProps: 'transform' },
-              0.3,
+              A.heroAt,
             );
           }
 
@@ -137,15 +137,15 @@ function useArticleMotion(ref: RefObject<HTMLElement | null>) {
           photos.forEach((frame, i) => {
             const img = frame.querySelector<HTMLElement>('[data-article-photo-img]');
             const ptl = gsap.timeline({
-              delay: 0.15 + i * 0.12,
-              scrollTrigger: { trigger: frame, start: 'top 92%', once: true },
+              delay: A.photoDelay + i * A.photoStagger,
+              scrollTrigger: { trigger: frame, start: A.photoStart, once: true },
             });
             ptl.fromTo(
               frame,
               { clipPath: 'inset(0% 0% 100% 0%)' },
               {
                 clipPath: 'inset(0% 0% 0% 0%)',
-                duration: DUR.heroBg * 0.7,
+                duration: DUR.heroBg * A.photoWipe,
                 ease: EASE.inOut,
                 clearProps: 'clipPath',
               },
@@ -154,7 +154,7 @@ function useArticleMotion(ref: RefObject<HTMLElement | null>) {
             if (img) {
               ptl.fromTo(
                 img,
-                { scale: 1.12 },
+                { scale: A.imageZoomFrom },
                 { scale: 1, duration: DUR.heroBg, ease: EASE.out, clearProps: 'transform' },
                 0,
               );
@@ -163,29 +163,29 @@ function useArticleMotion(ref: RefObject<HTMLElement | null>) {
 
           const batches: ScrollTrigger[] = [];
           if (pops.length) {
-            gsap.set(pops, { scale: 0.85, opacity: 0 });
+            gsap.set(pops, { scale: A.popFrom, opacity: 0 });
             batches.push(
               ...ScrollTrigger.batch(pops, {
-                start: 'top 90%',
+                start: A.popStart,
                 once: true,
                 onEnter: (els) =>
-                  gsap.to(els, { scale: 1, opacity: 1, duration: 0.9, delay: 0.1, ease: EASE.pop }),
+                  gsap.to(els, { scale: 1, opacity: 1, duration: A.popDuration, delay: A.revealDelay, ease: EASE.pop }),
               }),
             );
           }
           if (reveals.length) {
-            gsap.set(reveals, { y: 26 * k, opacity: 0 });
+            gsap.set(reveals, { y: A.revealRise * k, opacity: 0 });
             batches.push(
               ...ScrollTrigger.batch(reveals, {
-                start: 'top 92%',
+                start: A.start,
                 once: true,
                 onEnter: (els) =>
                   gsap.to(els, {
                     y: 0,
                     opacity: 1,
                     duration: DUR.text,
-                    stagger: 0.07,
-                    delay: 0.1,
+                    stagger: A.revealStagger,
+                    delay: A.revealDelay,
                     ease: EASE.out,
                   }),
               }),
@@ -239,7 +239,7 @@ export function BlogArticle({ post }: { post: BlogPost }) {
         <div
           data-article-hero
           style={{ '--hero-ratio': post.heroRatio } as CSSProperties}
-          className={`relative aspect-[4/3] overflow-hidden bg-[#f2f2f2] sm:aspect-[16/9] lg:aspect-[var(--hero-ratio)] ${RADIUS}`}
+          className={`relative aspect-[4/3] overflow-hidden bg-tile-grey sm:aspect-[16/9] lg:aspect-[var(--hero-ratio)] ${RADIUS}`}
         >
           <div data-article-hero-img className="absolute inset-0">
             <Img
@@ -259,7 +259,7 @@ export function BlogArticle({ post }: { post: BlogPost }) {
             <li
               key={image.src}
               data-article-photo
-              className={`relative aspect-[778/483] overflow-hidden bg-[#f2f2f2] ${RADIUS}`}
+              className={`relative aspect-[778/483] overflow-hidden bg-tile-grey ${RADIUS}`}
             >
               <div data-article-photo-img className="absolute inset-0">
                 <Img

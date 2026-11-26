@@ -245,7 +245,7 @@ export function Footer({ settings }: FooterProps) {
 
         {/* Crisp horizontal divider & Copyright matching 14-53-53.png */}
         <div className="mt-20 border-t border-paper/40 pt-10 text-center lg:mt-28 lg:pt-12">
-          <p className="text-small font-regular text-paper/90">{footer.copyright}</p>
+          <p className="text-small font-regular text-paper/90">{footer.copyright.replace('{year}', String(new Date().getFullYear()))}</p>
         </div>
       </div>
     </footer>

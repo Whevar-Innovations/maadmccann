@@ -1,5 +1,5 @@
 import { Fragment, useRef } from 'react';
-import { csr } from '@/content/static/csr';
+import type { CsrPage } from '@/content/types';
 import { gsap, MEDIA_QUERIES, useGSAP } from '@/motion/gsap-setup';
 import { useLoaderState } from '@/motion/LoaderProvider';
 import { DUR, EASE, SCROLL, STAGGER } from '@/motion/tokens';
@@ -18,15 +18,16 @@ function withBold(text: string) {
   );
 }
 
+export type CsrIntroProps = { intro: CsrPage['intro'] };
+
 /**
  * "OUR CSR WORK / Ideas With A Greater Purpose." intro.
  * The eyebrow and headline lines rise out of masks, then the copy in both columns fades up.
  * Waits for the first-visit loader so the reveal is not spent underneath it on tall screens.
  */
-export function CsrIntro() {
+export function CsrIntro({ intro }: CsrIntroProps) {
   const ref = useRef<HTMLElement | null>(null);
   const { isHeroReady } = useLoaderState();
-  const { intro } = csr;
 
   useGSAP(
     () => {

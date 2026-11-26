@@ -1,27 +1,27 @@
-import { getHomePage } from '@/content/api';
-import { team } from '@/content/static/team';
+import { useLoaderData } from 'react-router';
+import { getTeamPage } from '@/content/api';
 import { TeamGrid } from '@/components/team/TeamGrid';
 import { TeamHero } from '@/components/team/TeamHero';
 import { TeamIntro } from '@/components/team/TeamIntro';
 import { useSeo } from '@/lib/useSeo';
 
-/** Shares the homepage CTA ("Got something in mind?") so the copy has one source. */
 export const theMaadOnesLoader = async () => ({
-  cta: (await getHomePage()).cta,
+  page: await getTeamPage(),
 });
 
 /**
  * The MAAD Ones (/the-maad-ones): team photo header, intro, then the people by department.
- * CtaBand + Footer come from RootLayout's shared FooterMotifStage, identical to the homepage.
+ * CtaBand + Footer come from RootLayout's shared FooterMotifStage (settings.cta), identical to the homepage.
  */
 export function TheMaadOnesRoute() {
-  useSeo({ ...team.seo, path: '/the-maad-ones', image: '/team/team-hero-1600.webp' });
+  const { page } = useLoaderData<typeof theMaadOnesLoader>();
+  useSeo({ ...page.seo, path: '/the-maad-ones', image: page.hero.src });
 
   return (
     <div className="bg-paper">
-      <TeamHero />
-      <TeamIntro />
-      <TeamGrid />
+      <TeamHero image={page.hero} />
+      <TeamIntro intro={page.intro} />
+      <TeamGrid rows={page.rows} />
     </div>
   );
 }

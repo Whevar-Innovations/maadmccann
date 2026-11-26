@@ -1,4 +1,4 @@
-import type { ImageAsset } from '../types';
+import type { TeamMember, TeamPage, TeamPerson, TeamSection } from '../types';
 
 /**
  * The MAAD Ones (/the-maad-ones) copy.
@@ -6,32 +6,6 @@ import type { ImageAsset } from '../types';
  * People without a bio (some board members) render with no "See profile" affordance until one is added.
  * Portraits live in /public/team as {slug}-400.webp and {slug}-800.webp (2:3 crop).
  */
-export type TeamBio = {
-  paragraphs: string[];
-  brands?: string;
-  projects?: string;
-};
-
-export type TeamPerson = {
-  name: string;
-  bio?: TeamBio;
-};
-
-export type TeamMember = TeamPerson & {
-  slug: string;
-  /** Card title. Can differ per section (e.g. Mike is "Director" on the board). */
-  title: string;
-  image: ImageAsset;
-};
-
-export type TeamSection = {
-  id: string;
-  title: string;
-  /** Cards per row on desktop. */
-  columns: number;
-  members: TeamMember[];
-};
-
 const PEOPLE = {
   'mike-kafeero': {
     name: 'Mike Kafeero',
@@ -557,7 +531,7 @@ const section = (id: string, title: string, columns: number, members: TeamMember
   members,
 });
 
-export const team = {
+export const team: TeamPage = {
   seo: {
     title: 'The MAAD Ones',
     description:
@@ -571,7 +545,7 @@ export const team = {
     width: 2400,
     height: 1305,
     alt: 'The MAAD McCANN team gathered around the boardroom table in front of a painted mural',
-  } satisfies ImageAsset,
+  },
 
   intro: {
     accent: 'Different minds.',
@@ -662,5 +636,5 @@ export const team = {
       member('mike-kafeero', 'Head Of Production'),
       member('douglas-baalaga', 'Visual Content Creator'),
     ]),
-  ] satisfies (TeamSection | [TeamSection, TeamSection])[],
+  ],
 };

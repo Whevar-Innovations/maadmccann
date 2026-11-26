@@ -17,6 +17,8 @@ export type SmoothScrollContextValue = {
   stopScroll: () => void;
   startScroll: () => void;
   scrollToTop: (opts?: { smooth?: boolean }) => void;
+  /** Jump to the top instantly without refreshing ScrollTrigger (used by RouteScrollReset). */
+  jumpToTop: () => void;
   /** Scroll to the element whose id matches `hash` ("#creative" or "creative"). */
   scrollToHash: (hash: string, opts?: { immediate?: boolean }) => boolean;
 };
@@ -25,6 +27,7 @@ const SmoothScrollContext = createContext<SmoothScrollContextValue>({
   stopScroll: () => {},
   startScroll: () => {},
   scrollToTop: () => {},
+  jumpToTop: () => {},
   scrollToHash: () => false,
 });
 
@@ -42,10 +45,6 @@ export function useSmoothScroll(): SmoothScrollContextValue {
 export function SmoothScroll({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
   const lockCountRef = useRef(0);
-  const { pathname, hash } = useLocation();
-  const hashRef = useRef(hash);
-  hashRef.current = hash;
-
   useEffect(() => {
     const reduced = window.matchMedia(MEDIA_QUERIES.reducedMotion).matches;
     if (reduced) return;
@@ -101,25 +100,6 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   }, []);
 
-  // New page: jump to the top (or the #anchor) before the browser paints it, so the incoming
-  // page never flashes at the previous page's scroll position. Any leftover wheel momentum
-  // from the old page is cancelled by the immediate scroll.
-  useLayoutEffect(() => {
-    if (lenisRef.current) {
-      lenisRef.current.scrollTo(0, { immediate: true, force: true });
-    } else {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    }
-
-    // Recalculate trigger positions once the new page has laid out.
-    const raf = requestAnimationFrame(() => {
-      ScrollTrigger.refresh();
-      const target = hashRef.current;
-      if (target) scrollToHash(target, { immediate: true });
-    });
-    return () => cancelAnimationFrame(raf);
-  }, [pathname, scrollToHash]);
-
   const stopScroll = useCallback(() => {
     lockCountRef.current += 1;
     lenisRef.current?.stop();
@@ -139,6 +119,14 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const jumpToTop = useCallback(() => {
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(0, { immediate: true, force: true });
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }
+  }, []);
+
   const scrollToTop = useCallback((opts?: { smooth?: boolean }) => {
     const smooth = opts?.smooth ?? false;
     if (lenisRef.current) {
@@ -150,8 +138,8 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ stopScroll, startScroll, scrollToTop, scrollToHash }),
-    [stopScroll, startScroll, scrollToTop, scrollToHash],
+    () => ({ stopScroll, startScroll, scrollToTop, jumpToTop, scrollToHash }),
+    [stopScroll, startScroll, scrollToTop, jumpToTop, scrollToHash],
   );
 
   return (
@@ -159,4 +147,36 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       {children}
     </SmoothScrollContext.Provider>
   );
+}
+
+/**
+ * New page: jump to the top (or the #anchor) before the browser paints it, so the incoming
+ * page never flashes at the previous page's scroll position.
+ *
+ * Render this BEFORE <Outlet /> as a sibling. React runs layout effects child-first and
+ * sibling-by-sibling, so this effect fires before the new page's useGSAP hooks create their
+ * ScrollTriggers. If the reset ran later (e.g. in SmoothScroll, a parent), the new triggers
+ * would be created while the window is still at the old page's scroll offset; `once: true`
+ * triggers would then fire and kill themselves inside ScrollTrigger's creation-time refresh,
+ * which crashes GSAP ("Cannot read properties of undefined (reading 'end')").
+ */
+export function RouteScrollReset() {
+  const { pathname, hash } = useLocation();
+  const { jumpToTop, scrollToHash } = useSmoothScroll();
+  const hashRef = useRef(hash);
+  hashRef.current = hash;
+
+  useLayoutEffect(() => {
+    jumpToTop();
+
+    // Recalculate trigger positions once the new page has laid out.
+    const raf = requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+      const target = hashRef.current;
+      if (target) scrollToHash(target, { immediate: true });
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [pathname, jumpToTop, scrollToHash]);
+
+  return null;
 }

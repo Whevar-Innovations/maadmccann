@@ -1,26 +1,10 @@
-import type { ImageAsset } from '../types';
+import type { CsrPage, ImageAsset } from '../types';
 import { img } from './assets';
 
 /**
  * CSR page copy (/csr), from "MAAD McCANN CSR.pdf".
  * Posters live in /public/images/csr as {name}-{w}.webp, exported from the high-resolution artwork in the PDF.
  */
-
-export type CsrServiceIcon =
-  | 'campaign-strategy'
-  | 'experiential-marketing'
-  | 'media-pr'
-  | 'digital-content'
-  | 'branding-identity'
-  | 'event-experience'
-  | 'community-engagement'
-  | 'digital-storytelling';
-
-export type CsrService = {
-  icon: CsrServiceIcon;
-  title: string;
-  body: string;
-};
 
 const poster = (name: string, alt: string): ImageAsset =>
   img(`/images/csr/${name}-480.webp`, 480, 600, alt, `/images/csr/${name}-480.webp 480w, /images/csr/${name}-960.webp 960w`);
@@ -34,7 +18,7 @@ const ironPoster = (n: number, alt: string): ImageAsset =>
     `/images/csr/iron-sharpens-iron-${n}-400.webp 400w, /images/csr/iron-sharpens-iron-${n}-800.webp 800w`,
   );
 
-export const csr = {
+export const csr: CsrPage = {
   seo: {
     title: 'Corporate Social Responsibility',
     description:
@@ -154,4 +138,4 @@ export const csr = {
       ironPoster(4, 'Iron Sharpens Iron poster: “Do you love for the likes?”, 6 September 2025.'),
     ],
   },
-} as const;
+};

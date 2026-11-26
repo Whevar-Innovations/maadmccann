@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
-import { team, type TeamMember, type TeamSection } from '@/content/static/team';
+import type { TeamMember, TeamRow, TeamSection } from '@/content/types';
 import { gsap, MEDIA_QUERIES, ScrollTrigger, useGSAP } from '@/motion/gsap-setup';
 import { useLoaderState } from '@/motion/LoaderProvider';
-import { DUR, EASE } from '@/motion/tokens';
+import { DUR, EASE, TEAM_GRID } from '@/motion/tokens';
 import { BioPanel, type BioPanelTarget } from './BioPanel';
 import { ProfileDialog } from './ProfileDialog';
 import { TeamCard } from './TeamCard';
@@ -25,7 +25,9 @@ const cardIdOf = (section: TeamSection, member: TeamMember) => `${section.id}--$
  * Motion: headings rise out of a mask; cards "fall" into place in batches as they scroll in
  * (rise + scale + fade, portrait settles from a zoom, captions follow).
  */
-export function TeamGrid() {
+export type TeamGridProps = { rows: TeamRow[] };
+
+export function TeamGrid({ rows }: TeamGridProps) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const closeTimer = useRef<number | undefined>(undefined);
   const returnFocusRef = useRef<HTMLElement | null>(null);
@@ -39,7 +41,7 @@ export function TeamGrid() {
   const { membersById, sectionById } = useMemo(() => {
     const members = new Map<string, TeamMember>();
     const sections = new Map<string, TeamSection>();
-    for (const row of team.rows) {
+    for (const row of rows) {
       for (const section of Array.isArray(row) ? row : [row]) {
         for (const m of section.members) {
           members.set(cardIdOf(section, m), m);
@@ -111,9 +113,9 @@ export function TeamGrid() {
       mm.add(MEDIA_QUERIES.reducedMotion, () => {
         gsap.set(cards, { opacity: 0 });
         const batch = ScrollTrigger.batch(cards, {
-          start: 'top 92%',
+          start: TEAM_GRID.reducedStart,
           once: true,
-          onEnter: (els) => gsap.to(els, { opacity: 1, duration: DUR.ui, stagger: 0.03 }),
+          onEnter: (els) => gsap.to(els, { opacity: 1, duration: DUR.ui, stagger: TEAM_GRID.reducedStagger }),
         });
         return () => batch.forEach((t) => t.kill());
       });
@@ -128,12 +130,12 @@ export function TeamGrid() {
           headings.forEach((h) => {
             gsap.fromTo(
               h,
-              { yPercent: 110 },
+              { yPercent: TEAM_GRID.headingFromYPercent },
               {
                 yPercent: 0,
                 duration: DUR.text,
                 ease: EASE.out,
-                scrollTrigger: { trigger: h.parentElement, start: 'top 90%', once: true },
+                scrollTrigger: { trigger: h.parentElement, start: TEAM_GRID.headingStart, once: true },
               },
             );
           });
@@ -143,32 +145,32 @@ export function TeamGrid() {
           const captionsOf = (els: Element[]) =>
             els.flatMap((el) => Array.from(el.querySelectorAll('[data-card-caption]')));
 
-          gsap.set(cards, { y: 56 * k, scale: 0.9, opacity: 0, transformOrigin: '50% 70%' });
-          gsap.set(mediaOf(cards), { scale: 1.2 });
-          gsap.set(captionsOf(cards), { y: 14, opacity: 0 });
+          gsap.set(cards, { y: TEAM_GRID.rise * k, scale: TEAM_GRID.scaleFrom, opacity: 0, transformOrigin: TEAM_GRID.origin });
+          gsap.set(mediaOf(cards), { scale: TEAM_GRID.mediaScaleFrom });
+          gsap.set(captionsOf(cards), { y: TEAM_GRID.captionRise, opacity: 0 });
 
           const batch = ScrollTrigger.batch(cards, {
-            start: 'top 94%',
+            start: TEAM_GRID.start,
             once: true,
-            batchMax: 6,
+            batchMax: TEAM_GRID.batchMax,
             onEnter: (els) => {
-              const stagger = 0.08;
+              const stagger = TEAM_GRID.stagger;
               gsap.to(els, {
                 y: 0,
                 scale: 1,
                 opacity: 1,
-                duration: 1.15,
+                duration: TEAM_GRID.duration,
                 stagger,
                 ease: EASE.out,
                 clearProps: 'transform,opacity',
               });
-              gsap.to(mediaOf(els), { scale: 1, duration: 1.6, stagger, ease: EASE.out, clearProps: 'transform' });
+              gsap.to(mediaOf(els), { scale: 1, duration: TEAM_GRID.mediaDuration, stagger, ease: EASE.out, clearProps: 'transform' });
               gsap.to(captionsOf(els), {
                 y: 0,
                 opacity: 1,
-                duration: 0.7,
-                stagger: 0.03,
-                delay: 0.35,
+                duration: TEAM_GRID.captionDuration,
+                stagger: TEAM_GRID.captionStagger,
+                delay: TEAM_GRID.captionDelay,
                 ease: EASE.out,
               });
             },
@@ -220,7 +222,7 @@ export function TeamGrid() {
       ref={wrapRef}
       className="relative mx-auto flex w-full max-w-[2200px] flex-col gap-y-14 px-3.5 pt-14 pb-24 [--card-n:2] [--gap:0.625rem] sm:gap-y-16 sm:px-8 sm:pt-16 sm:[--card-n:3] sm:[--gap:0.75rem] md:[--card-n:4] lg:gap-y-20 lg:pb-36 lg:[--card:min(15rem,14.5vw)] lg:[--gap:clamp(0.6rem,0.75vw,1rem)] xl:[--card:min(15rem,10.6vw)]"
     >
-      {team.rows.map((row) =>
+      {rows.map((row) =>
         Array.isArray(row) ? (
           <div
             key={row.map((s) => s.id).join('+')}

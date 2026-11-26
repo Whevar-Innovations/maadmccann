@@ -2,18 +2,28 @@ import { fileURLToPath, URL } from 'node:url';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { blog } from './src/content/static/blog.ts';
+import { BLOG_POST_SLUGS } from './src/content/static/blogSlugs';
+import { CASE_STUDY_SLUGS } from './src/content/static/workSlugs';
 
 /** Public routes that belong in the sitemap. Add real routes as they ship. */
 const SITEMAP_ROUTES = [
   '/',
   '/what-we-do',
-  '/csr',
   '/the-maad-ones',
+  '/work',
+  '/work/:slug',
+  '/partners',
+  '/csr',
   '/blog',
-  // Read from the blog content so new articles are listed automatically.
-  ...blog.posts.map((post) => `/blog/${post.slug}`),
+  '/blog/:slug',
 ];
+
+/** `:slug` routes are patterns: the sitemap lists one URL per case study / article instead. */
+const SLUG_URLS: Record<string, readonly string[]> = {
+  '/work/:slug': CASE_STUDY_SLUGS.map((slug) => `/work/${slug}`),
+  '/blog/:slug': BLOG_POST_SLUGS.map((slug) => `/blog/${slug}`),
+};
+const SITEMAP_URLS = SITEMAP_ROUTES.flatMap((route) => SLUG_URLS[route] ?? [route]);
 
 /**
  * Domain-agnostic SEO URLs. The site URL is, in order:
@@ -27,7 +37,7 @@ function seoPlugin(siteUrl: string): Plugin {
   const lastmod = new Date().toISOString().slice(0, 10);
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${SITEMAP_ROUTES.map(
+${SITEMAP_URLS.map(
   (r) => `  <url>
     <loc>${siteUrl}${r}</loc>
     <lastmod>${lastmod}</lastmod>

@@ -1,4 +1,5 @@
-import type { ImageAsset } from '../types';
+import type { BlogPage, BlogPost, ImageAsset } from '../types';
+import { BLOG_POST_SLUGS } from './blogSlugs';
 
 /**
  * Blog copy (/blog and /blog/:slug), from "MAAD McCANN Website BLOG.pdf".
@@ -9,36 +10,12 @@ import type { ImageAsset } from '../types';
  * - gayaza-*: the two-up photo row, at the design's 778 × 483 crop.
  */
 
-export type BlogLockup = 'iron-sharpens-iron' | 'run-for-the-nile' | 'rotary-cancer-run';
-
-export type BlogPost = {
-  slug: string;
-  /** ISO date for <time>. */
-  date: string;
-  /** As printed on the card, e.g. "JUNE 24, 2026". */
-  dateLabel: string;
-  category: string;
-  /** Red part of the title (article page); the card prints lead + rest as one title. */
-  titleLead: string;
-  titleRest: string;
-  card: ImageAsset;
-  hero: ImageAsset;
-  /** CSS object-position for the hero on wide (cropped) frames. */
-  heroPosition: string;
-  /** Hero frame aspect ratio on desktop, from the design (width / height). */
-  heroRatio: string;
-  lockup?: BlogLockup;
-  /** Photo row under the hero (Gayaza). */
-  gallery?: readonly ImageAsset[];
-  paragraphs: readonly string[];
-  seo: { title: string; description: string };
-};
-
 type Size = readonly [w: number, h: number];
 
 /** Builds an ImageAsset from the {name}-{w}.webp set; `src` is the size nearest 960px as the fallback. */
 function set(name: string, sizes: readonly Size[], alt: string, lqip: string): ImageAsset {
-  const largest = sizes[sizes.length - 1]!;
+  const largest = sizes[sizes.length - 1];
+  if (!largest) throw new Error(`Blog image "${name}" has no sizes`);
   const fallback = sizes.reduce((a, b) => (Math.abs(b[0] - 960) < Math.abs(a[0] - 960) ? b : a));
   return {
     src: `/images/blog/${name}-${fallback[0]}.webp`,
@@ -56,20 +33,28 @@ const CARD: readonly Size[] = [
   [1040, 696],
 ];
 
-export const blog = {
+export const blog: BlogPage = {
   seo: {
     title: 'Blog',
     description:
       'Where truth meets bold execution. Explore our latest thinking on brand strategy, creative innovation, and the stories shaping markets across the region.',
   },
 
+  ogImage: '/images/blog/hero-iron-sharpens-iron-1280.webp',
+
   hero: {
     headlineLines: ['Ideas that move culture,', 'Strategies that drive growth'],
-    bodyLines: [
-      'Where truth meets bold execution. Explore our latest thinking on brand strategy,',
-      'creative innovation, and the stories shaping markets across the region.',
-    ],
+    subheading:
+      'Where truth meets bold execution. Explore our latest thinking on brand strategy, creative innovation, and the stories shaping markets across the region.',
   },
+
+  notFound: {
+    title: 'We couldn’t find that article',
+    body: 'It may have moved, or the link may be mistyped. Our latest stories are on the Blog.',
+    backLabel: 'Back to the Blog',
+  },
+
+  postsLabel: 'Articles',
 
   posts: [
     {
@@ -283,8 +268,11 @@ export const blog = {
           'Our annual mentorship program at Gayaza High School: honest conversations with young women about careers, confidence and life beyond the classroom.',
       },
     },
-  ] satisfies readonly BlogPost[],
-} as const;
+  ],
+};
 
-export const getBlogPost = (slug: string | undefined): BlogPost | undefined =>
-  blog.posts.find((post) => post.slug === slug);
+// vite.config.ts lists /blog/:slug in the sitemap from blogSlugs.ts: fail fast if it drifts.
+const slugs = blog.posts.map((post: BlogPost) => post.slug);
+if (slugs.join('|') !== BLOG_POST_SLUGS.join('|')) {
+  throw new Error(`blogSlugs.ts is out of sync with blog.ts: [${slugs.join(', ')}]`);
+}

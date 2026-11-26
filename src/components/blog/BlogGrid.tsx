@@ -1,20 +1,26 @@
 import { useRef } from 'react';
-import type { BlogPost } from '@/content/static/blog';
+import type { BlogPost } from '@/content/types';
 import { Img } from '@/components/ui/Img';
 import { Link } from '@/components/ui/Link';
 import { gsap, MEDIA_QUERIES, ScrollTrigger, useGSAP } from '@/motion/gsap-setup';
 import { useLoaderState } from '@/motion/LoaderProvider';
-import { DUR, EASE, REVEAL, SCROLL, STAGGER } from '@/motion/tokens';
+import { BLOG, DUR, EASE, REVEAL, SCROLL, STAGGER } from '@/motion/tokens';
 
 /**
  * Blog index grid: 2 × 2 cards (one column on phones), drawn at 1920px as a 1070px column of
- * 525px cards. Cards are light grey and turn the design red (#890000) with white type on hover /
+ * 525px cards. Cards are light grey and turn service red with white type on hover /
  * keyboard focus (the first card in the design shows that state), while the photo eases in slightly.
  *
  * Entrance (same vocabulary as the CSR panels and work tiles): each card rises and un-clips upward,
  * its photo settles from a slight zoom, then the date / category line and title fade up.
  */
-export function BlogGrid({ posts }: { posts: readonly BlogPost[] }) {
+export type BlogGridProps = {
+  posts: readonly BlogPost[];
+  /** Accessible name of the grid section. */
+  label: string;
+};
+
+export function BlogGrid({ posts, label }: BlogGridProps) {
   const ref = useRef<HTMLElement | null>(null);
   const { isHeroReady } = useLoaderState();
 
@@ -51,17 +57,17 @@ export function BlogGrid({ posts }: { posts: readonly BlogPost[] }) {
           gsap.set(cards, {
             y: isMobile ? REVEAL.fallYMobile : REVEAL.fallY,
             opacity: 0,
-            clipPath: 'inset(10% 0% 0% 0%)',
+            clipPath: BLOG.cardClipFrom,
           });
           cards.forEach((card) => {
             const { img, text } = parts(card);
-            if (img) gsap.set(img, { scale: 1.12 });
-            gsap.set(text, { y: isMobile ? 10 : 18, opacity: 0 });
+            if (img) gsap.set(img, { scale: BLOG.imageZoomFrom });
+            gsap.set(text, { y: isMobile ? BLOG.textRiseMobile : BLOG.textRise, opacity: 0 });
           });
 
           // Batched so cards entering together (the two in a row) still stagger left to right.
           const batches = ScrollTrigger.batch(cards, {
-            start: 'top 92%',
+            start: BLOG.cardStart,
             once: true,
             onEnter: (els) => {
               const entered = els as HTMLElement[];
@@ -72,8 +78,8 @@ export function BlogGrid({ posts }: { posts: readonly BlogPost[] }) {
                   y: 0,
                   opacity: 1,
                   clipPath: 'inset(0% 0% 0% 0%)',
-                  duration: 1.1,
-                  stagger: 0.12,
+                  duration: BLOG.cardDuration,
+                  stagger: BLOG.cardStagger,
                   ease: EASE.out,
                   clearProps: 'clipPath,transform',
                 },
@@ -85,13 +91,13 @@ export function BlogGrid({ posts }: { posts: readonly BlogPost[] }) {
                   tl.to(
                     img,
                     { scale: 1, duration: DUR.heroBg, ease: EASE.out, clearProps: 'transform' },
-                    i * 0.12,
+                    i * BLOG.cardStagger,
                   );
                 }
                 tl.to(
                   text,
-                  { y: 0, opacity: 1, duration: DUR.text, stagger: 0.08, ease: EASE.out },
-                  0.35 + i * 0.12,
+                  { y: 0, opacity: 1, duration: DUR.text, stagger: BLOG.textStagger, ease: EASE.out },
+                  BLOG.textAt + i * BLOG.cardStagger,
                 );
               });
             },
@@ -106,7 +112,7 @@ export function BlogGrid({ posts }: { posts: readonly BlogPost[] }) {
   return (
     <section
       ref={ref}
-      aria-label="Articles"
+      aria-label={label}
       className="mx-auto w-full px-5 pt-14 pb-20 sm:px-10 sm:pt-20 sm:pb-24 lg:max-w-[min(max(55.73vw,58rem),73.5rem)] lg:px-0 lg:pt-[9.2vw] lg:pb-[9.4vw]"
     >
       <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-[clamp(0.9rem,1.04vw,1.4rem)]">
@@ -114,7 +120,7 @@ export function BlogGrid({ posts }: { posts: readonly BlogPost[] }) {
           <li key={post.slug} data-blog-card className="will-change-transform">
             <Link
               href={`/blog/${post.slug}`}
-              className={`group flex h-full flex-col rounded-[clamp(0.7rem,0.625vw,0.9rem)] bg-[#f2f2f2] p-[clamp(0.55rem,0.625vw,0.85rem)] text-ink transition-colors duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[#890000] hover:text-paper focus-visible:bg-[#890000] focus-visible:text-paper focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#890000]`}
+              className={`group flex h-full flex-col rounded-[clamp(0.7rem,0.625vw,0.9rem)] bg-tile-grey p-[clamp(0.55rem,0.625vw,0.85rem)] text-ink transition-colors duration-500 ease-brand hover:bg-service-red hover:text-paper focus-visible:bg-service-red focus-visible:text-paper focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-service-red`}
             >
               <div className="relative aspect-[499/334] overflow-hidden rounded-[clamp(0.5rem,0.52vw,0.75rem)]">
                 <div data-card-img className="absolute inset-0">
@@ -122,7 +128,7 @@ export function BlogGrid({ posts }: { posts: readonly BlogPost[] }) {
                     image={post.card}
                     sizes="(min-width: 1024px) max(27vw, 28rem), (min-width: 640px) 46vw, 100vw"
                     decorative
-                    className="h-full w-full object-cover transition-[scale] duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105 group-focus-visible:scale-105"
+                    className="h-full w-full object-cover transition-[scale] duration-[900ms] ease-expo group-hover:scale-105 group-focus-visible:scale-105"
                   />
                 </div>
               </div>

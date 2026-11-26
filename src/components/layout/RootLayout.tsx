@@ -1,15 +1,9 @@
-import { Outlet, useLoaderData, useRouteLoaderData } from 'react-router';
+import { Outlet, useLoaderData } from 'react-router';
 import { getSiteSettings } from '@/content/api';
 import { CtaBand } from '@/components/home/CtaBand';
 import { LoaderProvider } from '@/motion/LoaderProvider';
 import { PageTransition } from '@/motion/PageTransition';
-import { SmoothScroll } from '@/motion/SmoothScroll';
-import type { blogLoader } from '@/routes/blog';
-import type { blogPostLoader } from '@/routes/blog-post';
-import type { csrLoader } from '@/routes/csr';
-import type { homeLoader } from '@/routes/home';
-import type { theMaadOnesLoader } from '@/routes/the-maad-ones';
-import type { whatWeDoLoader } from '@/routes/what-we-do';
+import { RouteScrollReset, SmoothScroll } from '@/motion/SmoothScroll';
 import { Footer } from './Footer';
 import { FooterMotifStage } from './FooterMotifStage';
 import { Header } from './Header';
@@ -20,37 +14,12 @@ export const rootLoader = async () => ({
 
 /**
  * App shell (SPEC §4, §7 & §8).
- * Wraps the site in Lenis SmoothScroll, LoaderProvider, and PageTransition (direct navigation,
- * no curtain). Header stays outside the page wrapper so its fixed positioning is unaffected.
- * CtaBand and Footer share a single continuous FooterMotifStage with zero seam.
+ * Wraps the site in Lenis SmoothScroll, LoaderProvider, and PageTransition (the new page slides up
+ * over a still of the old one, SPEC §8.8). Header stays outside the page wrapper so its fixed positioning is unaffected.
+ * CtaBand (settings.cta, site-wide) and Footer share a single continuous FooterMotifStage with zero seam.
  */
 export function RootLayout() {
   const { settings } = useLoaderData<typeof rootLoader>();
-  const homeData = useRouteLoaderData('home') as
-    | Awaited<ReturnType<typeof homeLoader>>
-    | undefined;
-  const whatWeDoData = useRouteLoaderData('what-we-do') as
-    | Awaited<ReturnType<typeof whatWeDoLoader>>
-    | undefined;
-  const teamData = useRouteLoaderData('the-maad-ones') as
-    | Awaited<ReturnType<typeof theMaadOnesLoader>>
-    | undefined;
-  const csrData = useRouteLoaderData('csr') as
-    | Awaited<ReturnType<typeof csrLoader>>
-    | undefined;
-  const blogData = useRouteLoaderData('blog') as
-    | Awaited<ReturnType<typeof blogLoader>>
-    | undefined;
-  const blogPostData = useRouteLoaderData('blog-post') as
-    | Awaited<ReturnType<typeof blogPostLoader>>
-    | undefined;
-  const cta =
-    homeData?.home.cta ??
-    whatWeDoData?.cta ??
-    teamData?.cta ??
-    csrData?.cta ??
-    blogData?.cta ??
-    blogPostData?.cta;
 
   return (
     <SmoothScroll>
@@ -67,11 +36,13 @@ export function RootLayout() {
               links navigate) but outside the page wrapper. */}
           <PageTransition outsideStage={<Header settings={settings} />}>
             <main id="main">
+              {/* Must stay before <Outlet />: resets scroll before the page's triggers exist. */}
+              <RouteScrollReset />
               <Outlet />
             </main>
 
             <FooterMotifStage>
-              {cta && <CtaBand cta={cta} />}
+              <CtaBand cta={settings.cta} />
               <Footer settings={settings} />
             </FooterMotifStage>
           </PageTransition>

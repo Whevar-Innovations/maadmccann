@@ -1,63 +1,39 @@
-import { getHomePage } from '@/content/api';
-import { csr } from '@/content/static/csr';
+import { useLoaderData } from 'react-router';
+import { getCsrPage } from '@/content/api';
 import cancerRunLogoSrc from '@/assets/svg/csr/cancer-run-logo.svg';
 import runForTheNileLogoSrc from '@/assets/svg/csr/run-for-the-nile-logo.svg';
-import { MotifHero, type MotifData } from '@/components/layout/MotifHero';
 import { CampaignPanel } from '@/components/csr/CampaignPanel';
+import { CsrHero } from '@/components/csr/CsrHero';
 import { CsrIntro } from '@/components/csr/CsrIntro';
 import { CsrServices } from '@/components/csr/CsrServices';
 import { IronSharpensIron } from '@/components/csr/IronSharpensIron';
 import { CSR_BODY, CSR_CONTAINER } from '@/components/csr/styles';
-import {
-  CSR_MOTIF_CENTERS,
-  CSR_MOTIF_H,
-  CSR_MOTIF_PATHS,
-  CSR_MOTIF_VIEWBOX,
-  CSR_MOTIF_W,
-} from '@/components/csr/csrMotifPaths';
 import { useSeo } from '@/lib/useSeo';
 
-const MOTIF: MotifData = {
-  w: CSR_MOTIF_W,
-  h: CSR_MOTIF_H,
-  viewBox: CSR_MOTIF_VIEWBOX,
-  paths: CSR_MOTIF_PATHS,
-  centers: CSR_MOTIF_CENTERS,
-};
-
-/** Shares the homepage CTA ("Got something in mind?") so the copy has one source. */
 export const csrLoader = async () => ({
-  cta: (await getHomePage()).cta,
+  page: await getCsrPage(),
 });
 
 /**
  * Corporate Social Responsibility (/csr), from "MAAD McCANN CSR.pdf".
- * CtaBand + Footer come from RootLayout's shared FooterMotifStage, identical to every other page.
+ * CtaBand + Footer come from RootLayout's shared FooterMotifStage (settings.cta).
  */
 export function CsrRoute() {
-  useSeo({ ...csr.seo, path: '/csr', image: '/images/csr/cancer-run-poster-960.webp' });
-  const { hero, cancerRun, runForTheNile } = csr;
+  const { page } = useLoaderData<typeof csrLoader>();
+  useSeo({ ...page.seo, path: '/csr', image: page.cancerRun.poster.src });
+  const { cancerRun, runForTheNile } = page;
 
   return (
     <div className="bg-paper text-ink">
-      <MotifHero
-        id="csr-hero"
-        motif={MOTIF}
-        eyebrow={hero.eyebrow}
-        headlineLines={hero.headlineLines}
-        bodyLines={hero.bodyLines}
-        heightClassName="min-h-[30rem] sm:min-h-[34rem] lg:min-h-[max(35.2vw,26rem)]"
-        headlineClassName="text-[clamp(2.1rem,3.65vw,5.05rem)] leading-[1.05] tracking-[-0.01em]"
-        bodyClassName="mt-5 max-w-[62ch] text-[clamp(0.95rem,1.2vw,1.65rem)] leading-[1.45] font-semibold sm:mt-6 lg:mt-[1.1vw] lg:max-w-none"
-      />
+      <CsrHero hero={page.hero} />
 
-      <CsrIntro />
+      <CsrIntro intro={page.intro} />
 
       <div className={CSR_CONTAINER}>
         {/* ---------------- Rotary Cancer Run ---------------- */}
         <CampaignPanel
           id={cancerRun.id}
-          toneClassName="bg-[#0000fd] text-paper"
+          toneClassName="bg-cancer-run-blue text-paper"
           poster={cancerRun.poster}
         >
           <img
@@ -99,7 +75,7 @@ export function CsrRoute() {
         {/* ---------------- Run for the Nile ---------------- */}
         <CampaignPanel
           id={runForTheNile.id}
-          toneClassName="bg-[#cdf3fb] text-ink"
+          toneClassName="bg-nile-sky text-ink"
           poster={runForTheNile.poster}
         >
           <img
@@ -113,7 +89,7 @@ export function CsrRoute() {
           <h2
             id={`${runForTheNile.id}-title`}
             data-reveal
-            className="mt-6 text-[clamp(1.6rem,2.1875vw,3rem)] leading-[1.1] font-bold tracking-[-0.01em] text-[#46ab33] lg:mt-[1.6vw]"
+            className="mt-6 text-[clamp(1.6rem,2.1875vw,3rem)] leading-[1.1] font-bold tracking-[-0.01em] text-nile-green lg:mt-[1.6vw]"
           >
             {runForTheNile.headlineLines.map((line) => (
               <span key={line} className="block">
@@ -137,7 +113,7 @@ export function CsrRoute() {
         />
       </div>
 
-      <IronSharpensIron />
+      <IronSharpensIron section={page.ironSharpensIron} />
     </div>
   );
 }

@@ -142,7 +142,7 @@ export function WorkCard({
         className="relative block h-full w-full"
         onClick={handleClick}
       >
-        <RevealImage noScale className={`relative h-full w-full ${aspect}`}>
+        <RevealImage noScale sharedImage className={`relative h-full w-full ${aspect}`}>
           <div ref={hoverZoomRef} className="h-full w-full will-change-transform">
             <Img
               image={project.image}
@@ -171,7 +171,7 @@ export function WorkCard({
           <h3 data-work-caption className="text-tile-label leading-tight font-semibold text-paper">
             {project.client}: {project.title}
           </h3>
-          <div className="mt-2.5 inline-flex translate-y-2 items-center gap-3 text-sub font-regular text-paper/95 opacity-0 transition-[opacity,translate,color] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0 group-hover:text-maroon-400 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:text-maroon-400 group-focus-within:opacity-100 group-data-[active=true]:translate-y-0 group-data-[active=true]:text-maroon-400 group-data-[active=true]:opacity-100">
+          <div className="mt-2.5 inline-flex translate-y-2 items-center gap-3 text-sub font-regular text-paper/95 opacity-0 transition-[opacity,translate,color] duration-500 ease-brand group-hover:translate-y-0 group-hover:text-maroon-400 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:text-maroon-400 group-focus-within:opacity-100 group-data-[active=true]:translate-y-0 group-data-[active=true]:text-maroon-400 group-data-[active=true]:opacity-100">
             <span>View work</span>
             <span data-work-line aria-hidden="true" className="inline-flex items-center">
               {/* 24px (w-6) stem that scales 2x to 48px on hover using transform only */}

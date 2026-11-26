@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import type { CsrService, CsrServiceIcon } from '@/content/static/csr';
+import type { CsrService, CsrServiceIcon } from '@/content/types';
 import brandingIdentitySrc from '@/assets/svg/csr/branding-identity.svg';
 import campaignStrategySrc from '@/assets/svg/csr/campaign-strategy.svg';
 import communityEngagementSrc from '@/assets/svg/csr/community-engagement.svg';
@@ -103,7 +103,7 @@ export function CsrServices({ id, title, services }: CsrServicesProps) {
                 duration: 1,
                 stagger: 0.12,
                 delay: 0.1,
-                ease: 'back.out(1.6)',
+                ease: EASE.popStrong,
               });
               gsap.to(cp, {
                 opacity: 1,
@@ -179,7 +179,7 @@ export function CsrServices({ id, title, services }: CsrServicesProps) {
                   height={107}
                   loading="lazy"
                   decoding="async"
-                  className="aspect-[5/4] h-auto w-full object-contain transition-[translate,scale] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:-translate-y-1 group-hover:scale-[1.06]"
+                  className="aspect-[5/4] h-auto w-full object-contain transition-[translate,scale] duration-500 ease-brand group-hover:-translate-y-1 group-hover:scale-[1.06]"
                 />
               </div>
             </div>

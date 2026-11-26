@@ -1,6 +1,5 @@
 import { useRef } from 'react';
-import type { ImageAsset } from '@/content/types';
-import { csr } from '@/content/static/csr';
+import type { CsrPage, ImageAsset } from '@/content/types';
 import heroBgSrc from '@/assets/jpg/hero-bg.jpg';
 import ironLogoSrc from '@/assets/svg/csr/iron-sharpens-iron-logo.svg';
 import { Img } from '@/components/ui/Img';
@@ -22,14 +21,15 @@ function Poster({ image, index }: { image: ImageAsset; index: number }) {
   );
 }
 
+export type IronSharpensIronProps = { section: CsrPage['ironSharpensIron'] };
+
 /**
  * Iron Sharpens Iron portfolio review: crimson textured panel (the CTA/footer texture), logo lockup
  * and copy, then the four event posters falling into a grid (2 × 2 on phones, 4 across from tablet).
  */
-export function IronSharpensIron() {
+export function IronSharpensIron({ section: isi }: IronSharpensIronProps) {
   const ref = useRef<HTMLElement | null>(null);
   usePanelReveal(ref);
-  const { ironSharpensIron: isi } = csr;
 
   return (
     <section

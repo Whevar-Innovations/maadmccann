@@ -12,4 +12,4 @@ export const CSR_CONTAINER =
 export const CSR_BODY = 'text-body leading-[1.4]';
 
 /** Design red used for headings and icons. */
-export const CSR_RED = 'text-[#86161a]';
+export const CSR_RED = 'text-csr-red';

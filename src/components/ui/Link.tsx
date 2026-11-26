@@ -20,38 +20,58 @@ function isNativeHref(href: string, external?: boolean): boolean {
   );
 }
 
-/** Routes that exist so far. Every other internal link renders disabled until its page ships. */
-const ENABLED_ROUTES = new Set(['/', '/what-we-do', '/csr', '/the-maad-ones', '/blog']);
-/** Sections whose child pages exist too (e.g. /blog/:slug). */
-const ENABLED_PREFIXES = ['/blog/'];
+/**
+ * Routes that exist so far. Every other internal link renders disabled until its page ships.
+ * Entries with a `:param` segment match any single segment there ('/work/:slug' matches '/work/gotv').
+ */
+const ENABLED_ROUTES = new Set([
+  '/',
+  '/what-we-do',
+  '/the-maad-ones',
+  '/work',
+  '/work/:slug',
+  '/partners',
+  '/csr',
+  '/blog',
+  '/blog/:slug',
+]);
+
+const patternOf = (route: string) => new RegExp(`^${route.replace(/:[^/]+/g, '[^/]+')}$`);
+
+const ROUTE_PATTERNS = [...ENABLED_ROUTES].filter((route) => route.includes(':')).map(patternOf);
+
+const isEnabledRoute = (path: string) =>
+  ENABLED_ROUTES.has(path) || ROUTE_PATTERNS.some((pattern) => pattern.test(path));
+
+/**
+ * Routes whose page has a `[data-shared-target]` frame: a tile image in the link
+ * (`[data-shared-image]`) expands into it instead of the generic page transition.
+ */
+const SHARED_ROUTES = new Set(['/work/:slug']);
+const SHARED_PATTERNS = [...SHARED_ROUTES].map(patternOf);
+const isSharedRoute = (path: string) => SHARED_PATTERNS.some((pattern) => pattern.test(path));
 
 function pathOf(href: string): string {
   const path = (href.split('#')[0] ?? '').split('?')[0] ?? '';
   return path === '' ? '/' : path.replace(/(.)\/$/, '$1');
 }
 
-const isEnabledPath = (path: string) =>
-  ENABLED_ROUTES.has(path) || ENABLED_PREFIXES.some((prefix) => path.startsWith(prefix));
-
 /**
  * Router-aware link primitive.
  * Only routes in ENABLED_ROUTES (plus hash, external, mailto/tel links) are navigable;
  * the rest render with aria-disabled and do nothing on click.
- * The link to the current page gets aria-current="page".
+ * The link to the current page gets aria-current="page"; the link to its parent section (e.g.
+ * "/work" on a "/work/:slug" case study) gets aria-current="true", so the nav still shows where you are.
  */
 export function Link({ href, external, children, className, onClick, ...rest }: LinkProps) {
   const { navigateWithTransition } = usePageTransition();
   const { pathname } = useLocation();
   const isNative = isNativeHref(href, external);
-  const isDisabledRoute = !isNative && !isEnabledPath(pathOf(href));
-  const isCurrent = !isNative && !href.includes('#') && pathOf(href) === pathOf(pathname);
-  // The section link (e.g. "Blog") while on one of its child pages (/blog/:slug).
-  const isCurrentSection =
-    !isNative &&
-    !isCurrent &&
-    !href.includes('#') &&
-    pathOf(href) !== '/' &&
-    pathOf(pathname).startsWith(`${pathOf(href)}/`);
+  const isDisabledRoute = !isNative && !isEnabledRoute(pathOf(href));
+  const linkPath = pathOf(href);
+  const isCurrent = !isNative && !href.includes('#') && linkPath === pathOf(pathname);
+  const isSection =
+    !isNative && !isCurrent && !href.includes('#') && linkPath !== '/' && pathOf(pathname).startsWith(`${linkPath}/`);
 
   if (isNative) {
     return (
@@ -84,14 +104,17 @@ export function Link({ href, external, children, className, onClick, ...rest }: 
     }
 
     e.preventDefault();
-    navigateWithTransition(href);
+    navigateWithTransition(href, {
+      trigger: e.currentTarget,
+      shared: isSharedRoute(pathOf(href)),
+    });
   };
 
   return (
     <RouterLink
       to={isDisabledRoute ? '#' : href}
       aria-disabled={isDisabledRoute ? 'true' : undefined}
-      aria-current={isCurrent ? 'page' : isCurrentSection ? 'true' : undefined}
+      aria-current={isCurrent ? 'page' : isSection ? 'true' : undefined}
       className={className}
       onClick={handleClick}
       {...rest}
