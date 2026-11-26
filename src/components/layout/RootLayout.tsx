@@ -4,6 +4,7 @@ import { CtaBand } from '@/components/home/CtaBand';
 import { LoaderProvider } from '@/motion/LoaderProvider';
 import { PageTransition } from '@/motion/PageTransition';
 import { RouteScrollReset, SmoothScroll } from '@/motion/SmoothScroll';
+import { BackToTop } from './BackToTop';
 import { Footer } from './Footer';
 import { FooterMotifStage } from './FooterMotifStage';
 import { Header } from './Header';
@@ -35,7 +36,8 @@ export function RootLayout() {
           {/* Navigation context wraps page content & footer. The header sits inside it (so its
               links navigate) but outside the page wrapper. */}
           <PageTransition outsideStage={<Header settings={settings} />}>
-            <main id="main">
+            {/* tabIndex -1: focus target for the skip link and BackToTop. */}
+            <main id="main" tabIndex={-1} className="focus:outline-none">
               {/* Must stay before <Outlet />: resets scroll before the page's triggers exist. */}
               <RouteScrollReset />
               <Outlet />
@@ -46,6 +48,8 @@ export function RootLayout() {
               <Footer settings={settings} />
             </FooterMotifStage>
           </PageTransition>
+
+          <BackToTop />
         </div>
       </LoaderProvider>
     </SmoothScroll>

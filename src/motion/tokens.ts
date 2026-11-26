@@ -246,6 +246,11 @@ export const GALLERY = {
   captionDelay: 0.35, // captions rise after their artwork
 } as const;
 
+/** Site-wide back-to-top button (layout/BackToTop). Fades/rises in with DUR.ui, EASE.soft, DIST.rise. */
+export const BACK_TO_TOP = {
+  showAfterVh: 1, // × viewport height scrolled before the button appears
+} as const;
+
 export const TEAM_INTRO = {
   delay: 0.2,
 } as const;

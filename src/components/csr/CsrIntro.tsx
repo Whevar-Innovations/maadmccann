@@ -38,7 +38,9 @@ export function CsrIntro({ intro }: CsrIntroProps) {
       const mm = gsap.matchMedia();
 
       mm.add(MEDIA_QUERIES.reducedMotion, () => {
-        gsap.fromTo([lines, body], { opacity: 0 }, { opacity: 1, duration: DUR.ui });
+        // Flat list: GSAP throws on a nested empty list.
+        const all = [...lines, ...body];
+        if (all.length) gsap.fromTo(all, { opacity: 0 }, { opacity: 1, duration: DUR.ui });
       });
 
       mm.add(
