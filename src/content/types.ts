@@ -258,3 +258,91 @@ export type PartnersPage = {
     viewCaseStudy: string;  // hover hint under a linked logo
   };
 };
+
+// ---------- Corporate Social Responsibility (/csr) ----------
+
+export type CsrServiceIcon =
+  | 'campaign-strategy'
+  | 'experiential-marketing'
+  | 'media-pr'
+  | 'digital-content'
+  | 'branding-identity'
+  | 'event-experience'
+  | 'community-engagement'
+  | 'digital-storytelling';
+
+export type CsrService = { icon: CsrServiceIcon; title: string; body: string };
+
+/** A campaign panel (poster + copy) and the "What we do for …" icon grid under it. */
+type CsrCampaign = {
+  /** Section anchor, also the prefix for the panel's heading id. */
+  id: string;
+  logoAlt: string;
+  paragraphs: string[];
+  poster: ImageAsset;
+  servicesTitle: string;
+  services: CsrService[];
+};
+
+export type CsrPage = {
+  seo: PageSeo;
+  hero: { eyebrow: string; headlineLines: string[]; bodyLines: string[] };
+  intro: {
+    eyebrow: string;
+    headlineLines: string[];
+    body: string;
+    /** Right column. `**text**` is rendered bold. */
+    paragraphs: string[];
+  };
+  cancerRun: CsrCampaign & { title: string; tagline: string };
+  runForTheNile: CsrCampaign & { headlineLines: string[] };
+  ironSharpensIron: {
+    id: string;
+    logoAlt: string;
+    titleLines: string[];
+    subtitle: string;
+    body: string;
+    paragraphs: string[];
+    posters: ImageAsset[];
+  };
+};
+
+// ---------- Blog (/blog, /blog/:slug) ----------
+
+/** Logo lockup between an article's hero and its copy. */
+export type BlogLockup = 'iron-sharpens-iron' | 'run-for-the-nile' | 'rotary-cancer-run';
+
+export type BlogPost = {
+  slug: string;
+  /** ISO date for <time>. */
+  date: string;
+  /** As printed on the card, e.g. "June 24, 2026". */
+  dateLabel: string;
+  category: string;
+  /** Red part of the title on the article page; the card prints lead + rest as one title. */
+  titleLead: string;
+  titleRest: string;
+  card: ImageAsset;
+  hero: ImageAsset;
+  /** CSS object-position of the hero on wide (cropped) frames. */
+  heroPosition: string;
+  /** Desktop hero frame aspect ratio from the design, as CSS ("1582 / 647"). */
+  heroRatio: string;
+  lockup?: BlogLockup;
+  /** Photo row under the hero. */
+  gallery?: ImageAsset[];
+  paragraphs: string[];
+  seo: PageSeo;
+};
+
+export type BlogPage = {
+  seo: PageSeo;
+  /** Share image for /blog (site-relative path). */
+  ogImage: string;
+  hero: { headlineLines: string[]; subheading: string };
+  /** Accessible name of the card grid. */
+  postsLabel: string;
+  posts: BlogPost[];
+  /** Shown at /blog/:slug when no article has that slug. */
+  notFound: { title: string; body: string; backLabel: string };
+};

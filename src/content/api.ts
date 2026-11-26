@@ -1,5 +1,8 @@
 import type {
+  BlogPage,
+  BlogPost,
   CaseStudyPage,
+  CsrPage,
   HomePage,
   PartnersPage,
   SiteSettings,
@@ -158,4 +161,48 @@ export async function getPartnersPage(): Promise<PartnersPage> {
     return assertPartnersPage(await (await import('./mock/source')).getPartnersPage());
   }
   return assertPartnersPage((await import('./static/partners')).partners);
+}
+
+function assertCsrPage(data: CsrPage): CsrPage {
+  for (const campaign of [data.cancerRun, data.runForTheNile]) {
+    if (!campaign.id) throw new Error('CSR campaign is missing its id');
+    if (campaign.services.length === 0) throw new Error(`CSR campaign "${campaign.id}" has no services`);
+  }
+  if (data.ironSharpensIron.posters.length === 0) throw new Error('CSR Iron Sharpens Iron has no posters');
+  return data;
+}
+
+export async function getCsrPage(): Promise<CsrPage> {
+  if (source === 'mock') {
+    return assertCsrPage(await (await import('./mock/source')).getCsrPage());
+  }
+  return assertCsrPage((await import('./static/csr')).csr);
+}
+
+function assertBlogPost(post: BlogPost): BlogPost {
+  if (post.paragraphs.length === 0) throw new Error(`Blog post "${post.slug}" has no copy`);
+  for (const image of [post.card, post.hero, ...(post.gallery ?? [])]) {
+    if (image.width <= 0 || image.height <= 0) {
+      throw new Error(`Blog post "${post.slug}" image ${image.src} needs width and height`);
+    }
+  }
+  return post;
+}
+
+function assertBlogPage(data: BlogPage): BlogPage {
+  if (data.posts.length === 0) throw new Error('Blog has no posts');
+  const slugs = new Set<string>();
+  for (const post of data.posts) {
+    if (slugs.has(post.slug)) throw new Error(`Duplicate blog post slug "${post.slug}"`);
+    slugs.add(post.slug);
+    assertBlogPost(post);
+  }
+  return data;
+}
+
+export async function getBlogPage(): Promise<BlogPage> {
+  if (source === 'mock') {
+    return assertBlogPage(await (await import('./mock/source')).getBlogPage());
+  }
+  return assertBlogPage((await import('./static/blog')).blog);
 }

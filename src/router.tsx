@@ -1,6 +1,9 @@
 import { createBrowserRouter } from 'react-router';
 import { RootLayout, rootLoader } from '@/components/layout/RootLayout';
+import { BlogRoute, blogLoader } from '@/routes/blog';
+import { BlogPostError, BlogPostRoute, blogPostLoader } from '@/routes/blog-post';
 import { BootFallback } from '@/routes/BootFallback';
+import { CsrRoute, csrLoader } from '@/routes/csr';
 import { HomeRoute, homeLoader } from '@/routes/home';
 import { RouteError } from '@/routes/RouteError';
 import { PartnersRoute, partnersLoader } from '@/routes/partners';
@@ -54,6 +57,27 @@ export const router = createBrowserRouter([
         loader: workDetailLoader,
         Component: WorkDetailRoute,
         handle: { headerTone: 'light' },
+      },
+      {
+        id: 'csr',
+        path: 'csr',
+        loader: csrLoader,
+        Component: CsrRoute,
+      },
+      {
+        id: 'blog',
+        path: 'blog',
+        loader: blogLoader,
+        Component: BlogRoute,
+      },
+      {
+        id: 'blog-post',
+        path: 'blog/:slug',
+        loader: blogPostLoader,
+        Component: BlogPostRoute,
+        ErrorBoundary: BlogPostError,
+        // Articles sit on paper: dark type, two-tone logo, hairline under the bar (blog design).
+        handle: { headerTone: 'light', headerRule: true },
       },
     ],
   },

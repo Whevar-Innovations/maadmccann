@@ -336,3 +336,37 @@ export const PARTNERS = {
   logoScaleFrom: 0.9,
   logoStagger: 0.04, // tighter than STAGGER.items: a busy row lands in under a second
 } as const;
+
+/** Blog index hero (ui/MotifHero) and card grid. */
+export const BLOG = {
+  motifOpacity: 0.25, // soft-light strokes over the metal (same treatment as WORK_HERO)
+  subDelay: 0.25,
+  cardStart: 'top 92%',
+  cardClipFrom: 'inset(10% 0% 0% 0%)', // cards un-clip upward as they rise
+  cardDuration: 1.1,
+  cardStagger: 0.12, // cards entering together, left to right
+  imageZoomFrom: 1.12, // photo settles from a slight zoom
+  textRise: 18, // px (date/category line + title; ~half on mobile)
+  textRiseMobile: 10,
+  textAt: 0.35,
+  textStagger: 0.08,
+} as const;
+
+/** Blog article: title words, hero wipe, photo row, logo lockup, paragraphs. */
+export const BLOG_ARTICLE = {
+  wordsAt: 0.1,
+  heroAt: 0.3, // hero frame wipes open just after the title starts rising
+  heroWipe: 0.75, // × DUR.heroBg
+  photoWipe: 0.7, // × DUR.heroBg
+  photoDelay: 0.15,
+  photoStagger: 0.12,
+  imageZoomFrom: 1.12,
+  popFrom: 0.85, // logo lockup scale-in
+  popDuration: 0.9,
+  revealRise: 26, // px paragraph rise (halved on mobile)
+  revealStagger: 0.07,
+  revealDelay: 0.1,
+  start: 'top 92%',
+  photoStart: 'top 92%',
+  popStart: 'top 90%',
+} as const;

@@ -16,12 +16,19 @@ export type HeaderProps = {
   settings: SiteSettings;
 };
 
-/** Routes opt into the light header (dark type on a paper page) with `handle: { headerTone: 'light' }`. */
+/**
+ * Routes opt into the light header (dark type on a paper page) with `handle: { headerTone: 'light' }`,
+ * and into a hairline under the bar with `headerRule: true` (blog articles).
+ */
 type HeaderTone = 'dark' | 'light';
-const useHeaderTone = (): HeaderTone =>
-  useMatches().some((m) => (m.handle as { headerTone?: HeaderTone } | undefined)?.headerTone === 'light')
-    ? 'light'
-    : 'dark';
+type HeaderHandle = { headerTone?: HeaderTone; headerRule?: boolean };
+const useHeaderHandle = () => {
+  const handles = useMatches().map((m) => m.handle as HeaderHandle | undefined);
+  return {
+    tone: (handles.some((h) => h?.headerTone === 'light') ? 'light' : 'dark') as HeaderTone,
+    rule: handles.some((h) => h?.headerRule === true),
+  };
+};
 
 /** Fraction of the wordmark that is "MAAD" (set in red in the light header). */
 const MAAD_SHARE = 38;
@@ -58,7 +65,9 @@ function TwoToneLogo() {
 /**
  * Site header (SPEC §7 #1 & §8.6).
  * - Logo left, 8 nav links centered (disabled per route constraints, home active), white pill "Talk To Us" button right.
- * - Transparent at top, then deep brand maroon (crimson-950) at 90% blur after 80px scroll.
+ * - Transparent at top, then deep brand maroon (crimson-950, paper on light pages) at 95% after 80px scroll.
+ *   No backdrop blur: re-blurring the motif / photos under the bar every frame stalled the start of each
+ *   scroll, and at 95% opacity the bar reads the same without it.
  * - Hover/focus/active links: maroon-200 tint (≈11.5:1 on crimson-950, ≈5.7:1 over the hero; WCAG AA).
  * - Hides on scroll down, shows on scroll up (0.4s power3.out).
  * - Mobile drawer: 100% opaque solid dark blackish (#0E0E10) with embossed line-art motif matching Screenshot 15-52-54.png.
@@ -71,7 +80,8 @@ export function Header({ settings }: HeaderProps) {
   const drawerRef = useRef<HTMLDivElement | null>(null);
   const hiddenRef = useRef(false);
   const { stopScroll, startScroll } = useSmoothScroll();
-  const light = useHeaderTone() === 'light';
+  const { tone, rule } = useHeaderHandle();
+  const light = tone === 'light';
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -181,15 +191,15 @@ export function Header({ settings }: HeaderProps) {
       <header
         ref={headerRef}
         data-site-header
-        className={`fixed inset-x-0 top-0 z-40 transition-[background-color,backdrop-filter,opacity] duration-300 will-change-transform ${
+        className={`fixed inset-x-0 top-0 z-40 transition-[background-color,opacity] duration-300 will-change-transform ${
           menuOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'
         } ${
           scrolledPastThreshold && !menuOpen
             ? light
-              ? 'bg-paper/90 backdrop-blur-md'
-              : 'bg-crimson-950/90 backdrop-blur-md'
+              ? 'bg-paper/95'
+              : 'bg-crimson-950/95'
             : 'bg-transparent'
-        }`}
+        } ${rule ? 'border-b border-ink/25' : ''}`}
       >
         <div className="mx-auto flex h-20 w-full max-w-header items-center justify-between gap-6 px-6 sm:px-10 lg:h-28 lg:px-16">
           <Link

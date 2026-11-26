@@ -2,15 +2,28 @@ import { fileURLToPath, URL } from 'node:url';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import { BLOG_POST_SLUGS } from './src/content/static/blogSlugs';
 import { CASE_STUDY_SLUGS } from './src/content/static/workSlugs';
 
 /** Public routes that belong in the sitemap. Add real routes as they ship. */
-const SITEMAP_ROUTES = ['/', '/what-we-do', '/the-maad-ones', '/work', '/work/:slug', '/partners'];
+const SITEMAP_ROUTES = [
+  '/',
+  '/what-we-do',
+  '/the-maad-ones',
+  '/work',
+  '/work/:slug',
+  '/partners',
+  '/csr',
+  '/blog',
+  '/blog/:slug',
+];
 
-/** `/work/:slug` is a pattern: the sitemap lists one URL per case study instead. */
-const SITEMAP_URLS = SITEMAP_ROUTES.flatMap((route) =>
-  route === '/work/:slug' ? CASE_STUDY_SLUGS.map((slug) => `/work/${slug}`) : [route],
-);
+/** `:slug` routes are patterns: the sitemap lists one URL per case study / article instead. */
+const SLUG_URLS: Record<string, readonly string[]> = {
+  '/work/:slug': CASE_STUDY_SLUGS.map((slug) => `/work/${slug}`),
+  '/blog/:slug': BLOG_POST_SLUGS.map((slug) => `/blog/${slug}`),
+};
+const SITEMAP_URLS = SITEMAP_ROUTES.flatMap((route) => SLUG_URLS[route] ?? [route]);
 
 /**
  * Domain-agnostic SEO URLs. The site URL is, in order:
