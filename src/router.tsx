@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router';
 import { RootLayout, rootLoader } from '@/components/layout/RootLayout';
 import { BootFallback } from '@/routes/BootFallback';
+import { CsrRoute, csrLoader } from '@/routes/csr';
 import { HomeRoute, homeLoader } from '@/routes/home';
 import { RouteError } from '@/routes/RouteError';
 import { TheMaadOnesRoute, theMaadOnesLoader } from '@/routes/the-maad-ones';
@@ -26,6 +27,12 @@ export const router = createBrowserRouter([
         path: 'what-we-do',
         loader: whatWeDoLoader,
         Component: WhatWeDoRoute,
+      },
+      {
+        id: 'csr',
+        path: 'csr',
+        loader: csrLoader,
+        Component: CsrRoute,
       },
       {
         id: 'the-maad-ones',

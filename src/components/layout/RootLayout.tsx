@@ -4,6 +4,7 @@ import { CtaBand } from '@/components/home/CtaBand';
 import { LoaderProvider } from '@/motion/LoaderProvider';
 import { PageTransition } from '@/motion/PageTransition';
 import { SmoothScroll } from '@/motion/SmoothScroll';
+import type { csrLoader } from '@/routes/csr';
 import type { homeLoader } from '@/routes/home';
 import type { theMaadOnesLoader } from '@/routes/the-maad-ones';
 import type { whatWeDoLoader } from '@/routes/what-we-do';
@@ -32,7 +33,10 @@ export function RootLayout() {
   const teamData = useRouteLoaderData('the-maad-ones') as
     | Awaited<ReturnType<typeof theMaadOnesLoader>>
     | undefined;
-  const cta = homeData?.home.cta ?? whatWeDoData?.cta ?? teamData?.cta;
+  const csrData = useRouteLoaderData('csr') as
+    | Awaited<ReturnType<typeof csrLoader>>
+    | undefined;
+  const cta = homeData?.home.cta ?? whatWeDoData?.cta ?? teamData?.cta ?? csrData?.cta;
 
   return (
     <SmoothScroll>

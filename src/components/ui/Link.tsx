@@ -21,7 +21,7 @@ function isNativeHref(href: string, external?: boolean): boolean {
 }
 
 /** Routes that exist so far. Every other internal link renders disabled until its page ships. */
-const ENABLED_ROUTES = new Set(['/', '/what-we-do', '/the-maad-ones']);
+const ENABLED_ROUTES = new Set(['/', '/what-we-do', '/csr', '/the-maad-ones']);
 
 function pathOf(href: string): string {
   const path = (href.split('#')[0] ?? '').split('?')[0] ?? '';
