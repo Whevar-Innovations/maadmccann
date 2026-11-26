@@ -142,6 +142,20 @@
     outline: 2px solid currentColor;
     outline-offset: 3px;
   }
+
+  /* Tailwind v4's preflight resets buttons to cursor: default. Everything clickable shows the
+     pointer; disabled controls (including ui/Link's aria-disabled placeholder routes) don't. */
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']),
+  summary,
+  label[for],
+  select:not(:disabled) {
+    cursor: pointer;
+  }
+  :disabled,
+  [aria-disabled='true'] {
+    cursor: default;
+  }
 }
 
 @keyframes play-ring {
