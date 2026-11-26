@@ -1,12 +1,16 @@
 import { useEffect, useRef } from 'react';
-import type { WorkPage } from '@/content/types';
-import { Pill } from '@/components/ui/Pill';
+import { Pill } from './Pill';
 import { useHeroEntrance } from '@/motion/useHeroEntrance';
+
+/** One filter choice; `count` (optional) shows after the label, e.g. "Beverages 16". */
+export type FilterOption = { id: string; label: string; count?: number };
 
 export type CategoryFilterProps = {
   label: string;
   allLabel: string;
-  categories: WorkPage['categories'];
+  /** Shown after the "All" pill when the options carry counts. */
+  allCount?: number;
+  categories: FilterOption[];
   /** Selected category id, or null for "all". */
   value: string | null;
   onChange: (categoryId: string | null) => void;
@@ -16,7 +20,7 @@ export type CategoryFilterProps = {
  * Sector pills. Wrapped and centred from md up; below that a single scrolling row with the
  * selected pill kept in view and faded edges instead of a four-row stack.
  */
-export function CategoryFilter({ label, allLabel, categories, value, onChange }: CategoryFilterProps) {
+export function CategoryFilter({ label, allLabel, allCount, categories, value, onChange }: CategoryFilterProps) {
   const rowRef = useRef<HTMLDivElement | null>(null);
   useHeroEntrance(rowRef, { targets: '[data-pill]', delay: 0.2 });
 
@@ -32,7 +36,10 @@ export function CategoryFilter({ label, allLabel, categories, value, onChange }:
     });
   }, [value]);
 
-  const options = [{ id: null, label: allLabel }, ...categories];
+  const options: { id: string | null; label: string; count?: number }[] = [
+    { id: null, label: allLabel, count: allCount },
+    ...categories,
+  ];
 
   return (
     <div
@@ -44,9 +51,20 @@ export function CategoryFilter({ label, allLabel, categories, value, onChange }:
       {options.map((option) => {
         const selected = option.id === value;
         return (
-          <span key={option.id ?? 'all'} data-pill data-selected={selected} className="snap-center">
-            <Pill selected={selected} aria-pressed={selected} onClick={() => onChange(option.id)}>
+          <span key={option.id ?? 'all'} data-pill data-selected={selected} className="shrink-0 snap-center">
+            <Pill
+              selected={selected}
+              aria-pressed={selected}
+              onClick={() => onChange(option.id)}
+              className="whitespace-nowrap"
+            >
               {option.label}
+              {option.count !== undefined && (
+                <>
+                  {' '}
+                  <span className="ml-1 tabular-nums opacity-60">{option.count}</span>
+                </>
+              )}
             </Pill>
           </span>
         );

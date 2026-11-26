@@ -18,7 +18,7 @@ Do not mix in Motion/framer-motion. GSAP owns all animation so timing stays cons
 src/
   content/
     types.ts            // TS types = future Sanity schema shape
-    api.ts              // getHomePage(), getSiteSettings(), getWhatWeDoPage(), getTeamPage(), getWorkPage(), getCaseStudy(slug)...
+    api.ts              // getHomePage(), getSiteSettings(), getWhatWeDoPage(), getTeamPage(), getWorkPage(), getCaseStudy(slug), getPartnersPage()...
     static/             // static source; only src/content/ may import it (check:rules)
       home.ts  settings.ts  whatWeDo.ts  team.ts
     mock/               // Sanity-shaped mock source (VITE_CONTENT_SOURCE=mock)
@@ -28,7 +28,7 @@ src/
     SmoothScroll.tsx  LoaderProvider.tsx  PageTransition.tsx  pageSnapshot.ts  sharedTransition.ts
     RevealText.tsx  RevealImage.tsx  FadeUp.tsx  Counter.tsx  Magnetic.tsx
   components/
-    ui/   Img.tsx  Button.tsx  Link.tsx
+    ui/   Img.tsx  Button.tsx  Link.tsx  Pill.tsx  CategoryFilter.tsx  MotifHero.tsx
     layout/  Header.tsx  Footer.tsx  RootLayout.tsx
     home/  Hero.tsx  Trophies.tsx  Showreel.tsx  ClientsRow.tsx
            WorkGrid.tsx  WorkCard.tsx  Impact.tsx  CtaBand.tsx
@@ -36,7 +36,8 @@ src/
     team/  TeamHero.tsx  TeamIntro.tsx  TeamGrid.tsx  TeamCard.tsx  BioPanel.tsx  ProfileDialog.tsx
     work/  WorkHero.tsx  CategoryFilter.tsx  ProjectGrid.tsx  ProjectCard.tsx  Pagination.tsx
            CaseHeader.tsx  CaseMedia.tsx  CaseStory.tsx  ArtworkGallery.tsx  galleryLayout.ts
-  routes/  home.tsx  what-we-do.tsx  the-maad-ones.tsx  work.tsx  work-detail.tsx (loader + page each)
+    partners/  PartnersHero.tsx  PartnersIntro.tsx  SectorTable.tsx  PartnerLogoTile.tsx  partnersMotifPaths.ts
+  routes/  home.tsx  what-we-do.tsx  the-maad-ones.tsx  work.tsx  work-detail.tsx  partners.tsx (loader + page each)
   lib/     useSeo.ts  site.ts (site-wide SEO defaults)
   styles/  globals.css (tokens)
 scripts/check-rules.mjs   // rule guard, runs before every build
@@ -140,6 +141,12 @@ export type GalleryItem = { image: ImageAsset; caption?;
   size?: 'auto' | 'full' | 'small' | 'feature'; side?: 'left' | 'right' /* feature only */; newRow?: boolean };
 export type CaseStudyPage = { slug; seo; clientLabel; client; title; media: CaseMedia; headline;
   story: { label?; body }[]; gallery: GalleryItem[] };
+
+// Our Partners (/partners): sectors in display order, each with its logos (optional case-study href)
+export type PartnerLogo = ClientLogo & { href?: string };
+export type PartnerSector = { id; label; filterLabel?: string /* shorter pill name */; logos: PartnerLogo[] };
+export type PartnersPage = { seo; hero: { headlineLines; subheading }; intro; filterLabel; allLabel;
+  sectors: PartnerSector[]; labels: { announce; announceOne; announceAll; viewCaseStudy } };
 ```
 
 ### 5.3 API layer (`src/content/api.ts`)
@@ -260,6 +267,7 @@ export const settings: SiteSettings = {
 | `teamPage` (singleton) | `TeamPage` | seo, hero image, intro, rows of sections referencing `teamMember` |
 | `workPage` (singleton) | `WorkPage` | seo, hero, categories, interface labels; projects reference `project` |
 | `caseStudy` (collection) | `CaseStudyPage` | slug, media (Mux URL or image), story paragraphs, gallery (ordered artworks with optional size/side/newRow hints); referenced from `project` |
+| `partnersPage` (singleton) | `PartnersPage` | seo, hero, intro, filter labels; ordered `partnerSector` objects (id, label, optional pill label) referencing `clientLogo` with an optional case-study link |
 | `teamMember` (collection) | `TeamMember` | portrait (hotspot, required `alt`), bio; title is set per section |
 | `project` (collection) | `Project` | `client`, `title`, `slug`, `image` (hotspot, required `alt`) |
 | `award` (collection) | `Award` | referenced from `homePage.hero.awards` |
@@ -464,6 +472,17 @@ Destination-led, no overlay. On click, `motion/pageSnapshot.ts` freezes a still 
 - Gallery: `ScrollTrigger.batch` wipes each artwork frame up (`ENTRANCE.clipFrom`) in reading order while the artwork settles from 1.08× (`GALLERY`, halved on mobile), and captions rise after.
 - The header rises (`useHeroEntrance`), the headline is a `RevealText` and the story paragraphs `FadeUp`.
 - Reduced motion: fades only, no scale.
+
+### 8.11 Our Partners (`/partners`)
+
+- **Hero:** `ui/MotifHero` (shared with Our Work) with the *Our Clients* motif, traced to `partners/partnersMotifPaths.ts`. The doodles bloom from the focal point, a cursor spotlight follows on fine pointers, the headline (`text-banner`) and subheading rise, and the motif carries `data-page-parallax`.
+- **Intro:** `RevealText`.
+- **Filter:** `ui/CategoryFilter` pills ("All" plus each sector, with logo counts). The state lives in `?sector=`: shareable, back/forward step through it, and an unknown id falls back to All. A polite live region announces the result. Below `md` it becomes a single scrolling row.
+- **Table** (`SectorTable`): desktop is a hairline-ruled table, with a label column (11rem, 15rem from `lg`) and an auto-fill logo grid of fixed-height `object-contain` boxes. Mobile is stacked sector blocks with a label bar and count over a 3-column grid (2 under 380px).
+- **Row entrance** (`PARTNERS` tokens, `ScrollTrigger.batch`): the top rule draws left to right, the divider draws down, the label rises out of its mask, and the logos settle in (fade, rise, 0.9→1). Changing the filter remounts the rows, so the entrance replays.
+- **Linked logos** (to case studies): an arrow badge marks them on every device. On fine pointers they lift on hover and focus, with a "View case study" hint.
+- Reduced motion: fades only.
+
 ## 9. Assets
 
 | Asset | Status |

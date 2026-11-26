@@ -38,7 +38,7 @@ Never weaken the guard to get a build through. Fix the code, or ask.
 | --- | --- |
 | `src/router.tsx` | All routes. Each route exports `xxxLoader` and `XxxRoute` from `src/routes/`. |
 | `src/components/layout/` | `RootLayout` (shell, loader, transitions), `Header`, `Footer`, `FooterMotifStage` (CtaBand + Footer share one stage) |
-| `src/components/<page>/` | Page sections: `home/`, `what-we-do/`, `team/` |
+| `src/components/<page>/` | Page sections: `home/`, `what-we-do/`, `team/`, `work/`, `partners/` |
 | `src/components/ui/` | Primitives: `Link`, `Button`, `Img`, `PlayButton` |
 | `src/motion/` | `tokens.ts`, `gsap-setup.ts`, `SmoothScroll`, `LoaderProvider`, `PageTransition`, reveal primitives (`RevealText`, `RevealImage`, `FadeUp`, `Counter`, `Magnetic`, `LogoCarousel`, `useFallIn`, `useHeroEntrance`, `useMotifBloom`), page-transition helpers (`pageSnapshot`, `sharedTransition`) |
 | `src/content/` | `types.ts` (CMS contract), `api.ts` (async fetchers), `static/` (content), `mock/` + `sanity/` (CMS adapter + mappers) |
@@ -77,7 +77,7 @@ Never weaken the guard to get a build through. Fix the code, or ask.
 7. **Always use `ui/Link` or `ui/Button`** for internal navigation, never a bare `<a>` or
    `RouterLink`. Those components run the page transition (`motion/PageTransition.tsx`).
 8. Navigation labels, hrefs and footer columns live in `content/static/settings.ts`. The
-   planned pages are `/work`, `/csr`, `/partners`, `/blog`, `/awards` and Talk To Us (`#footer`).
+   remaining planned pages are `/csr`, `/blog`, `/awards` and Talk To Us (`#footer`).
 
 ### Styling
 9. **Use theme tokens only.** The stock Tailwind palette, fonts and breakpoints are deliberately

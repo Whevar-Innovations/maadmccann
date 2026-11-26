@@ -3,6 +3,7 @@ import { RootLayout, rootLoader } from '@/components/layout/RootLayout';
 import { BootFallback } from '@/routes/BootFallback';
 import { HomeRoute, homeLoader } from '@/routes/home';
 import { RouteError } from '@/routes/RouteError';
+import { PartnersRoute, partnersLoader } from '@/routes/partners';
 import { TheMaadOnesRoute, theMaadOnesLoader } from '@/routes/the-maad-ones';
 import { WhatWeDoRoute, whatWeDoLoader } from '@/routes/what-we-do';
 import { WorkRoute, workLoader } from '@/routes/work';
@@ -40,6 +41,12 @@ export const router = createBrowserRouter([
         path: 'work',
         loader: workLoader,
         Component: WorkRoute,
+      },
+      {
+        id: 'partners',
+        path: 'partners',
+        loader: partnersLoader,
+        Component: PartnersRoute,
       },
       {
         id: 'work-detail',

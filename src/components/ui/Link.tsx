@@ -24,7 +24,7 @@ function isNativeHref(href: string, external?: boolean): boolean {
  * Routes that exist so far. Every other internal link renders disabled until its page ships.
  * Entries with a `:param` segment match any single segment there ('/work/:slug' matches '/work/gotv').
  */
-const ENABLED_ROUTES = new Set(['/', '/what-we-do', '/the-maad-ones', '/work', '/work/:slug']);
+const ENABLED_ROUTES = new Set(['/', '/what-we-do', '/the-maad-ones', '/work', '/work/:slug', '/partners']);
 
 const patternOf = (route: string) => new RegExp(`^${route.replace(/:[^/]+/g, '[^/]+')}$`);
 

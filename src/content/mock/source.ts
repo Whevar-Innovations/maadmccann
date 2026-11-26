@@ -1,5 +1,14 @@
-import type { CaseStudyPage, HomePage, SiteSettings, TeamPage, WhatWeDoPage, WorkPage } from '../types';
+import type {
+  CaseStudyPage,
+  HomePage,
+  PartnersPage,
+  SiteSettings,
+  TeamPage,
+  WhatWeDoPage,
+  WorkPage,
+} from '../types';
 import { home } from '../static/home';
+import { partners } from '../static/partners';
 import { settings } from '../static/settings';
 import { team } from '../static/team';
 import { whatWeDo } from '../static/whatWeDo';
@@ -44,4 +53,9 @@ export async function getCaseStudy(slug: string): Promise<CaseStudyPage | undefi
   await Promise.resolve();
   const found = caseStudies.find((c) => c.slug === slug);
   return found ? structuredClone(found) : undefined;
+}
+
+export async function getPartnersPage(): Promise<PartnersPage> {
+  await Promise.resolve();
+  return structuredClone(partners);
 }

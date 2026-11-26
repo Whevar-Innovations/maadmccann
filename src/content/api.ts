@@ -1,6 +1,7 @@
 import type {
   CaseStudyPage,
   HomePage,
+  PartnersPage,
   SiteSettings,
   TeamPage,
   WhatWeDoPage,
@@ -127,4 +128,34 @@ export async function getCaseStudy(slug: string): Promise<CaseStudyPage | undefi
       ? await (await import('./mock/source')).getCaseStudy(slug)
       : (await import('./static/work')).caseStudies.find((c) => c.slug === slug);
   return found ? assertCaseStudy(found) : undefined;
+}
+
+function assertPartnersPage(data: PartnersPage): PartnersPage {
+  if (data.sectors.length === 0) throw new Error('Partners page has no sectors');
+  const sectorIds = new Set<string>();
+  const logoIds = new Set<string>();
+  for (const sector of data.sectors) {
+    if (sectorIds.has(sector.id)) throw new Error(`Duplicate partner sector id "${sector.id}"`);
+    sectorIds.add(sector.id);
+    if (sector.logos.length === 0) throw new Error(`Partner sector "${sector.id}" has no logos`);
+    for (const logo of sector.logos) {
+      if (logoIds.has(logo.id)) throw new Error(`Duplicate partner logo id "${logo.id}"`);
+      logoIds.add(logo.id);
+      if (logo.image.width <= 0 || logo.image.height <= 0) {
+        throw new Error(`Partner logo "${logo.id}" needs image width and height`);
+      }
+      // Case-study links are internal routes (ui/Link runs the page transition).
+      if (logo.href !== undefined && !/^\/(?!\/)/.test(logo.href)) {
+        throw new Error(`Partner logo "${logo.id}" href must be an internal path, received "${logo.href}"`);
+      }
+    }
+  }
+  return data;
+}
+
+export async function getPartnersPage(): Promise<PartnersPage> {
+  if (source === 'mock') {
+    return assertPartnersPage(await (await import('./mock/source')).getPartnersPage());
+  }
+  return assertPartnersPage((await import('./static/partners')).partners);
 }
