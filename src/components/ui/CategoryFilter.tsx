@@ -46,7 +46,7 @@ export function CategoryFilter({ label, allLabel, allCount, categories, value, o
       ref={rowRef}
       role="group"
       aria-label={label}
-      className="-mx-5 flex snap-x gap-2.5 overflow-x-auto px-5 py-1 [scrollbar-width:none] [mask-image:linear-gradient(to_right,transparent,black_20px,black_calc(100%-20px),transparent)] md:mx-auto md:max-w-[56rem] md:flex-wrap md:justify-center md:gap-3 md:overflow-visible md:px-0 md:[mask-image:none] [&::-webkit-scrollbar]:hidden"
+      className="-mx-5 flex snap-x gap-2.5 overflow-x-auto px-5 py-1 [scrollbar-width:none] [mask-image:linear-gradient(to_right,transparent,black_20px,black_calc(100%-20px),transparent)] md:mx-auto  md:flex-wrap md:justify-center md:gap-3 md:overflow-visible md:px-0 md:[mask-image:none] [&::-webkit-scrollbar]:hidden"
     >
       {options.map((option) => {
         const selected = option.id === value;
