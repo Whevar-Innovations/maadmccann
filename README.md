@@ -91,7 +91,7 @@ Led by the destination page, with no overlay or loader screen (`src/motion/PageT
 │   │   ├── layout/               # Shell layout (Header, Footer, FooterMotifStage, RootLayout)
 │   │   ├── what-we-do/           # What We Do sections (WhatWeDoHero, Services, ServiceCard, SbccOrbit, OrgChart)
 │   │   ├── team/                 # The MAAD Ones sections (TeamHero, TeamIntro, TeamGrid, TeamCard, BioPanel, ProfileDialog)
-│   │   ├── work/                 # Our Work + case studies (WorkHero, CategoryFilter, ProjectGrid, ProjectCard, Pagination, CaseHeader, CaseMedia, CaseStory, ArtworkGallery)
+│   │   ├── work/                 # Our Work + case studies (WorkHero, CategoryFilter, ProjectGrid, ProjectCard, Pagination, CaseHeader, CaseMedia, CaseStory, ArtworkGallery, galleryLayout.ts packer)
 │   │   └── ui/                   # Shared UI primitives (Button, Link, Img, PlayButton, Pill, VideoFrame)
 │   ├── content/
 │   │   ├── api.ts                # Content fetchers (getHomePage, getSiteSettings, getWhatWeDoPage, getTeamPage, getWorkPage, getCaseStudy)

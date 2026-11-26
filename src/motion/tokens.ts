@@ -231,6 +231,21 @@ export const CASE_STUDY = {
   storyStagger: 0.12, // paragraph rise-in
 } as const;
 
+/** Case-study hero video/poster frame. */
+export const CASE_MEDIA = {
+  enterScale: 1.12, // poster settles from a zoom as the frame un-clips
+  enterDelay: 0.15, // after the header's rise starts
+  growScale: 1.13, // scroll "lean in": the max-w-7xl frame (1280) grows to the design's ~1448
+  growVh: 0.6, // × viewport height of scroll over which it grows
+  scrub: 0.6, // scrub smoothing (s)
+} as const;
+
+/** Case-study artwork gallery reveal. */
+export const GALLERY = {
+  scaleFrom: 1.08, // inner artwork settles from a slight zoom as its frame wipes up
+  captionDelay: 0.35, // captions rise after their artwork
+} as const;
+
 export const TEAM_INTRO = {
   delay: 0.2,
 } as const;

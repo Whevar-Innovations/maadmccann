@@ -197,15 +197,24 @@ export type CaseMedia =
   | { kind: 'video'; videoUrl: string; poster: ImageAsset }
   | { kind: 'image'; image: ImageAsset };
 
-export type GalleryItem = { image: ImageAsset; caption?: string };
-
-/** Items on one row share a height (widths follow their aspect ratios). */
-export type GalleryRow = GalleryItem[];
-
-export type GalleryBlock =
-  | { layout: 'rows'; rows: GalleryRow[] }
-  /** One tall item beside a stack of rows, e.g. Take Pride's "Women Improvement Loan". */
-  | { layout: 'beside'; tallSide: 'left' | 'right'; tall: GalleryItem; rows: GalleryRow[] };
+/**
+ * One artwork in a case-study gallery. Editors list artworks in reading order; code packs them
+ * into equal-height rows by aspect ratio (components/work/galleryLayout.ts). The hints are optional
+ * art direction:
+ * - `auto` (default): packed with its neighbours, up to three per row.
+ * - `full`: a full-width row of its own.
+ * - `small`: prefers sharing a row (counts as half its width when packing), e.g. a 2-up pair.
+ * - `feature`: a tall piece placed beside a stack of the items that follow it (`side`, default right).
+ * - `newRow`: start a new row at this item.
+ */
+export type GalleryItem = {
+  image: ImageAsset;
+  caption?: string;
+  size?: 'auto' | 'full' | 'small' | 'feature';
+  /** `feature` only. */
+  side?: 'left' | 'right';
+  newRow?: boolean;
+};
 
 export type CaseStudyPage = {
   slug: string;
@@ -216,5 +225,6 @@ export type CaseStudyPage = {
   media: CaseMedia;
   headline: string;
   story: { label?: string; body: string }[];
-  gallery: GalleryBlock[];
+  /** Flat, in reading order: the layout is computed from aspect ratios + hints. */
+  gallery: GalleryItem[];
 };

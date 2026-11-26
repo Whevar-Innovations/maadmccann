@@ -106,6 +106,17 @@ export async function getWorkPage(): Promise<WorkPage> {
 function assertCaseStudy(data: CaseStudyPage): CaseStudyPage {
   if (data.story.length === 0) throw new Error(`Case study "${data.slug}" has no story`);
   if (data.gallery.length === 0) throw new Error(`Case study "${data.slug}" has no gallery`);
+  data.gallery.forEach((art, i) => {
+    const where = `Case study "${data.slug}" gallery item ${i + 1}`;
+    if (art.image.width <= 0 || art.image.height <= 0) throw new Error(`${where} needs image width and height`);
+    if (art.side && art.size !== 'feature') throw new Error(`${where}: "side" only applies to a feature`);
+    if (art.size === 'feature') {
+      const next = data.gallery[i + 1];
+      if (!next || next.size === 'full' || next.size === 'feature') {
+        throw new Error(`${where}: a feature needs an artwork after it to sit beside`);
+      }
+    }
+  });
   return data;
 }
 

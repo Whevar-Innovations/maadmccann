@@ -39,8 +39,12 @@ function asset(base: string, width: number, height: number, alt: string): ImageA
   return img(largest.url, width, height, alt, srcSet);
 }
 
-const item = (image: ImageAsset, caption?: string): GalleryItem =>
-  caption ? { image, caption } : { image };
+/** A gallery artwork. `hints` is optional art direction (see GalleryItem); layout is packed by code. */
+const item = (
+  image: ImageAsset,
+  caption?: string,
+  hints: Pick<GalleryItem, 'size' | 'side' | 'newRow'> = {},
+): GalleryItem => ({ image, ...(caption ? { caption } : {}), ...hints });
 
 const LEGAL = 'DRINK RESPONSIBLY. EXCESSIVE CONSUMPTION OF ALCOHOL IS HARMFUL TO YOUR HEALTH. NOT FOR SELL TO PERSONS UNDER THE AGE OF 18.';
 
@@ -238,7 +242,7 @@ export const caseStudies: CaseStudyPage[] = [
       poster: asset('gotv-ka-weekie/poster', 2575, 1445, 'GOtv Ka Weekie film still'),
     },
     headline:
-      'How MAAD McCann Positioned Ka Weekie as the Smartest 7 Days in Ugandan Entertainment.',
+      'How MAAD McCann Positioned Ka Weekie as the Smartest 7\u00a0Days in Ugandan Entertainment.',
     story: [
       {
         body: 'When MultiChoice Uganda introduced 7-day packages across DStv and GOtv, the challenge wasn’t just communicating a price point—it was shifting consumer behavior. MAAD McCann developed the Ka Weekie campaign identity to tap directly into the heartbeat of Ugandan culture, translating complex pricing tiers into a simple, relatable message: premium sports, news, and drama available on your own terms. By elevating everyday consumer stories and framing short-term subscriptions around real-life moments—like long weekends, village trips, or key football fixtures—we created a campaign that felt intimately tailored to the everyday viewer.',
@@ -248,18 +252,11 @@ export const caseStudies: CaseStudyPage[] = [
       },
     ],
     gallery: [
-      {
-        layout: 'rows',
-        rows: [
-          [
-            item(asset('gotv-ka-weekie/kv-introducing-young', 977, 1383, 'Ka Weekie: Introducing, three neighbours in bright prints')),
-            item(asset('gotv-ka-weekie/kv-introducing-elders', 978, 1384, 'Ka Weekie: Introducing, three elders seated together')),
-            item(asset('gotv-ka-weekie/kv-kaakano', 982, 1390, 'Ka Weekie kaakano: friends on stools with a milk can')),
-          ],
-          [item(asset('gotv-ka-weekie/banner-introducing', 3012, 1146, 'Ka Weekie: Introducing, two friends dancing, with the weekly package prices'))],
-          [item(asset('gotv-ka-weekie/banner-kaakano', 3010, 1145, 'Ka Weekie kaakano banner with the weekly package prices'))],
-        ],
-      },
+      item(asset('gotv-ka-weekie/kv-introducing-young', 977, 1383, 'Ka Weekie: Introducing, three neighbours in bright prints')),
+      item(asset('gotv-ka-weekie/kv-introducing-elders', 978, 1384, 'Ka Weekie: Introducing, three elders seated together')),
+      item(asset('gotv-ka-weekie/kv-kaakano', 982, 1390, 'Ka Weekie kaakano: friends on stools with a milk can')),
+      item(asset('gotv-ka-weekie/banner-introducing', 3012, 1146, 'Ka Weekie: Introducing, two friends dancing, with the weekly package prices')),
+      item(asset('gotv-ka-weekie/banner-kaakano', 3010, 1145, 'Ka Weekie kaakano banner with the weekly package prices')),
     ],
   },
   {
@@ -297,25 +294,12 @@ export const caseStudies: CaseStudyPage[] = [
       },
     ],
     gallery: [
-      {
-        layout: 'beside',
-        tallSide: 'right',
-        tall: item(asset('uganda-baati-crown/ad-woman-tall', 875, 1241, 'Crown Your Home with Orientile: a homeowner pointing at her roof')),
-        rows: [
-          [item(asset('uganda-baati-crown/ad-man', 1640, 922, 'Crown Your Home with Orientile: a man pointing at a red tiled roof'))],
-          [item(asset('uganda-baati-crown/ad-woman', 1640, 922, 'Crown Your Home with Orientile: a woman pointing at a red tiled roof'))],
-        ],
-      },
-      {
-        layout: 'rows',
-        rows: [
-          [
-            item(asset('uganda-baati-crown/dyk-1', 983, 1364, 'Did you know? Orientile roof tile launched in 2022')),
-            item(asset('uganda-baati-crown/dyk-2', 983, 1364, 'Did you know? Orientile comes in 28 gauge, 26 gauge on order')),
-            item(asset('uganda-baati-crown/dyk-3', 984, 1364, 'Did you know? A fundi can clean the roof daily during installation')),
-          ],
-        ],
-      },
+      item(asset('uganda-baati-crown/ad-woman-tall', 875, 1241, 'Crown Your Home with Orientile: a homeowner pointing at her roof'), undefined, { size: 'feature' }),
+      item(asset('uganda-baati-crown/ad-man', 1640, 922, 'Crown Your Home with Orientile: a man pointing at a red tiled roof')),
+      item(asset('uganda-baati-crown/ad-woman', 1640, 922, 'Crown Your Home with Orientile: a woman pointing at a red tiled roof')),
+      item(asset('uganda-baati-crown/dyk-1', 983, 1364, 'Did you know? Orientile roof tile launched in 2022')),
+      item(asset('uganda-baati-crown/dyk-2', 983, 1364, 'Did you know? Orientile comes in 28 gauge, 26 gauge on order')),
+      item(asset('uganda-baati-crown/dyk-3', 984, 1364, 'Did you know? A fundi can clean the roof daily during installation')),
     ],
   },
   {
@@ -359,22 +343,11 @@ export const caseStudies: CaseStudyPage[] = [
       },
     ],
     gallery: [
-      {
-        layout: 'beside',
-        tallSide: 'right',
-        tall: item(asset('pride-bank-growing/women', 1496, 1871, 'Take Pride in breaking barriers with our Women Improvement Loan')),
-        rows: [
-          [
-            item(asset('pride-bank-growing/agri', 728, 1039, 'Take Pride in working the land with our Agriculture Loan')),
-            item(asset('pride-bank-growing/home', 728, 1040, 'Take Pride in building your dream home with our Home Improvement Loan')),
-          ],
-          [item(asset('pride-bank-growing/school-fees', 1482, 802, 'Take Pride in giving your child a bright future with our School Fees Loan'))],
-        ],
-      },
-      {
-        layout: 'rows',
-        rows: [[item(asset('pride-bank-growing/rising-stars', 2996, 1461, 'Take Pride in helping their money grow with them using our Rising Stars account'))]],
-      },
+      item(asset('pride-bank-growing/women', 1496, 1871, 'Take Pride in breaking barriers with our Women Improvement Loan'), undefined, { size: 'feature' }),
+      item(asset('pride-bank-growing/agri', 728, 1039, 'Take Pride in working the land with our Agriculture Loan')),
+      item(asset('pride-bank-growing/home', 728, 1040, 'Take Pride in building your dream home with our Home Improvement Loan')),
+      item(asset('pride-bank-growing/school-fees', 1482, 802, 'Take Pride in giving your child a bright future with our School Fees Loan')),
+      item(asset('pride-bank-growing/rising-stars', 2996, 1461, 'Take Pride in helping their money grow with them using our Rising Stars account')),
     ],
   },
   {
@@ -419,17 +392,10 @@ export const caseStudies: CaseStudyPage[] = [
       },
     ],
     gallery: [
-      {
-        layout: 'rows',
-        rows: [
-          [item(asset('tuskerlite-turn-on/dj-green', 2989, 1304, 'Turn on your Lite: a DJ with a mixing desk beside a Tusker Lite bottle'), LEGAL)],
-          [
-            item(asset('tuskerlite-turn-on/dj-hat', 1480, 646, 'Turn on your Lite: a creative in a neon hat'), LEGAL),
-            item(asset('tuskerlite-turn-on/photographer', 1480, 646, 'Turn on your Lite: a photographer with a camera'), LEGAL),
-          ],
-          [item(asset('tuskerlite-turn-on/singer', 2989, 1304, 'Turn on your Lite: a performer in an orange jacket'), LEGAL)],
-        ],
-      },
+      item(asset('tuskerlite-turn-on/dj-green', 2989, 1304, 'Turn on your Lite: a DJ with a mixing desk beside a Tusker Lite bottle'), LEGAL),
+      item(asset('tuskerlite-turn-on/dj-hat', 1480, 646, 'Turn on your Lite: a creative in a neon hat'), LEGAL, { size: 'small' }),
+      item(asset('tuskerlite-turn-on/photographer', 1480, 646, 'Turn on your Lite: a photographer with a camera'), LEGAL, { size: 'small' }),
+      item(asset('tuskerlite-turn-on/singer', 2989, 1304, 'Turn on your Lite: a performer in an orange jacket'), LEGAL),
     ],
   },
 ];

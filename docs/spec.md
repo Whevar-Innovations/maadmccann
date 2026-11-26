@@ -35,7 +35,7 @@ src/
     what-we-do/  WhatWeDoHero.tsx  Services.tsx  ServiceCard.tsx  SbccOrbit.tsx  OrgChart.tsx
     team/  TeamHero.tsx  TeamIntro.tsx  TeamGrid.tsx  TeamCard.tsx  BioPanel.tsx  ProfileDialog.tsx
     work/  WorkHero.tsx  CategoryFilter.tsx  ProjectGrid.tsx  ProjectCard.tsx  Pagination.tsx
-           CaseHeader.tsx  CaseMedia.tsx  CaseStory.tsx  ArtworkGallery.tsx
+           CaseHeader.tsx  CaseMedia.tsx  CaseStory.tsx  ArtworkGallery.tsx  galleryLayout.ts
   routes/  home.tsx  what-we-do.tsx  the-maad-ones.tsx  work.tsx  work-detail.tsx (loader + page each)
   lib/     useSeo.ts  site.ts (site-wide SEO defaults)
   styles/  globals.css (tokens)
@@ -135,10 +135,11 @@ export type WorkProject = Project & { categoryIds: string[]; hasCaseStudy: boole
 export type WorkPage = { seo; hero: { headlineLines; subheading }; filterLabel; allLabel;
   categories: WorkCategory[]; pageSize: number; projects: WorkProject[]; labels: { ... } };
 export type CaseMedia = { kind: 'video'; videoUrl; poster } | { kind: 'image'; image };  // Mux video or hero image
-export type GalleryBlock = { layout: 'rows'; rows: GalleryItem[][] }
-  | { layout: 'beside'; tallSide: 'left' | 'right'; tall: GalleryItem; rows: GalleryItem[][] };
+// Gallery: editors list artworks in reading order; code packs the layout (§8.10). Hints are optional.
+export type GalleryItem = { image: ImageAsset; caption?;
+  size?: 'auto' | 'full' | 'small' | 'feature'; side?: 'left' | 'right' /* feature only */; newRow?: boolean };
 export type CaseStudyPage = { slug; seo; clientLabel; client; title; media: CaseMedia; headline;
-  story: { label?; body }[]; gallery: GalleryBlock[] };
+  story: { label?; body }[]; gallery: GalleryItem[] };
 ```
 
 ### 5.3 API layer (`src/content/api.ts`)
@@ -258,7 +259,7 @@ export const settings: SiteSettings = {
 | `whatWeDoPage` (singleton) | `WhatWeDoPage` | seo, hero, one object per service (with anchor `id`) |
 | `teamPage` (singleton) | `TeamPage` | seo, hero image, intro, rows of sections referencing `teamMember` |
 | `workPage` (singleton) | `WorkPage` | seo, hero, categories, interface labels; projects reference `project` |
-| `caseStudy` (collection) | `CaseStudyPage` | slug, media (Mux URL or image), story paragraphs, gallery blocks; referenced from `project` |
+| `caseStudy` (collection) | `CaseStudyPage` | slug, media (Mux URL or image), story paragraphs, gallery (ordered artworks with optional size/side/newRow hints); referenced from `project` |
 | `teamMember` (collection) | `TeamMember` | portrait (hotspot, required `alt`), bio; title is set per section |
 | `project` (collection) | `Project` | `client`, `title`, `slug`, `image` (hotspot, required `alt`) |
 | `award` (collection) | `Award` | referenced from `homePage.hero.awards` |
@@ -447,6 +448,22 @@ Destination-led, no overlay. On click, `motion/pageSnapshot.ts` freezes a still 
 - `prefers-reduced-motion: reduce`: no loader animation (instant), no parallax, no idle loops. Elements simply fade in (0.4s).
 - Mobile (under 768px): shorter distances (halve `DIST`), no pointer parallax, hero stacks (text, then trophies), trophy idle loop limited to the float only, work grid becomes a single column in the order 0 to 4.
 
+
+### 8.10 Case study (`/work/:slug`)
+
+**Gallery layout** (`components/work/galleryLayout.ts`). The CMS gives an ordered list of artworks; `layoutGallery()` packs it in aspect-ratio space (no DOM measuring, identical at every width):
+- Runs of `auto`/`small` items are split into rows of 1–3 by a linear-partition DP minimising Σ(Σratio − 2.4)². A row of three portraits or one wide banner is the ideal; `small` counts as half its width, so two small landscapes share a row.
+- `full` takes a full-width row; `newRow` forces a break.
+- `feature` sits beside a stack of the next 1–4 items (on `side`, default right). The stack size is chosen so its rows pack well (target Σratio 1.6) and the feature column lands near 48% of the width.
+- Every row is equal height (flex widths ∝ ratio), and the beside block's columns are sized so both sides match. Nothing is cropped. Below `md`, each artwork takes a full-width row. The gallery shares the video column (`max-w-7xl`).
+- `assertCaseStudy` rejects artworks without dimensions, `side` on a non-feature, and a feature with nothing after it.
+
+**Motion.**
+- Hero media: the frame un-clips from the bottom while the poster settles from 1.12× (`CASE_MEDIA`). This is skipped when a work tile expanded into the frame.
+- Scroll "lean in" (desktop): the frame scales from 1 to 1.13 over the first 0.6 of a viewport of scroll, so 1280 becomes the design's ~1448, capped at the viewport width. It is 1 at scroll 0.
+- Gallery: `ScrollTrigger.batch` wipes each artwork frame up (`ENTRANCE.clipFrom`) in reading order while the artwork settles from 1.08× (`GALLERY`, halved on mobile), and captions rise after.
+- The header rises (`useHeroEntrance`), the headline is a `RevealText` and the story paragraphs `FadeUp`.
+- Reduced motion: fades only, no scale.
 ## 9. Assets
 
 | Asset | Status |

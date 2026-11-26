@@ -95,9 +95,15 @@
   --text-cta--line-height: 1.1;
 
   /* ---------- UI scale: clamp(0.8 × size, size ÷ 19.2 vw, 1.15 × size) ---------- */
-  --text-case-title: clamp(2.5rem, 2.6042vw, 3.5938rem); /* 50px, Bold: case-study title */
-  --text-case-title--line-height: 1.05;
-  --text-case-title--letter-spacing: -0.02em;
+  /* 60px, Bold, no tracking: case-study title + story headline (Our Work design p.2).
+     Floor is 2rem, not 0.8x: the story headline runs to ~8 lines on a phone at 48px. */
+  --text-case-title: clamp(2rem, 3.125vw, 4.3125rem);
+  --text-case-title--line-height: 1.18;
+  --text-case-client: clamp(1.2rem, 1.25vw, 1.725rem); /* 24px: case-study CLIENT label + name */
+  --text-case-client--line-height: 1.33;
+  /* 16px on a 24px pitch: case-study story. Floor 1rem keeps phone body copy readable. */
+  --text-case-body: clamp(1rem, 0.8333vw, 1.15rem);
+  --text-case-body--line-height: 1.5;
   --text-tile-label: clamp(1.5rem, 1.5625vw, 2.1562rem); /* 30px, SemiBold: work tile labels */
   --text-footer-cta: clamp(1.3rem, 1.3542vw, 1.8687rem); /* 26px, Bold: footer Let's Talk */
   --text-stat-label: clamp(1.175rem, 1.224vw, 1.6891rem); /* 23.5px, Bold: stat labels */

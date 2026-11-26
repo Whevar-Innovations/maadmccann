@@ -14,9 +14,9 @@ export function CaseHeader({ clientLabel, client, title }: CaseHeaderProps) {
   useHeroEntrance(ref, { targets: '[data-case-enter]' });
 
   return (
-    <header ref={ref} className="container-site pt-32 pb-10 md:pt-40 md:pb-14 lg:pt-48 lg:pb-16">
-      <div className="mx-auto grid max-w-[64rem] gap-4 md:grid-cols-[15rem_1fr] md:gap-8">
-        <p data-case-enter className="text-body leading-snug text-ink">
+    <header ref={ref} className="container-site pt-32 pb-10 md:pt-40 md:pb-16 lg:pt-56 lg:pb-24">
+      <div className="mx-auto grid max-w-5xl gap-4 md:grid-cols-[13rem_1fr] md:gap-8">
+        <p data-case-enter className="text-case-client text-ink">
           <span className="block font-semibold">{clientLabel}</span>
           <span className="block">{client}</span>
         </p>
