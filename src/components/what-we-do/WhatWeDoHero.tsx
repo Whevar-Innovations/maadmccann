@@ -82,7 +82,7 @@ export function WhatWeDoHero({ hero }: WhatWeDoHeroProps) {
     <section
       ref={sectionRef}
       aria-labelledby="wwd-hero-heading"
-      className="relative isolate flex min-h-[34rem] items-center overflow-hidden bg-wwd-ink pt-28 pb-20 text-paper sm:min-h-[38rem] lg:min-h-[42rem] lg:pt-32 [@media(orientation:landscape)_and_(max-height:540px)]:min-h-svh [@media(orientation:landscape)_and_(max-height:540px)]:pt-24 [@media(orientation:landscape)_and_(max-height:540px)]:pb-10"
+      className="relative isolate flex min-h-[34rem] items-center overflow-hidden bg-wwd-ink pt-28 pb-20 text-paper sm:min-h-[38rem] lg:min-h-[clamp(42rem,35vw,56rem)] lg:pt-32 [@media(orientation:landscape)_and_(max-height:540px)]:min-h-svh [@media(orientation:landscape)_and_(max-height:540px)]:pt-24 [@media(orientation:landscape)_and_(max-height:540px)]:pb-10"
     >
       {/* Soft vignette like the design: lighter charcoal centre, darker edges */}
       <div
@@ -119,10 +119,10 @@ export function WhatWeDoHero({ hero }: WhatWeDoHeroProps) {
         <use href="#header-motif-pattern" />
       </svg>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1240px] px-5 text-center sm:px-10">
+      <div className="relative z-10 mx-auto w-full max-w-column px-5 text-center sm:px-10">
         <h1
           id="wwd-hero-heading"
-          className="font-display text-[clamp(2.1rem,4.3vw,5.2rem)] leading-[1.02] font-bold tracking-[-0.03em] text-paper"
+          className="font-display text-[clamp(2.1rem,4.3vw,6.88rem)] leading-[1.02] font-bold tracking-[-0.03em] text-paper"
         >
           {hero.headlineLines.map((line) => (
             <span key={line} className="block overflow-hidden pb-[0.06em]">
@@ -133,7 +133,7 @@ export function WhatWeDoHero({ hero }: WhatWeDoHeroProps) {
           ))}
         </h1>
 
-        <p className="mx-auto mt-6 max-w-[62ch] text-[clamp(0.95rem,1.05vw,1.3rem)] leading-snug font-medium text-paper/90 sm:mt-7 lg:max-w-none">
+        <p className="mx-auto mt-6 max-w-[62ch] text-[clamp(0.95rem,1.05vw,1.68rem)] leading-snug font-medium text-paper/90 sm:mt-7 lg:max-w-none">
           {hero.bodyLines.map((line) => (
             <span key={line} data-hero-body className="block sm:inline lg:block">
               {line}{' '}

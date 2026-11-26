@@ -9,9 +9,9 @@ export type ArtworkGalleryProps = {
   gallery: CaseStudyPage['gallery'];
 };
 
-/** `sizes` for a piece taking `share` of the gallery width (max-w-7xl = 1280px, ~90vw below that). */
+/** `sizes` for a piece taking `share` of the gallery width (max-w-content: 1280px to a 1920 viewport, then 66.67vw; ~90vw below 1440). */
 const sizesFor = (share: number) =>
-  `(min-width: 1440px) ${Math.ceil(1280 * share)}px, (min-width: 768px) ${Math.ceil(90 * share)}vw, 100vw`;
+  `(min-width: 1920px) ${Math.ceil(66.67 * share)}vw, (min-width: 1440px) ${Math.ceil(1280 * share)}px, (min-width: 768px) ${Math.ceil(90 * share)}vw, 100vw`;
 
 function Figure({ item, share }: { item: GalleryItem; share: number }) {
   return (
@@ -58,7 +58,7 @@ const rowKey = (row: GalleryRow) => row.map((item) => item.image.src).join('|');
 /**
  * Artwork mosaic, laid out by `layoutGallery` from the editor's ordered list: justified rows, and
  * "beside" blocks where a feature piece sits next to a stack of rows, sized so both sides match.
- * Same column as the hero video (max-w-7xl), like the design.
+ * Same column as the hero video (max-w-content), like the design.
  *
  * Motion: as each batch of artworks scrolls in, the frames wipe up (the direction the page travels)
  * in reading order while the artwork settles from a slight zoom; captions rise after.
@@ -132,7 +132,7 @@ export function ArtworkGallery({ gallery }: ArtworkGalleryProps) {
       aria-label="Campaign artwork"
       className="container-site pb-20 md:pb-28 lg:pb-32"
     >
-      <div className="mx-auto flex max-w-7xl flex-col gap-1.5 md:gap-2">
+      <div className="mx-auto flex max-w-content flex-col gap-1.5 md:gap-2">
         {blocks.map((block) => {
           if (block.layout === 'rows') {
             return (

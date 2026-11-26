@@ -165,7 +165,8 @@ export const partners: PartnersPage = {
   },
   {
     id: 'telecom-pay-tv',
-    label: 'Telecommunications & Pay TV',
+    // Soft hyphen: the one-word sector label is wider than the label column at 1920 and up.
+    label: 'Tele\u00ADcommunications & Pay TV',
     filterLabel: 'Telecoms & Pay TV',
     logos: [
       logo('multichoice', 'MultiChoice', 320, 199, '/work/gotv-ka-weekie'),

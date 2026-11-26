@@ -46,13 +46,13 @@ export function TeamCard({ member, cardId, active, onHoverStart, onHoverEnd, onO
       <div className="absolute inset-x-0 bottom-0 flex flex-col px-[9%] pb-[7%] text-left text-paper">
         <span
           data-card-caption
-          className="font-display text-[clamp(0.9rem,3.6vw,1.05rem)] leading-[1.1] font-bold tracking-[-0.01em] sm:text-[clamp(0.85rem,1.9vw,1.05rem)] lg:text-[clamp(0.78rem,1.02vw,1.2rem)]"
+          className="font-display text-[clamp(0.9rem,3.6vw,1.05rem)] leading-[1.1] font-bold tracking-[-0.01em] sm:text-[clamp(0.85rem,1.9vw,1.05rem)] lg:text-[clamp(0.78rem,min(1.02vw,max(1.2rem,1vw)),1.6rem)]"
         >
           {member.name}
         </span>
         <span
           data-card-caption
-          className="mt-[0.3em] text-[clamp(0.66rem,2.6vw,0.76rem)] leading-[1.25] font-medium text-paper/85 sm:text-[clamp(0.62rem,1.3vw,0.76rem)] lg:text-[clamp(0.56rem,0.66vw,0.8rem)]"
+          className="mt-[0.3em] text-[clamp(0.66rem,2.6vw,0.76rem)] leading-[1.25] font-medium text-paper/85 sm:text-[clamp(0.62rem,1.3vw,0.76rem)] lg:text-[clamp(0.56rem,0.66vw,1.056rem)]"
         >
           {member.title}
         </span>
@@ -73,7 +73,7 @@ export function TeamCard({ member, cardId, active, onHoverStart, onHoverEnd, onO
             <span
               data-card-caption
               aria-hidden={hasBio ? undefined : true}
-              className={`${hasBio ? '' : 'invisible'} block pt-[0.6em] text-center text-[clamp(0.58rem,2.2vw,0.66rem)] font-medium tracking-[0.12em] text-paper/80 uppercase sm:text-[clamp(0.55rem,1.1vw,0.66rem)] lg:text-[clamp(0.5rem,0.56vw,0.7rem)]`}
+              className={`${hasBio ? '' : 'invisible'} block pt-[0.6em] text-center text-[clamp(0.58rem,2.2vw,0.66rem)] font-medium tracking-[0.12em] text-paper/80 uppercase sm:text-[clamp(0.55rem,1.1vw,0.66rem)] lg:text-[clamp(0.5rem,0.56vw,0.896rem)]`}
             >
               <span className="relative inline-block pb-[0.2em] opacity-100 transition-opacity duration-500 ease-expo pointer-fine:opacity-0 group-hover:opacity-100! group-focus-visible:opacity-100! group-data-[active=true]:opacity-100!">
                 See profile

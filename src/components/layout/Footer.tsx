@@ -126,7 +126,7 @@ export function Footer({ settings }: FooterProps) {
     >
       <div
         ref={cardRef}
-        className="mx-auto max-w-[1720px] rounded-t-[2.75rem] bg-charcoal px-8 pt-24 pb-12 text-paper sm:px-16 sm:pt-28 lg:px-28 lg:pt-36 lg:pb-16 xl:px-36"
+        className="mx-auto max-w-footer rounded-t-[2.75rem] bg-charcoal px-8 pt-24 pb-12 text-paper sm:px-16 sm:pt-28 lg:px-28 lg:pt-36 lg:pb-16 xl:px-36"
       >
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
           {/* Left column: Logo + LET'S CONNECT grouped cleanly as in 14-53-53.png */}

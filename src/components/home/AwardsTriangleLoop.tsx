@@ -214,7 +214,7 @@ export function AwardsTriangleLoop({
     <div
       ref={stageRef}
       data-trophies-stage
-      className={`relative mx-auto aspect-[1.15/1] w-full max-w-[780px] select-none ${className}`}
+      className={`relative mx-auto aspect-[1.15/1] w-full max-w-trophies select-none ${className}`}
     >
       {/* Soft  radial glow behind the trio (SPEC §8.4) */}
       <div
