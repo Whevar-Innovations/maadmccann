@@ -323,3 +323,16 @@ export const FALL_IN = {
   stagger: 0.12,
   durationFactor: 0.7, // × DUR.text
 } as const;
+
+/** Our Partners: hero motif and the sector table's row entrance. */
+export const PARTNERS = {
+  motifOpacity: 0.25, // soft-light strokes over the metal (same treatment as WORK_HERO)
+  subDelay: 0.25,
+  rowStagger: 0.12, // rows entering together start one after another
+  sideAt: 0.1, // label/logo divider draws just after the row's top rule
+  labelAt: 0.15,
+  logosAt: 0.3,
+  logoRise: 16, // px (halved on mobile)
+  logoScaleFrom: 0.9,
+  logoStagger: 0.04, // tighter than STAGGER.items: a busy row lands in under a second
+} as const;

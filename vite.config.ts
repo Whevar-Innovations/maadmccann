@@ -5,7 +5,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { CASE_STUDY_SLUGS } from './src/content/static/workSlugs';
 
 /** Public routes that belong in the sitemap. Add real routes as they ship. */
-const SITEMAP_ROUTES = ['/', '/what-we-do', '/the-maad-ones', '/work', '/work/:slug'];
+const SITEMAP_ROUTES = ['/', '/what-we-do', '/the-maad-ones', '/work', '/work/:slug', '/partners'];
 
 /** `/work/:slug` is a pattern: the sitemap lists one URL per case study instead. */
 const SITEMAP_URLS = SITEMAP_ROUTES.flatMap((route) =>

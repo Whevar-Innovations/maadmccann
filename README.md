@@ -23,7 +23,7 @@ All digital assets, layouts, typography, and motifs are derived directly from th
 | **`What We Do/`** | `MAAD McCANN Website Services.ai`<br>• `Services Motif.png`<br>• Font packages | **Services & Capabilities**<br>• Brand Strategy & Development<br>• Creative & Art Direction<br>• PR & Reputation Management<br>• Experiential & Events<br>• Media Planning & Buying<br>• Production, Digital & SBCC | • `src/routes/what-we-do.tsx`<br>• `src/components/what-we-do/*`<br>• `src/content/types.ts` (`WhatWeDoPage`)<br>• `src/content/static/whatWeDo.ts`<br>• Footer services grid in `Footer.tsx` |
 | **`Our Work/`** | `MAAD McCANN Website Our Work.ai`<br>• `Our Work Motif.png`<br>• High-res campaign key visuals | **Our Work & Case Studies**<br>• Sector filter pills + paginated project grid (URL-driven)<br>• `/work/:slug` case studies: video or hero image, story, artwork mosaic<br>• Homepage tile grid (`WorkGrid`) links into them | • `src/routes/work.tsx`, `src/routes/work-detail.tsx`<br>• `src/components/work/*`<br>• `src/content/types.ts` (`WorkPage`, `CaseStudyPage`)<br>• `src/content/static/work.ts`, `workSlugs.ts`<br>• `src/components/home/WorkGrid.tsx`, `WorkCard.tsx`<br>• `src/assets/img/work/*` |
 | **`CSR/`** | `MAAD McCANN CSR.ai`<br>• `Run For The Nile/`<br>• `Iron Sharpens Iron/`<br>• `CSR Motif.png` | **Corporate Social Responsibility**<br>• Purpose-driven campaigns<br>• Master dark line-art motif backdrop | • `src/assets/img/dark-motif-bg.webp`<br>• Mobile header menu backdrop |
-| **`Our Partners/`** | `MAAD McCANN Website Our Clients.ai`<br>• Partner brand marks | **Client Roster**<br>• Dual-tier trust display<br>• Staggered fade-up reveal | • `src/components/home/ClientsRow.tsx`<br>• `src/assets/img/clients/*` |
+| **`Our Partners/`** | `MAAD McCANN Website Our Clients.ai`<br>• `Our Clients Motif.png`<br>• Partner brand marks (cropped from the artwork) | **Our Partners & Client Roster**<br>• `/partners`: motif hero, sector filter (URL-driven), hairline sector table of client logos, optional case-study links<br>• Homepage clients row | • `src/routes/partners.tsx`<br>• `src/components/partners/*`<br>• `src/content/types.ts` (`PartnersPage`)<br>• `src/content/static/partners.ts`<br>• `src/assets/img/partners/*`<br>• `src/components/home/ClientsRow.tsx` |
 | **`The Maad Ones/`** | `The MAAD Ones.ai`<br>• `People Page.docx`<br>• Leadership portraits | **Agency Team & Culture**<br>• Creative leadership<br>• Department heads & culture | • `src/routes/the-maad-ones.tsx`<br>• `src/components/team/*`<br>• `src/content/types.ts` (`TeamPage`, `TeamMember`)<br>• `src/content/static/team.ts` |
 | **`Blog/`** | `MAAD McCANN Website BLOG.ai`<br>• Gayaza High School workshop assets | **Insights & Thought Leadership**<br>• Creative masterclasses<br>• Community engagement articles | • `src/content/types.ts` (`Article`) |
 | **`Awards/`** | `MAAD McCANN Website Awards.ai`<br>• Silverback Awards photo archive | **Awards & Recognition**<br>• Grand Prix, Agency of the Year<br>• Category plaques & certificates | • `src/components/home/Trophies.tsx`<br>• `public/trophies/*` |
@@ -91,8 +91,9 @@ Led by the destination page, with no overlay or loader screen (`src/motion/PageT
 │   │   ├── layout/               # Shell layout (Header, Footer, FooterMotifStage, RootLayout)
 │   │   ├── what-we-do/           # What We Do sections (WhatWeDoHero, Services, ServiceCard, SbccOrbit, OrgChart)
 │   │   ├── team/                 # The MAAD Ones sections (TeamHero, TeamIntro, TeamGrid, TeamCard, BioPanel, ProfileDialog)
-│   │   ├── work/                 # Our Work + case studies (WorkHero, CategoryFilter, ProjectGrid, ProjectCard, Pagination, CaseHeader, CaseMedia, CaseStory, ArtworkGallery, galleryLayout.ts packer)
-│   │   └── ui/                   # Shared UI primitives (Button, Link, Img, PlayButton, Pill, VideoFrame)
+│   │   ├── work/                 # Our Work + case studies (WorkHero, ProjectGrid, ProjectCard, Pagination, CaseHeader, CaseMedia, CaseStory, ArtworkGallery, galleryLayout.ts packer)
+│   │   ├── partners/             # Our Partners (PartnersHero, PartnersIntro, SectorTable, PartnerLogoTile, partnersMotifPaths.ts)
+│   │   └── ui/                   # Shared UI primitives (Button, Link, Img, PlayButton, Pill, CategoryFilter, MotifHero, VideoFrame)
 │   ├── content/
 │   │   ├── api.ts                # Content fetchers (getHomePage, getSiteSettings, getWhatWeDoPage, getTeamPage, getWorkPage, getCaseStudy)
 │   │   ├── types.ts              # CMS schema type definitions (the contract)
@@ -121,6 +122,7 @@ Led by the destination page, with no overlay or loader screen (`src/motion/PageT
 │   │   ├── the-maad-ones.tsx     # The MAAD Ones loader & route view
 │   │   ├── work.tsx              # Our Work loader & route view
 │   │   ├── work-detail.tsx       # Case study (/work/:slug) loader & route view
+│   │   ├── partners.tsx          # Our Partners loader & route view
 │   │   └── RouteError.tsx        # Top-level error boundary
 │   ├── styles/
 │   │   └── globals.css           # Tailwind v4 theme & typography tokens

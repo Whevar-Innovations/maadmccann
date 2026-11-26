@@ -228,3 +228,33 @@ export type CaseStudyPage = {
   /** Flat, in reading order: the layout is computed from aspect ratios + hints. */
   gallery: GalleryItem[];
 };
+
+// ---------- Our Partners (/partners) ----------
+
+/** A client logo on the Our Partners page; `href` links it to a case study when one exists. */
+export type PartnerLogo = ClientLogo & { href?: string };
+
+/**
+ * One sector row: the label cell and its logos, in display order. `id` is the `?sector=` value;
+ * `filterLabel` is an optional shorter name for the filter pill (e.g. "SBCC").
+ */
+export type PartnerSector = { id: string; label: string; filterLabel?: string; logos: PartnerLogo[] };
+
+export type PartnersPage = {
+  seo: PageSeo;
+  hero: {
+    headlineLines: string[];
+    subheading: string;
+  };
+  intro: string;
+  /** Accessible name of the sector filter, and the "show everything" pill. */
+  filterLabel: string;
+  allLabel: string;
+  sectors: PartnerSector[];
+  labels: {
+    announce: string;       // live region: 'Showing {count} partners in {sector}'
+    announceOne: string;    // live region, one logo: 'Showing 1 partner in {sector}'
+    announceAll: string;    // live region, no filter: 'Showing all {count} partners'
+    viewCaseStudy: string;  // hover hint under a linked logo
+  };
+};
