@@ -66,63 +66,89 @@
   --font-weight-bold: 700;
   --font-weight-black: 900;
 
-  /* ---------- Breakpoints: 640 / 1024 / 1440 (+768 for the mobile motion rules in §8.9) ---------- */
+  /* ---------- Breakpoints: 640 / 1024 / 1440 / 1920 (+768 for the mobile motion rules in §8.9) ---------- */
   --breakpoint-*: initial;
   --breakpoint-sm: 40rem;
   --breakpoint-md: 48rem;
   --breakpoint-lg: 64rem;
   --breakpoint-xl: 90rem;
+  --breakpoint-2xl: 120rem; /* the design artboard; above it the layout scales up (§6 large screens) */
 
-  /* ---------- Display scale (§6 fluid sizes, verbatim) ---------- */
+  /* ---------- Layout widths (§6 large screens) ----------
+     Each width is its design value (px at a 1920 viewport) up to 1920, then grows with the viewport
+     to 1.333x at 2560 and stops: clamp(size, size / 19.2 vw, 1.333 x size). So nothing changes at or
+     below 1920, and a 2560 screen gets the 1920 design scaled up instead of a small island.
+     Use as max-w-<name>. Follow the same rule for any new width. */
+  --container-site: clamp(90rem, 75vw, 120rem); /* 1440: container-site */
+  --container-header: clamp(110rem, 91.6667vw, 146.6667rem); /* 1760: header bar */
+  --container-footer: clamp(107.5rem, 89.5833vw, 143.3333rem); /* 1720: footer block */
+  --container-hero: clamp(105rem, 87.5vw, 140rem); /* 1680: home hero grid */
+  --container-ghost: clamp(111.25rem, 92.7083vw, 148.3333rem); /* 1780: TRUTH WELL TOLD */
+  --container-content: clamp(80rem, 66.6667vw, 106.6667rem); /* 1280: impact, case media, gallery, partner table */
+  --container-column: clamp(77.5rem, 64.5833vw, 103.3333rem); /* 1240: What We Do, team intro */
+  --container-grid: clamp(76.5rem, 63.75vw, 102rem); /* 1224: Our Work project grid */
+  --container-story: clamp(72rem, 60vw, 96rem); /* 1152: case-study story headline */
+  --container-case: clamp(64rem, 53.3333vw, 85.3333rem); /* 1024: case-study header */
+  --container-trophies: clamp(48.75rem, 40.625vw, 65rem); /* 780: hero trophy triangle */
+  --container-intro: clamp(48rem, 40vw, 64rem); /* 768: showreel heading block */
+
+  /* ---------- Display scale (§6 fluid sizes, verbatim) ----------
+     Display maxima sit at 1.333x the 1920 size, so headlines keep growing to a 2560 viewport
+     (§6 large screens). At or below 1920 the vw term wins, so these match the design. Where an old
+     cap sat below the vw value at 1920, hold it to 1920 and scale only above:
+     clamp(min, min(vw, max(cap, cap / 19.2 vw)), 1.333 x cap) (see --text-stat). */
   --tracking-display: -0.02em;
   --leading-display: 0.95;
   --leading-body: 1.5;
 
-  --text-hero: clamp(2.75rem, 5.5vw, 6.6rem); /* 105.6px, Haas 75 Bold */
+  --text-hero: clamp(2.75rem, 5.5vw, 8.8rem); /* 105.6px, Haas 75 Bold */
   --text-hero--line-height: 0.95;
   --text-hero--letter-spacing: -0.02em;
-  --text-ghost: clamp(4.5rem, 10.65vw, 12.8rem); /* 204.5px, Haas 75 Bold */
+  --text-ghost: clamp(4.5rem, 10.65vw, 17.04rem); /* 204.5px, Haas 75 Bold */
   --text-ghost--line-height: 0.95;
   --text-ghost--letter-spacing: -0.02em;
-  --text-showreel: clamp(2rem, 3.125vw, 3.75rem); /* 60px, Haas 75 Bold */
+  --text-showreel: clamp(2rem, 3.125vw, 5rem); /* 60px, Haas 75 Bold */
   --text-showreel--line-height: 1.1;
-  --text-impact: clamp(1.75rem, 2.4vw, 2.9rem); /* 45.9px, Haas 95 Black */
+  --text-impact: clamp(1.75rem, 2.4vw, 3.84rem); /* 45.9px, Haas 95 Black */
   --text-impact--line-height: 0.95;
   --text-impact--letter-spacing: -0.02em;
-  --text-stat: clamp(3rem, 4.26vw, 5.1rem); /* 81.8px, Haas 95 Black */
+  --text-stat: clamp(3rem, min(4.26vw, max(5.1rem, 4.25vw)), 6.8rem); /* 81.8px, Haas 95 Black */
   --text-stat--line-height: 1;
-  --text-cta: clamp(1.75rem, 3.23vw, 3.9rem); /* 62px, Haas 65 Medium */
+  --text-cta: clamp(1.75rem, 3.23vw, 5.168rem); /* 62px, Haas 65 Medium */
   --text-cta--line-height: 1.1;
   /* 72px, Bold: banner heroes on the crimson motif (Our Work, Our Partners). Floor 2rem, not 0.8x,
      so the two-line headline stays two to three lines on a phone. */
-  --text-banner: clamp(2rem, 3.75vw, 5.175rem);
+  --text-banner: clamp(2rem, 3.75vw, 6rem);
   --text-banner--line-height: 1.05;
 
-  /* ---------- UI scale: clamp(0.8 × size, size ÷ 19.2 vw, 1.15 × size) ---------- */
+  /* ---------- UI scale: clamp(0.8 × size, size ÷ 19.2 vw, 1.333 × size) ----------
+     The 1.333x ceiling lets copy grow with the layout widths up to a 2560 viewport (§6 large screens). */
   /* 60px, Bold, no tracking: case-study title + story headline (Our Work design p.2).
      Floor is 2rem, not 0.8x: the story headline runs to ~8 lines on a phone at 48px. */
-  --text-case-title: clamp(2rem, 3.125vw, 4.3125rem);
+  --text-case-title: clamp(2rem, 3.125vw, 5rem);
   --text-case-title--line-height: 1.18;
-  --text-case-client: clamp(1.2rem, 1.25vw, 1.725rem); /* 24px: case-study CLIENT label + name */
+  --text-case-client: clamp(1.2rem, 1.25vw, 2rem); /* 24px: case-study CLIENT label + name */
   --text-case-client--line-height: 1.33;
   /* 16px on a 24px pitch: case-study story. Floor 1rem keeps phone body copy readable. */
-  --text-case-body: clamp(1rem, 0.8333vw, 1.15rem);
+  --text-case-body: clamp(1rem, 0.8333vw, 1.3333rem);
   --text-case-body--line-height: 1.5;
-  --text-tile-label: clamp(1.5rem, 1.5625vw, 2.1562rem); /* 30px, SemiBold: work tile labels */
-  --text-footer-cta: clamp(1.3rem, 1.3542vw, 1.8687rem); /* 26px, Bold: footer Let's Talk */
-  --text-stat-label: clamp(1.175rem, 1.224vw, 1.6891rem); /* 23.5px, Bold: stat labels */
-  --text-sub: clamp(1rem, 1.0417vw, 1.4375rem); /* 20px, SemiBold showreel subheading, Regular View work */
-  --text-footer-title: clamp(0.96rem, 1vw, 1.38rem); /* 19.2px, Bold: footer column titles */
-  --text-body: clamp(0.9rem, 0.9375vw, 1.2937rem); /* 18px, Medium: hero subheading, impact paragraph */
-  --text-connect: clamp(0.865rem, 0.901vw, 1.2434rem); /* 17.3px, SemiBold: LET'S CONNECT */
-  --text-accent: clamp(0.835rem, 0.8698vw, 1.2003rem); /* 16.7px, Futura: VIEW OUR WORK */
-  --text-stat-desc: clamp(0.75rem, 0.7812vw, 1.0781rem); /* 15px, Medium: stat descriptions */
-  --text-small: clamp(0.705rem, 0.7344vw, 1.0134rem); /* 14.1px, SemiBold contact details, Regular footer links */
+  --text-tile-label: clamp(1.5rem, 1.5625vw, 2.5rem); /* 30px, SemiBold: work tile labels */
+  --text-footer-cta: clamp(1.3rem, 1.3542vw, 2.1667rem); /* 26px, Bold: footer Let's Talk */
+  --text-stat-label: clamp(1.175rem, 1.224vw, 1.9584rem); /* 23.5px, Bold: stat labels */
+  --text-sub: clamp(1rem, 1.0417vw, 1.6667rem); /* 20px, SemiBold showreel subheading, Regular View work */
+  --text-footer-title: clamp(0.96rem, 1vw, 1.6rem); /* 19.2px, Bold: footer column titles */
+  --text-body: clamp(0.9rem, 0.9375vw, 1.5rem); /* 18px, Medium: hero subheading, impact paragraph */
+  --text-connect: clamp(0.865rem, 0.901vw, 1.4416rem); /* 17.3px, SemiBold: LET'S CONNECT */
+  --text-accent: clamp(0.835rem, 0.8698vw, 1.3917rem); /* 16.7px, Futura: VIEW OUR WORK */
+  --text-stat-desc: clamp(0.75rem, 0.7812vw, 1.2499rem); /* 15px, Medium: stat descriptions */
+  --text-small: clamp(0.705rem, 0.7344vw, 1.175rem); /* 14.1px, SemiBold contact details, Regular footer links */
 }
 
-/* Page container: max 1440px, side padding clamp(20px, 5vw, 72px) */
+/* Page container: max 1440px up to a 1920 viewport, then scales to 1920 (--container-site),
+   side padding clamp(20px, 5vw, 72px). Full-bleed frames (showreel, work grid) sit outside it. */
 @utility container-site {
   width: 100%;
+  max-width: var(--container-site);
   margin-inline: auto;
   padding-inline: clamp(20px, 5vw, 72px);
 }

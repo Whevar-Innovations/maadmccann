@@ -18,8 +18,8 @@ VITE_CONTENT_SOURCE=mock npm run build   # proves components don't depend on the
 ```
 
 There is no linter or test runner. `check:rules` + `typecheck` + `build` is the gate. For visual or
-motion changes, also check the page in the browser at 1440, 1024, 768 and 390px, with reduced
-motion both on and off.
+motion changes, also check the page in the browser at 2560, 1920, 1440, 1024, 768 and 390px, with
+reduced motion both on and off.
 
 **`npm run check:rules` fails the build** on:
 
@@ -92,9 +92,13 @@ Never weaken the guard to get a build through. Fix the code, or ask.
    one exception is the keyword `black` in alpha masks, where only alpha matters.
 10. Type sizes come from the named scale (`text-hero`, `text-cta`, `text-body`, `text-small`, and
     the rest). Their values follow the spec's fluid rule `clamp(0.8×, size/19.2 vw, 1.15×)` measured
-    off the 1920-wide designs. Follow the same rule for any new size.
-11. Page width uses `container-site` (max 1440, gutter `clamp(20px, 5vw, 72px)`). Breakpoints
-    are `sm` 640, `md` 768, `lg` 1024 and `xl` 1440.
+    off the 1920-wide designs, with the max at 1.333× so type keeps growing to a 2560 viewport (spec §6
+    large screens). Follow the same rule for any new size.
+11. Page width uses `container-site` (max 1440 up to a 1920 viewport, then scaling to 1920, gutter
+    `clamp(20px, 5vw, 72px)`). Other widths use the `--container-*` tokens (`max-w-content`,
+    `max-w-column`, …), never a raw `max-w-[1240px]`; a new width gets a token following
+    `clamp(size, size/19.2 vw, 1.333×)`. Breakpoints are `sm` 640, `md` 768, `lg` 1024, `xl` 1440
+    and `2xl` 1920.
 12. Fonts: `font-display` is Haas Grot Disp (trial, falling back to Inter until licensed).
     `font-body` is Inter. `font-accent` is Futura, and only for the "VIEW OUR WORK" style link.
     Never commit Haas trial files, Futura BT or Helvetica Neue to `public/`.
@@ -159,7 +163,7 @@ Follow this order. `routes/the-maad-ones.tsx` is the reference implementation.
    motif layer `data-page-parallax` (rule 18).
 6. **Register:** `router.tsx` + `ENABLED_ROUTES` (`ui/Link.tsx`) + `SITEMAP_ROUTES` (`vite.config.ts`).
 7. **Verify:** `npm run build` (runs `check:rules`), `VITE_CONTENT_SOURCE=mock npm run build`, then
-   check it in the browser at four widths with reduced motion on and off.
+   check it in the browser at 2560, 1920, 1440, 1024, 768 and 390px with reduced motion on and off.
 8. **Docs:** update the README structure tree and the `docs/spec.md` §5.2/§5.3 lists.
 
 ## Design direction

@@ -193,7 +193,7 @@ export function TeamGrid({ rows }: TeamGridProps) {
       <h2 id={`team-${section.id}-title`} className="overflow-hidden pb-[0.08em]">
         <span
           data-team-heading
-          className="block font-display text-[clamp(1.05rem,1.35vw,1.6rem)] leading-none font-bold tracking-[-0.01em] text-ink uppercase will-change-transform"
+          className="block font-display text-[clamp(1.05rem,min(1.35vw,max(1.6rem,1.3333vw)),2.1333rem)] leading-none font-bold tracking-[-0.01em] text-ink uppercase will-change-transform"
         >
           {section.title}
         </span>
@@ -220,7 +220,7 @@ export function TeamGrid({ rows }: TeamGridProps) {
   return (
     <div
       ref={wrapRef}
-      className="relative mx-auto flex w-full max-w-[2200px] flex-col gap-y-14 px-3.5 pt-14 pb-24 [--card-n:2] [--gap:0.625rem] sm:gap-y-16 sm:px-8 sm:pt-16 sm:[--card-n:3] sm:[--gap:0.75rem] md:[--card-n:4] lg:gap-y-20 lg:pb-36 lg:[--card:min(15rem,14.5vw)] lg:[--gap:clamp(0.6rem,0.75vw,1rem)] xl:[--card:min(15rem,10.6vw)]"
+      className="relative mx-auto flex w-full max-w-[2200px] flex-col gap-y-14 px-3.5 pt-14 pb-24 [--card-n:2] [--gap:0.625rem] sm:gap-y-16 sm:px-8 sm:pt-16 sm:[--card-n:3] sm:[--gap:0.75rem] md:[--card-n:4] lg:gap-y-20 lg:pb-36 lg:[--card:min(15rem,14.5vw)] lg:[--gap:clamp(0.6rem,0.75vw,1rem)] xl:[--card:min(15rem,10.6vw)] 2xl:[--card:min(20rem,10.6vw)]"
     >
       {rows.map((row) =>
         Array.isArray(row) ? (

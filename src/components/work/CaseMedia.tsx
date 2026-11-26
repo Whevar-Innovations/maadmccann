@@ -81,7 +81,7 @@ export function CaseMedia({ media, title }: CaseMediaProps) {
 
   return (
     <div ref={ref} className="container-site">
-      <div data-case-grow className="mx-auto max-w-7xl will-change-transform">
+      <div data-case-grow className="mx-auto max-w-content will-change-transform">
         <div data-shared-target className="overflow-hidden">
           <div data-case-zoom className="will-change-transform">
             {media.kind === 'video' ? (

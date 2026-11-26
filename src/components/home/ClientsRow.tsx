@@ -29,7 +29,7 @@ export function ClientsRow({ clients }: ClientsRowProps) {
         </FadeUp>
       </div>
 
-      <FadeUp className="container-site mt-8 lg:mt-10">
+      <FadeUp className="mt-8 lg:mt-10">
         <LogoCarousel
           items={clients.logos}
           getKey={(logo) => logo.id}

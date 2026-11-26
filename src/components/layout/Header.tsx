@@ -191,7 +191,7 @@ export function Header({ settings }: HeaderProps) {
             : 'bg-transparent'
         }`}
       >
-        <div className="mx-auto flex h-20 w-full max-w-[1760px] items-center justify-between gap-6 px-6 sm:px-10 lg:h-28 lg:px-16">
+        <div className="mx-auto flex h-20 w-full max-w-header items-center justify-between gap-6 px-6 sm:px-10 lg:h-28 lg:px-16">
           <Link
             href="/"
             aria-label="MAAD McCANN Home"
