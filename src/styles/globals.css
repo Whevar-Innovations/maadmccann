@@ -93,6 +93,10 @@
   --text-stat--line-height: 1;
   --text-cta: clamp(1.75rem, 3.23vw, 3.9rem); /* 62px, Haas 65 Medium */
   --text-cta--line-height: 1.1;
+  /* 72px, Bold: banner heroes on the crimson motif (Our Work, Our Partners). Floor 2rem, not 0.8x,
+     so the two-line headline stays two to three lines on a phone. */
+  --text-banner: clamp(2rem, 3.75vw, 5.175rem);
+  --text-banner--line-height: 1.05;
 
   /* ---------- UI scale: clamp(0.8 × size, size ÷ 19.2 vw, 1.15 × size) ---------- */
   /* 60px, Bold, no tracking: case-study title + story headline (Our Work design p.2).

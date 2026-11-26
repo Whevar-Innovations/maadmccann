@@ -4,7 +4,7 @@ import type { WorkPage } from '@/content/types';
 import { clampPage, fill } from '@/lib/pagination';
 import { FadeUp } from '@/motion/FadeUp';
 import { useSmoothScroll } from '@/motion/SmoothScroll';
-import { CategoryFilter } from './CategoryFilter';
+import { CategoryFilter } from '@/components/ui/CategoryFilter';
 import { Pagination } from './Pagination';
 import { ProjectCard } from './ProjectCard';
 
