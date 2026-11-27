@@ -98,7 +98,8 @@ Never weaken the guard to get a build through. Fix the code, or ask.
     `clamp(20px, 5vw, 72px)`). Other widths use the `--container-*` tokens (`max-w-content`,
     `max-w-column`, …), never a raw `max-w-[1240px]`; a new width gets a token following
     `clamp(size, size/19.2 vw, 1.333×)`. Breakpoints are `sm` 640, `md` 768, `lg` 1024, `xl` 1440
-    and `2xl` 1920.
+    and `2xl` 1920. Two shape variants cover what width alone gets wrong: `tall:` (portrait tablets,
+    ≥640 and ≤4:5) and `wide:` (≥1024 and ≥3:2). The home hero lays out in `--hero-u` (spec §6).
 12. Fonts: `font-display` is Haas Grot Disp (trial, falling back to Inter until licensed).
     `font-body` is Inter. `font-accent` is Futura, and only for the "VIEW OUR WORK" style link.
     Never commit Haas trial files, Futura BT or Helvetica Neue to `public/`.

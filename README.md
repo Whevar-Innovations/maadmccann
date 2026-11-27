@@ -53,9 +53,9 @@ Only files inside `src/content/` may import `src/content/static/`. All content f
 - **Mock Mode (`VITE_CONTENT_SOURCE=mock`):** Uses an asynchronous in-memory clone of `mock/source.ts` to simulate CMS latency and verify zero build regressions.
 
 ### B. Sticky Desktop Header & Mobile Drawer
-- **Desktop Header:** Fixed at `top: 0` (`h-20 lg:h-28`), transitioning from transparent to ink blur (`bg-ink/80 backdrop-blur-md`) past `80px` scroll. Smoothly hides on downward scroll past `120px` (`yPercent: -100`) and reveals instantly on upward scroll (`yPercent: 0`).
+- **Desktop Header:** Fixed at `top: 0` (`h-20 lg:h-28`), transitioning from transparent to black (`bg-ink/95`, `bg-paper/95` on light pages) past `80px` scroll. Smoothly hides on downward scroll past `120px` (`yPercent: -100`) and reveals instantly on upward scroll (`yPercent: 0`).
 - **Viewport Anchoring:** The `<Header>` is placed directly under the root container outside any CSS `transform` or `will-change` wrappers, ensuring its containing block is always the browser viewport.
-- **Mobile Menu Drawer:** Portaled directly to `document.body` (`fixed inset-0 z-[9950]`). Uses a 100% solid, fully opaque dark blackish background (`bg-menu-ink`, `#0E0E10`) with an embossed line-art motif overlay from `CSR Motif.png`. When open, the main desktop header is hidden to prevent double-logo/button ghosting.
+- **Mobile Menu Drawer:** Portaled directly to `document.body` (`fixed inset-0 z-[9950]`). Uses a 100% solid, fully opaque dark blackish background (`bg-menu-ink`, `#0E0E10`) with an embossed line-art motif overlay from `CSR Motif.png`. When open, the main desktop header is hidden to prevent double-logo/button ghosting. From `sm` the links scale up (`--text-menu`, capped by viewport height), the top bar matches the header bar so the logo doesn't jump, and the Talk To Us pill and the location line share one row.
 
 ### C. Continuous Footer Motif Stage
 A unified red metallic texture stage (`src/components/layout/FooterMotifStage.tsx`) spans both the `CtaBand` and `Footer` sections seamlessly, eliminating horizontal seams. An interactive SVG motif bloom runs on scroll entry, with a pointer-tracking radial spotlight.
