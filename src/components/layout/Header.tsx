@@ -65,7 +65,7 @@ function TwoToneLogo() {
 /**
  * Site header (SPEC §7 #1 & §8.6).
  * - Logo left, 8 nav links centered (disabled per route constraints, home active), white pill "Talk To Us" button right.
- * - Transparent at top, then deep brand maroon (crimson-950, paper on light pages) at 95% after 80px scroll.
+ * - Transparent at top, then black (ink, paper on light pages) at 95% after 80px scroll (client request).
  *   No backdrop blur: re-blurring the motif / photos under the bar every frame stalled the start of each
  *   scroll, and at 95% opacity the bar reads the same without it.
  * - Hover/focus/active links: maroon-200 tint (≈11.5:1 on crimson-950, ≈5.7:1 over the hero; WCAG AA).
@@ -197,7 +197,7 @@ export function Header({ settings }: HeaderProps) {
           scrolledPastThreshold && !menuOpen
             ? light
               ? 'bg-paper/95'
-              : 'bg-crimson-950/95'
+              : 'bg-ink/95'
             : 'bg-transparent'
         } ${rule ? 'border-b border-ink/25' : ''}`}
       >
@@ -298,15 +298,16 @@ export function Header({ settings }: HeaderProps) {
             aria-label="Navigation menu"
             className="fixed inset-0 z-[9950] flex h-dvh min-h-svh w-screen flex-col justify-between overflow-y-auto bg-menu-ink text-paper min-[75rem]:hidden"
           >
-            {/* Subtle embossed dark motif background matching Screenshot 15-52-54.png */}
+            {/* Subtle embossed dark motif background matching Screenshot 15-52-54.png. Quieter from sm up:
+                bg-cover enlarges the doodles on tablets until they compete with the links. */}
             <div
               aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-15"
+              className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-15 sm:opacity-[0.07]"
               style={{ backgroundImage: `url(${darkMotifBgSrc})` }}
             />
 
-            {/* Top drawer bar: single logo + close button matching header h-20 px-6 sm:px-10 */}
-            <div className="relative z-10 flex h-20 w-full shrink-0 items-center justify-between px-6 sm:px-10">
+            {/* Top drawer bar: logo + close button, matching the header bar (h-20/28, px-6/10/16) so nothing jumps */}
+            <div className="relative z-10 flex h-20 w-full shrink-0 items-center justify-between px-6 sm:px-10 lg:h-28 lg:px-16">
               <Link
                 href="/"
                 aria-label="MAAD McCANN Home"
@@ -345,15 +346,15 @@ export function Header({ settings }: HeaderProps) {
             </div>
 
             {/* Nav list */}
-            <nav aria-label="Mobile Primary" className="relative z-10 my-auto px-6 py-6 sm:px-10">
-              <ul className="space-y-3.5 sm:space-y-4">
+            <nav aria-label="Mobile Primary" className="relative z-10 my-auto px-6 py-6 sm:px-10 lg:px-16">
+              <ul className="space-y-3.5 sm:space-y-[1.2svh]">
                 {settings.nav.map((item, idx) => (
                   <li key={item.href} data-mobile-nav-item className="overflow-hidden">
                     <ContentLink
                       link={item}
-                      className="group flex items-baseline gap-4 font-display text-2xl sm:text-3xl font-extrabold uppercase tracking-tight text-paper transition-colors hover:text-paper"
+                      className="group flex items-baseline gap-4 font-display text-2xl font-extrabold uppercase tracking-tight text-paper transition-colors hover:text-paper sm:gap-6 sm:text-menu"
                     >
-                      <span className="font-mono text-xs text-paper/40 font-normal">
+                      <span className="font-mono text-xs font-normal text-paper/40 group-aria-[current]:text-crimson-600 sm:text-sm">
                         {String(idx + 1).padStart(2, '0')}
                       </span>
                       <span>{item.label}</span>
@@ -366,16 +367,16 @@ export function Header({ settings }: HeaderProps) {
             {/* Drawer bottom: CTA + brand details */}
             <div
               data-mobile-nav-item
-              className="relative z-10 space-y-6 border-t border-paper/10 px-6 pt-6 pb-8 sm:px-10"
+              className="relative z-10 space-y-6 border-t border-paper/10 px-6 pt-6 pb-8 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:space-y-0 sm:px-10 sm:pb-10 lg:px-16"
             >
               <Button
                 link={settings.navCta}
                 size="md"
                 onClick={() => setMenuOpen(false)}
-                className="w-full justify-center bg-paper text-ink font-bold hover:bg-paper/90"
+                className="w-full justify-center bg-paper text-ink font-bold hover:bg-paper/90 sm:w-auto sm:px-10"
               />
 
-              <div className="flex items-center justify-between text-[11px] font-mono tracking-widest text-paper/60 uppercase">
+              <div className="flex items-center justify-between text-[11px] font-mono tracking-widest text-paper/60 uppercase sm:gap-8 sm:text-xs">
                 <span>KAMPALA, UGANDA</span>
                 <span>TRUTH WELL TOLD</span>
               </div>

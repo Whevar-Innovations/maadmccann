@@ -365,6 +365,22 @@ with `clamp(min, min(vw, max(cap, cap ÷ 19.2 vw)), 1.333 × cap)`. Full-bleed f
 grid) stay full-bleed. Rasters that fill the viewport need a source at least 2560 wide. The ceilings
 are pending designer sign-off.
 
+**Home hero stage unit.** The home hero (lg+) is laid out in `--hero-u`, 1/100 of the 16:9 frame
+that fits the viewport: `min(1vw, max(1.2rem, 1.7778svh), 1.6rem)`. At or below 1920 wide it is
+exactly 1vw, so laptops match the design. Above that, the height term keeps short-for-their-width
+screens (an iMac 27" in a browser, about 2560×1300) in proportion, and the cap centres a 2560 frame
+on 4K so copy, trophies and motif stay one group. The `--spacing-hero-*`, `--container-hero-*` and
+`--text-hero-stage*` tokens are all expressed in it.
+
+**Screen-shape variants** (`@custom-variant` in `globals.css`, use them only where width alone
+misleads):
+
+- `tall`: `min-width 640px` and `max-aspect-ratio 4/5` (iPad mini/Pro in portrait). The home hero
+  stacks the copy over the trophies (`--text-hero-tall*`, `--container-hero-tall-*`) and fills one screen.
+- `wide`: `min-width 1024px` and `min-aspect-ratio 3/2` (laptops, desktops, 3:2 landscape tablets).
+  The hero ghost text keeps its dark multiply here. Elsewhere the cropped background is too dark,
+  so it is a faint paper emboss (`text-paper/7`).
+
 **Licensing before launch**
 
 - **Inter 18pt:** open licence (SIL OFL), free to self-host. Subset woff2 files for all four weights and a ready `fonts.css` are done: copy them to `public/fonts` and import `fonts.css`.
@@ -376,10 +392,10 @@ are pending designer sign-off.
 
 | # | Section | Layout and content | Background |
 | --- | --- | --- | --- |
-| 1 | **Header** | Logo (white SVG) left. Eight links plus a white pill button *Talk To Us* on the right. Overlays the hero. Hides on scroll down, shows on scroll up. Mobile: full-screen menu with staggered links. | transparent, then `ink` at 80% blur after 80px |
-| 2 | **Hero** | Left: 3-line headline, subheading (max 52ch), `VIEW OUR WORK` link with circle-arrow icon. Right: three trophies in a triangle (see §8.4). Behind: inverted-A motif. Bottom: ghosted `TRUTH WELL TOLD`, cropped by the section edge. Min height 100svh. | `hero-bg.jpg` red metallic |
+| 1 | **Header** | Logo (white SVG) left. Eight links plus a white pill button *Talk To Us* on the right. Overlays the hero. Hides on scroll down, shows on scroll up. Below 1200px: full-screen menu with staggered links. From `sm` the links scale up (`--text-menu`, capped by height so all eight fit a landscape iPad), the top bar matches the header bar, and the CTA and details share one row. The current page's number is red. | transparent, then `ink` at 95% after 80px (light pages: `paper` at 95%) |
+| 2 | **Hero** | Left (copy from x = 12.5vw): 3-line headline (`text-hero`), subheading, then `VIEW OUR WORK` with a circle-arrow icon pinned level with the trophy bases. Right: three trophies in a triangle (see §8.4), in a 780-wide column. Behind: the A/V motif, anchored to the frame's right edge, resting multiply fill 0.22 (`HERO_TIMELINE.motifRestOpacity`). Bottom: ghosted `TRUTH WELL TOLD`, cropped by the section edge (see §6 `wide`). Min height 100svh. Sized in the hero stage unit (§6); portrait tablets stack (§6 `tall`). | `hero-bg.jpg` red metallic |
 | 3 | **Showreel** | Centred heading and subheading, then a full-width 16:9 video poster with a 96px outlined circle labelled WATCH in the centre. Click opens a fullscreen video modal. | `ink` |
-| 4 | **Clients row** | Centred small-caps label, then 7 logos in one row (wraps to 2 rows below 640px). | `paper` |
+| 4 | **Clients row** | Centred small-caps label, then a continuous logo marquee (`motion/LogoCarousel`, 20 logos): a constant-speed seamless loop that never reacts to page scrolling (`LOGO_MARQUEE` tokens). Desktop eases to a stop on hover or focus. Phones get a swipeable scroller that keeps gliding between swipes. Reduced motion: a static wrapped grid. | `paper` |
 | 5 | **Work grid** | Zero-gap tiles. Slot 0: tall, left half, spans three rows. Slots 1 to 3: stacked, right half. Slot 4: full-width banner (about 21:9). Each tile: full-bleed image, bottom gradient, label bottom-left (`Client: Title`) and `View work ——` with a line. | image |
 | 6 | **Impact** | Two columns: `OUR IMPACT` in impact-red on the left, paragraph on the right. Below, four stats in a row, each with a top divider, big number, bold label and small grey description. 2×2 below 1024px. | `paper` |
 | 7 | **CTA band** | Centred two-line headline, paragraph (max 60ch), white pill `Let’s Talk`. `lower-pattern.svg` as a faint overlay. | `cta-bg.jpg` red |
@@ -495,7 +511,7 @@ Destination-led, no overlay. On click, `motion/pageSnapshot.ts` freezes a still 
 
 - **Hero:** `ui/MotifHero` (shared with Our Work) with the *Our Clients* motif, traced to `partners/partnersMotifPaths.ts`. The doodles bloom from the focal point, a cursor spotlight follows on fine pointers, the headline (`text-banner`) and subheading rise, and the motif carries `data-page-parallax`.
 - **Intro:** `RevealText`.
-- **Filter:** `ui/CategoryFilter` pills ("All" plus each sector, with logo counts). The state lives in `?sector=`: shareable, back/forward step through it, and an unknown id falls back to All. A polite live region announces the result. Below `md` it becomes a single scrolling row.
+- **Filter:** `ui/CategoryFilter` pills ("All" plus each sector, with logo counts). The state lives in `?sector=`: shareable, back/forward step through it, and an unknown id falls back to All. A polite live region announces the result. On Our Partners (`rows={3}`) the pills sit in exactly three centred lines balanced by label length from `lg` up, and stay a single scrolling row below `lg`. Our Work keeps free wrapping from `md`, with a scrolling row below.
 - **Table** (`SectorTable`): desktop is a hairline-ruled table, with a label column (11rem, 15rem from `lg`) and an auto-fill logo grid of fixed-height `object-contain` boxes. Mobile is stacked sector blocks with a label bar and count over a 3-column grid (2 under 380px).
 - **Row entrance** (`PARTNERS` tokens, `ScrollTrigger.batch`): the top rule draws left to right, the divider draws down, the label rises out of its mask, and the logos settle in (fade, rise, 0.9→1). Changing the filter remounts the rows, so the entrance replays.
 - **Linked logos** (to case studies): an arrow badge marks them on every device. On fine pointers they lift on hover and focus, with a "View case study" hint.

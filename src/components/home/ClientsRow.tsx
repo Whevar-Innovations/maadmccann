@@ -9,7 +9,7 @@ export type ClientsRowProps = {
 
 /**
  * Clients row section (SPEC §7 #4 & §8.5).
- * Centred small-caps label, then a stepped, infinite logo carousel (visible count follows width; pauses on hover).
+ * Centred small-caps label, then a continuous, seamless logo marquee (never stops on scroll; eases to a stop on hover).
  */
 export function ClientsRow({ clients }: ClientsRowProps) {
   return (
@@ -36,11 +36,11 @@ export function ClientsRow({ clients }: ClientsRowProps) {
           renderItem={(logo) => (
             <span
               data-client-logo
-              className="relative flex h-12 w-full max-w-[9.5rem] items-center justify-center will-change-transform hover:z-10 active:z-10 motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:active:scale-110 motion-safe:[@media(hover:hover)]:hover:scale-[1.15] sm:h-14 lg:h-16"
+              className="relative flex h-12 w-[7rem] items-center justify-center will-change-transform hover:z-10 active:z-10 motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:active:scale-110 motion-safe:[@media(hover:hover)]:hover:scale-[1.15] sm:h-14 sm:w-[8.5rem] lg:h-16 lg:w-[9.5rem]"
             >
               <Img
                 image={logo.image}
-                sizes="152px"
+                sizes="160px"
                 className="h-full w-full object-contain"
               />
             </span>

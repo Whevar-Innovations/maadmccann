@@ -135,6 +135,7 @@ export function SectorTable({ sectors, filterLabel, allLabel, labels }: SectorTa
           categories={options}
           value={selected?.id ?? null}
           onChange={choose}
+          rows={3}
         />
       </div>
       <p aria-live="polite" className="sr-only">

@@ -1,5 +1,5 @@
-import type { HomePage, Project } from '../types';
-import { img, trophySet } from './assets';
+import type { ClientLogo, HomePage, ImageAsset, Project } from '../types';
+import { img, logoImage, trophySet } from './assets';
 import showreelPosterSrc from '@/assets/img/showreel-poster.webp';
 import gotvSrc from '@/assets/img/work/gotv-ka-weekie.webp';
 import cocacolaSrc from '@/assets/img/work/cocacola-digital.webp';
@@ -63,15 +63,35 @@ const rawProjects: RawProject[] = [
   },
 ];
 
-// Client logos (trimmed of padding; source files live in assets/img/clients/color)
-const clientLogos = [
-  { id: 'coca-cola', name: 'Coca-Cola', src: cocaColaLogo, w: 520, h: 180 },
-  { id: 'unicef', name: 'UNICEF', src: unicefLogo, w: 520, h: 134 },
-  { id: 'diageo', name: 'Diageo', src: diageoLogo, w: 520, h: 120 },
-  { id: 'emirates', name: 'Emirates', src: emiratesLogo, w: 520, h: 116 },
-  { id: 'ugachick', name: 'Ugachick', src: ugachickLogo, w: 225, h: 225 },
-  { id: 'multichoice', name: 'MultiChoice', src: multichoiceLogo, w: 428, h: 260 },
-] as const;
+// Client logos. The original six are trimmed exports in assets/img/clients; the rest reuse the
+// cropped partner exports (assets/img/partners/{id}-{w}.webp) via logoImage. Global and local
+// brands alternate so the strip reads varied at any point of the loop.
+const logo = (id: string, name: string, image: ImageAsset): ClientLogo => ({ id, name, image });
+const partnerLogo = (id: string, name: string, w: number, h: number): ClientLogo =>
+  logo(id, name, logoImage(id, w, h, `${name} logo`));
+
+const clientLogos: ClientLogo[] = [
+  logo('coca-cola', 'Coca-Cola', img(cocaColaLogo, 520, 180, 'Coca-Cola logo')),
+  partnerLogo('uganda-breweries', 'Uganda Breweries Limited', 206, 191),
+  logo('unicef', 'UNICEF', img(unicefLogo, 520, 134, 'UNICEF logo')),
+  partnerLogo('gotv', 'GOtv', 320, 66),
+  logo('diageo', 'Diageo', img(diageoLogo, 520, 120, 'Diageo logo')),
+  partnerLogo('tusker-lite', 'Tusker Lite', 161, 175),
+  logo('emirates', 'Emirates', img(emiratesLogo, 520, 116, 'Emirates logo')),
+  partnerLogo('kcb', 'KCB Bank', 320, 60),
+  partnerLogo('guinness', 'Guinness', 162, 176),
+  logo('ugachick', 'Ugachick', img(ugachickLogo, 225, 225, 'Ugachick logo')),
+  partnerLogo('mastercard', 'Mastercard', 277, 218),
+  logo('multichoice', 'MultiChoice', img(multichoiceLogo, 428, 260, 'MultiChoice logo')),
+  partnerLogo('johnnie-walker', 'Johnnie Walker', 320, 169),
+  partnerLogo('red-cross', 'Uganda Red Cross Society', 249, 248),
+  partnerLogo('unilever', 'Unilever', 215, 237),
+  partnerLogo('dstv', 'DStv', 320, 68),
+  partnerLogo('totalenergies', 'TotalEnergies', 320, 235),
+  partnerLogo('save-the-children', 'Save the Children', 320, 66),
+  partnerLogo('western-union', 'Western Union', 320, 100),
+  partnerLogo('prudential', 'Prudential', 320, 165),
+];
 
 export const home: HomePage = {
   hero: {
@@ -127,11 +147,7 @@ export const home: HomePage = {
   },
   clients: {
     heading: 'TRUSTED BY VISIONARY BRANDS',
-    logos: clientLogos.map(({ id, name, src, w, h }) => ({
-      id,
-      name,
-      image: img(src, w, h, `${name} logo`),
-    })),
+    logos: clientLogos,
   },
   featuredProjects: rawProjects.map(withProjectHref),
   impact: {
