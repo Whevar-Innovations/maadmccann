@@ -1,18 +1,14 @@
 import { createBrowserRouter } from 'react-router';
 import { RootLayout, rootLoader } from '@/components/layout/RootLayout';
-import { BlogRoute, blogLoader } from '@/routes/blog';
-import { BlogPostError, BlogPostRoute, blogPostLoader } from '@/routes/blog-post';
 import { BootFallback } from '@/routes/BootFallback';
-import { ContactRoute, contactLoader } from '@/routes/contact';
-import { CsrRoute, csrLoader } from '@/routes/csr';
-import { HomeRoute, homeLoader } from '@/routes/home';
 import { RouteError } from '@/routes/RouteError';
-import { PartnersRoute, partnersLoader } from '@/routes/partners';
-import { TheMaadOnesRoute, theMaadOnesLoader } from '@/routes/the-maad-ones';
-import { WhatWeDoRoute, whatWeDoLoader } from '@/routes/what-we-do';
-import { WorkRoute, workLoader } from '@/routes/work';
-import { WorkDetailRoute, workDetailLoader } from '@/routes/work-detail';
 
+/**
+ * Each page is its own chunk (route `lazy`): the first load only downloads the shell (header,
+ * footer, motion) plus the page being visited, so its hero motif blooms on an idle main thread
+ * instead of competing with every other page's code, motif paths and the video player.
+ * `handle` stays static so the header knows its tone before the page chunk arrives.
+ */
 export const router = createBrowserRouter([
   {
     id: 'root',
@@ -25,66 +21,85 @@ export const router = createBrowserRouter([
       {
         id: 'home',
         index: true,
-        loader: homeLoader,
-        Component: HomeRoute,
+        lazy: async () => {
+          const m = await import('@/routes/home');
+          return { loader: m.homeLoader, Component: m.HomeRoute };
+        },
       },
       {
         id: 'what-we-do',
         path: 'what-we-do',
-        loader: whatWeDoLoader,
-        Component: WhatWeDoRoute,
+        lazy: async () => {
+          const m = await import('@/routes/what-we-do');
+          return { loader: m.whatWeDoLoader, Component: m.WhatWeDoRoute };
+        },
       },
       {
         id: 'the-maad-ones',
         path: 'the-maad-ones',
-        loader: theMaadOnesLoader,
-        Component: TheMaadOnesRoute,
+        lazy: async () => {
+          const m = await import('@/routes/the-maad-ones');
+          return { loader: m.theMaadOnesLoader, Component: m.TheMaadOnesRoute };
+        },
       },
       {
         id: 'work',
         path: 'work',
-        loader: workLoader,
-        Component: WorkRoute,
+        lazy: async () => {
+          const m = await import('@/routes/work');
+          return { loader: m.workLoader, Component: m.WorkRoute };
+        },
       },
       {
         id: 'partners',
         path: 'partners',
-        loader: partnersLoader,
-        Component: PartnersRoute,
+        lazy: async () => {
+          const m = await import('@/routes/partners');
+          return { loader: m.partnersLoader, Component: m.PartnersRoute };
+        },
       },
       {
         id: 'work-detail',
         path: 'work/:slug',
-        loader: workDetailLoader,
-        Component: WorkDetailRoute,
         handle: { headerTone: 'light' },
+        lazy: async () => {
+          const m = await import('@/routes/work-detail');
+          return { loader: m.workDetailLoader, Component: m.WorkDetailRoute };
+        },
       },
       {
         id: 'csr',
         path: 'csr',
-        loader: csrLoader,
-        Component: CsrRoute,
+        lazy: async () => {
+          const m = await import('@/routes/csr');
+          return { loader: m.csrLoader, Component: m.CsrRoute };
+        },
       },
       {
         id: 'blog',
         path: 'blog',
-        loader: blogLoader,
-        Component: BlogRoute,
+        lazy: async () => {
+          const m = await import('@/routes/blog');
+          return { loader: m.blogLoader, Component: m.BlogRoute };
+        },
       },
       {
         id: 'blog-post',
         path: 'blog/:slug',
-        loader: blogPostLoader,
-        Component: BlogPostRoute,
-        ErrorBoundary: BlogPostError,
         // Articles sit on paper: dark type, two-tone logo, hairline under the bar (blog design).
         handle: { headerTone: 'light', headerRule: true },
+        lazy: async () => {
+          const m = await import('@/routes/blog-post');
+          return { loader: m.blogPostLoader, Component: m.BlogPostRoute, ErrorBoundary: m.BlogPostError };
+        },
       },
       {
         id: 'contact',
         path: 'contact',
-        loader: contactLoader,
-        Component: ContactRoute,
+        lazy: async () => {
+          const m = await import('@/routes/contact');
+          return { loader: m.contactLoader, Component: m.ContactRoute };
+        },
       },
     ],
   },

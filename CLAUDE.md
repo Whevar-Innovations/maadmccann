@@ -36,7 +36,7 @@ Never weaken the guard to get a build through. Fix the code, or ask.
 
 | Path | What lives there |
 | --- | --- |
-| `src/router.tsx` | All routes. Each route exports `xxxLoader` and `XxxRoute` from `src/routes/`. |
+| `src/router.tsx` | All routes, each code-split with `lazy: () => import('@/routes/xxx')` returning its `xxxLoader` and `XxxRoute` (keep `handle` static so the header tone is known early). |
 | `src/components/layout/` | `RootLayout` (shell, loader, transitions), `Header`, `Footer`, `FooterMotifStage` (CtaBand + Footer share one stage) |
 | `src/components/<page>/` | Page sections: `home/`, `what-we-do/`, `team/`, `work/`, `partners/` |
 | `src/components/ui/` | Primitives: `Link`, `Button`, `Img`, `PlayButton` |

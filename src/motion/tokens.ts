@@ -97,6 +97,7 @@ export const HERO_TIMELINE = {
 export const MOTIF_LAB = {
   restOpacity: 0.14,
   bloomPeakOpacity: 0.34,
+  bloomScaleFrom: 0.9, // each doodle grows from this scale about its centre as it blooms
   bloomDistanceDelayFactor: 1.6,
   bloomSettleDelay: 1.5,
   spotOpacity: 0.24,
