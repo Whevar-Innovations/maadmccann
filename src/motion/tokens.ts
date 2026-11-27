@@ -85,6 +85,7 @@ export const HERO_TIMELINE = {
   motifFillAt: 1.3, // after motifStart
   motifFloatY: 12,
   motifFloatDurs: [4, 5] as const, // A, V
+  motifRestOpacity: 0.22, // multiply fill at rest; client: quieter so the awards + copy lead
   headlineFromXPercent: 40, // × distFactor
   trophyFloatY: -6, // × distFactor
   headerFromY: -12,
@@ -122,8 +123,14 @@ export const REVEAL = {
   fallScale: 0.72,
   fallDuration: 1.1,
   fallCaptionDelay: 0.35,
-  carouselHold: 3,
-  carouselStep: 0.9,
+} as const;
+
+/** Home "Trusted by" logo strip: a constant-speed, seamless marquee (client: never stops). */
+export const LOGO_MARQUEE = {
+  pxPerSecond: 50, // desktop glide speed
+  mobileFactor: 0.5, // phones glide at half speed (rule 16)
+  hoverPauseDur: 0.4, // ease the loop to a stop / back to speed on hover
+  swipeSettleMs: 600, // phones: idle time after a swipe/momentum before the glide resumes
 } as const;
 
 export const TRANSITION = {
