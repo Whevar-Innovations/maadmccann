@@ -282,7 +282,9 @@ export const BIO_PANEL = {
   enterRise: 14,
   enterScale: 0.98,
   enter: 0.45,
-  move: 0.55,
+  /** Switching cards: the panel shrinks away at the old card before opening at the new one. */
+  collapse: 0.16,
+  collapseScale: 0.94,
   itemRise: 8,
   items: 0.45,
   itemStagger: 0.035,
