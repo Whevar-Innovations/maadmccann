@@ -157,18 +157,23 @@ export function CardTitle({
 
 export function Tagline({
   lines,
+  fit = false,
   className = '',
 }: {
   lines: readonly string[];
+  /**
+   * Keep each line on one line on desktop. The narrow bento columns stop widening at the
+   * column cap while 1.2vw type keeps growing, so the size is also capped to the card's
+   * width (6cqi; needs an `@container` ancestor, i.e. the ServiceCard).
+   */
+  fit?: boolean;
   className?: string;
 }) {
+  const size = fit ? 'text-[clamp(1.05rem,min(1.2vw,6cqi),1.92rem)]' : 'text-[clamp(1.05rem,1.2vw,1.92rem)]';
   return (
-    <p
-      data-reveal
-      className={`text-[clamp(1.05rem,1.2vw,1.92rem)] leading-[1.2] font-semibold ${className}`}
-    >
+    <p data-reveal className={`${size} leading-[1.2] font-semibold ${className}`}>
       {lines.map((l) => (
-        <span key={l} className="block">
+        <span key={l} className={fit ? 'block lg:whitespace-nowrap' : 'block'}>
           {l}
         </span>
       ))}

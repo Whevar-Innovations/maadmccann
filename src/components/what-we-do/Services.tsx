@@ -46,7 +46,7 @@ export function Services({ page }: ServicesProps) {
                   <Body className="mt-3 max-w-[60ch] lg:max-w-[48ch]">{sbcc.body}</Body>
                   <ul
                     data-reveal
-                    className="mt-5 list-disc pl-5 text-[clamp(0.875rem,0.85vw,1.36rem)] leading-[1.6] font-semibold marker:text-paper sm:grid sm:grid-flow-col sm:grid-cols-[auto_minmax(0,1fr)] sm:grid-rows-4 sm:gap-x-10 md:grid-flow-row md:grid-cols-1 md:grid-rows-none lg:grid-flow-col lg:grid-cols-[auto_minmax(0,1fr)] lg:grid-rows-4"
+                    className="mt-5 list-disc pl-5 text-[clamp(0.875rem,0.85vw,1.36rem)] leading-[1.6] font-semibold marker:text-paper sm:grid sm:grid-flow-col sm:grid-cols-[auto_minmax(0,1fr)] sm:grid-rows-4 sm:gap-x-10 md:grid-flow-row md:grid-cols-1 md:grid-rows-none lg:grid-flow-col lg:grid-cols-[auto_minmax(0,1fr)] lg:grid-rows-3"
                   >
                     {/* Items wrap inside their column instead of spilling into the next one. */}
                     {sbcc.bullets.map((b) => (
@@ -155,9 +155,9 @@ export function Services({ page }: ServicesProps) {
             </div>
           </ServiceCard>
 
-          <ServiceCard id={media.id} tone="red" className="p-6 sm:p-10 lg:px-11 lg:py-10">
+          <ServiceCard id={media.id} tone="red" className="@container p-6 sm:p-10 lg:px-11 lg:py-10">
             <CardTitle id={`${media.id}-title`} lines={[media.title]} />
-            <Tagline lines={media.taglineLines} className="mt-6" />
+            <Tagline lines={media.taglineLines} fit className="mt-6" />
             <Body className="mt-3">{media.body}</Body>
             <Body className="mt-3">
               {media.servicesLines.map((l) => (
