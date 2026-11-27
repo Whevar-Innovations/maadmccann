@@ -20,7 +20,8 @@ const VIEWPORT_MARGIN = 16;
 /**
  * Floating bio panel shown while a card is hovered (desktop) or keyboard-focused, as in the
  * design: a pale glass panel opening just below the card over its neighbours. It flips above the
- * card when there is no room below, and glides between cards instead of blinking out and in.
+ * card when there is no room below. Moving to another card collapses it at the old card and
+ * reopens it at the new one, so it never sweeps over the profiles in between.
  * Long bios scroll inside the panel (Lenis is told to leave that scroll alone).
  */
 export function BioPanel({ target, containerRef, onPointerEnter, onPointerLeave }: BioPanelProps) {
@@ -40,6 +41,7 @@ export function BioPanel({ target, containerRef, onPointerEnter, onPointerLeave 
     if (!target) {
       if (!visibleRef.current) return;
       visibleRef.current = false;
+      gsap.killTweensOf(panel); // stop a card-switch timeline that may be mid-reopen
       gsap.to(panel, {
         autoAlpha: 0,
         y: reduced ? 0 : BIO_PANEL.hideDrop,
@@ -77,6 +79,7 @@ export function BioPanel({ target, containerRef, onPointerEnter, onPointerLeave 
 
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
     const items = panel.querySelectorAll('[data-bio-item], [data-bio-head]');
+    let itemDelay: number = BIO_PANEL.itemDelay;
 
     if (!visibleRef.current) {
       visibleRef.current = true;
@@ -86,23 +89,37 @@ export function BioPanel({ target, containerRef, onPointerEnter, onPointerLeave 
         { autoAlpha: 0, y: reduced ? 0 : BIO_PANEL.enterRise, scale: reduced ? 1 : BIO_PANEL.enterScale },
         { autoAlpha: 1, y: 0, scale: 1, duration: BIO_PANEL.enter, ease: EASE.out, overwrite: 'auto' },
       );
+    } else if (reduced) {
+      gsap.killTweensOf(panel);
+      gsap.set(panel, { left, top, autoAlpha: 1, y: 0, scale: 1 });
     } else {
-      gsap.to(panel, {
-        left,
-        top,
-        autoAlpha: 1,
-        y: 0,
-        scale: 1,
-        duration: reduced ? 0 : BIO_PANEL.move,
-        ease: EASE.out,
-        overwrite: 'auto',
-      });
+      // Moving to another card: collapse the panel where it is, then open it fresh under the
+      // new card, so it never slides across (and covers) the profiles in between.
+      gsap.killTweensOf(panel);
+      itemDelay += BIO_PANEL.collapse;
+      gsap
+        .timeline()
+        .to(panel, { autoAlpha: 0, scale: BIO_PANEL.collapseScale, duration: BIO_PANEL.collapse, ease: EASE.soft })
+        .set(panel, { left, top })
+        .fromTo(
+          panel,
+          { y: BIO_PANEL.enterRise, scale: BIO_PANEL.enterScale },
+          { autoAlpha: 1, y: 0, scale: 1, duration: BIO_PANEL.enter, ease: EASE.out },
+        );
     }
     if (!reduced) {
       gsap.fromTo(
         items,
         { opacity: 0, y: BIO_PANEL.itemRise },
-        { opacity: 1, y: 0, duration: BIO_PANEL.items, stagger: BIO_PANEL.itemStagger, ease: EASE.out, delay: BIO_PANEL.itemDelay, overwrite: 'auto' },
+        {
+          opacity: 1,
+          y: 0,
+          duration: BIO_PANEL.items,
+          stagger: BIO_PANEL.itemStagger,
+          ease: EASE.out,
+          delay: itemDelay,
+          overwrite: 'auto',
+        },
       );
     }
   }, [target, containerRef]);

@@ -346,3 +346,37 @@ export type BlogPage = {
   /** Shown at /blog/:slug when no article has that slug. */
   notFound: { title: string; body: string; backLabel: string };
 };
+
+// ---------- Contact Us (/contact) ----------
+
+export type ContactDetailIcon = 'location' | 'phone' | 'email' | 'hours';
+
+/** One line of a contact detail. `href` (tel:, mailto:) makes it a link. */
+export type ContactDetailLine = { text: string; href?: string };
+
+/** An icon + lines block in the "Get In Touch" column, in display order (two per row on desktop). */
+export type ContactDetail = { icon: ContactDetailIcon; label: string; lines: ContactDetailLine[] };
+
+export type ContactPage = {
+  seo: PageSeo;
+  hero: { headlineLines: string[]; subheading: string };
+  /** Crimson ticker under the hero, in order. */
+  services: string[];
+  servicesLabel: string;
+  intro: { eyebrow: string; title: string; body: string };
+  details: ContactDetail[];
+  /** Heading over the social icons (the icons themselves are SiteSettings.footer.socials). */
+  followLabel: string;
+  form: {
+    title: string;
+    subtitle: string;
+    fields: { name: string; email: string; subject: string; message: string };
+    submitLabel: string;
+    sendingLabel: string;
+    successMessage: string;
+    errorMessage: string;
+    /** Without a form endpoint (VITE_CONTACT_ENDPOINT) the message opens in the visitor's mail app, to this address. */
+    recipient: string;
+  };
+  map: { title: string; embedUrl: string };
+};

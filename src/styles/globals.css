@@ -105,6 +105,7 @@
   --container-case: clamp(64rem, 53.3333vw, 85.3333rem); /* 1024: case-study header */
   --container-trophies: clamp(48.75rem, 40.625vw, 65rem); /* 780: hero trophy triangle */
   --container-intro: clamp(48rem, 40vw, 64rem); /* 768: showreel heading block */
+  --container-contact: clamp(100rem, 83.3333vw, 133.3333rem); /* 1600: Contact Us details, form and map (container-wide) */
   /* Home hero (lg+), measured off the 1920x1080 artboard in a "stage unit" (--hero-u): 1/100 of the
      16:9 frame that fits the viewport, capped at 1.333x (2560). At or below 1920 wide u = 1vw exactly
      (laptops unchanged). Above, the height term keeps the frame on short-for-their-width screens
@@ -185,6 +186,13 @@
   --text-case-body: clamp(1rem, 0.8333vw, 1.3333rem);
   --text-case-body--line-height: 1.5;
   --text-tile-label: clamp(1.5rem, 1.5625vw, 2.5rem); /* 30px, SemiBold: work tile labels */
+  /* 67px / 54px, Bold: Contact Us "Get In Touch" and "Your Details". Floor 2.25rem / 2rem, not 0.8x,
+     so the titles sit comfortably beside phone-width copy. */
+  --text-contact-title: clamp(2.25rem, 3.4896vw, 5.5833rem);
+  --text-contact-title--line-height: 1.05;
+  --text-form-title: clamp(2rem, 2.8125vw, 4.5rem);
+  --text-form-title--line-height: 1.1;
+  --text-lead: clamp(1.25rem, 1.3021vw, 2.0833rem); /* 25px, Medium: Contact services ticker, KEEP CLOSE, Send Message */
   --text-footer-cta: clamp(1.3rem, 1.3542vw, 2.1667rem); /* 26px, Bold: footer Let's Talk */
   --text-stat-label: clamp(1.175rem, 1.224vw, 1.9584rem); /* 23.5px, Bold: stat labels */
   --text-sub: clamp(1rem, 1.0417vw, 1.6667rem); /* 20px, SemiBold showreel subheading, Regular View work, hero subheading (lg+) */
@@ -250,6 +258,27 @@
 /* What We Do hero vignette: lighter charcoal centre, darker edges. */
 @utility bg-wwd-glow {
   background-image: radial-gradient(ellipse at 60% 35%, #2a2b2a 0%, #161716 55%, #0b0c0b 100%);
+}
+
+/* Wide page container (Contact Us): 1600 at 1920 (--container-contact), same gutter as container-site. */
+@utility container-wide {
+  width: min(100% - 2 * clamp(20px, 5vw, 72px), var(--container-contact));
+  margin-inline: auto;
+}
+
+/* Ink MotifHero (Contact Us): near-black with a barely lighter centre, under the motif (sampled from the design). */
+@utility bg-ink-glow {
+  background-image: radial-gradient(ellipse at 50% 45%, #161616 0%, #0d0d0d 70%);
+}
+
+/* Contact Us map band: graphite above the map's midline, black below (the map straddles the seam).
+   The band has equal top and bottom padding, so 50% is the map's centre. */
+@utility bg-contact-split {
+  background-image: linear-gradient(
+    to bottom,
+    var(--color-graphite) 0 50%,
+    var(--color-black) 50% 100%
+  );
 }
 
 /* Animated underline + accent colour for text links on dark backgrounds. */

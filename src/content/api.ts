@@ -2,6 +2,7 @@ import type {
   BlogPage,
   BlogPost,
   CaseStudyPage,
+  ContactPage,
   CsrPage,
   HomePage,
   PartnersPage,
@@ -198,6 +199,27 @@ function assertBlogPage(data: BlogPage): BlogPage {
     assertBlogPost(post);
   }
   return data;
+}
+
+function assertContactPage(data: ContactPage): ContactPage {
+  if (data.hero.headlineLines.length === 0) throw new Error('Contact hero has no headline');
+  if (data.services.length === 0) throw new Error('Contact services ticker has no items');
+  if (data.details.length === 0) throw new Error('Contact page has no contact details');
+  for (const detail of data.details) {
+    if (detail.lines.length === 0) throw new Error(`Contact detail "${detail.icon}" has no lines`);
+  }
+  if (!/^[^@\s]+@[^@\s]+$/.test(data.form.recipient)) {
+    throw new Error(`Contact form recipient "${data.form.recipient}" is not an email address`);
+  }
+  if (!data.map.embedUrl.startsWith('https://')) throw new Error('Contact map embedUrl must be https');
+  return data;
+}
+
+export async function getContactPage(): Promise<ContactPage> {
+  if (source === 'mock') {
+    return assertContactPage(await (await import('./mock/source')).getContactPage());
+  }
+  return assertContactPage((await import('./static/contact')).contact);
 }
 
 export async function getBlogPage(): Promise<BlogPage> {

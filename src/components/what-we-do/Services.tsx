@@ -46,7 +46,7 @@ export function Services({ page }: ServicesProps) {
                   <Body className="mt-3 max-w-[60ch] lg:max-w-[48ch]">{sbcc.body}</Body>
                   <ul
                     data-reveal
-                    className="mt-5 list-disc pl-5 text-[clamp(0.875rem,0.85vw,1.36rem)] leading-[1.6] font-semibold marker:text-paper sm:grid sm:grid-flow-col sm:grid-cols-[auto_minmax(0,1fr)] sm:grid-rows-4 sm:gap-x-10 md:grid-flow-row md:grid-cols-1 md:grid-rows-none lg:grid-flow-col lg:grid-cols-[auto_minmax(0,1fr)] lg:grid-rows-4"
+                    className="mt-5 list-disc pl-5 text-[clamp(0.875rem,0.85vw,1.36rem)] leading-[1.6] font-semibold marker:text-paper sm:grid sm:grid-flow-col sm:grid-cols-[auto_minmax(0,1fr)] sm:grid-rows-4 sm:gap-x-10 md:grid-flow-row md:grid-cols-1 md:grid-rows-none lg:grid-flow-col lg:grid-cols-[auto_minmax(0,1fr)] lg:grid-rows-3"
                   >
                     {/* Items wrap inside their column instead of spilling into the next one. */}
                     {sbcc.bullets.map((b) => (
@@ -101,15 +101,16 @@ export function Services({ page }: ServicesProps) {
               <Tagline lines={[digital.tagline]} className="mt-6" />
               <Body className="mt-3">{digital.intro}</Body>
 
-              {/* Phones: three equal columns so all circles stay on one line, however narrow. */}
+              {/* Phones: three equal columns so all circles stay on one line, however narrow.
+                  From 1920 the circles grow with the copy (104px → 1.333× at 2560). */}
               <ul
-                className="my-8 grid max-w-[20rem] grid-cols-3 gap-2 sm:flex sm:max-w-none sm:flex-wrap sm:gap-4"
+                className="my-8 grid max-w-[20rem] grid-cols-3 gap-2 sm:flex sm:max-w-none sm:flex-wrap sm:gap-4 2xl:gap-[0.8333vw]"
                 aria-label="Digital services"
               >
                 {digital.pills.map((words) => (
                   <li key={words.join(' ')} className="min-w-0">
-                    <RingCircle className="w-full border-[5px] sm:w-[6.5rem] sm:border-[6px]">
-                      <span className="px-0.5 text-center text-[clamp(0.58rem,2.6vw,0.7rem)] leading-[1.2] font-semibold sm:text-[0.78rem]">
+                    <RingCircle className="w-full border-[5px] sm:w-[clamp(6.5rem,5.4167vw,8.6667rem)] sm:border-[6px]">
+                      <span className="px-0.5 text-center text-[clamp(0.58rem,2.6vw,0.7rem)] leading-[1.2] font-semibold sm:text-[clamp(0.78rem,0.65vw,1.04rem)]">
                         {words.map((w) => (
                           <span key={w} className="block">
                             {w}
@@ -155,9 +156,9 @@ export function Services({ page }: ServicesProps) {
             </div>
           </ServiceCard>
 
-          <ServiceCard id={media.id} tone="red" className="p-6 sm:p-10 lg:px-11 lg:py-10">
+          <ServiceCard id={media.id} tone="red" className="@container p-6 sm:p-10 lg:px-11 lg:py-10">
             <CardTitle id={`${media.id}-title`} lines={[media.title]} />
-            <Tagline lines={media.taglineLines} className="mt-6" />
+            <Tagline lines={media.taglineLines} fit className="mt-6" />
             <Body className="mt-3">{media.body}</Body>
             <Body className="mt-3">
               {media.servicesLines.map((l) => (

@@ -9,7 +9,8 @@ export type FooterProps = {
   settings: SiteSettings;
 };
 
-function SocialIcon({ platform }: { platform: SocialPlatform }) {
+/** Brand social glyphs, shared with the Contact Us "Follow Us" row. */
+export function SocialIcon({ platform }: { platform: SocialPlatform }) {
   switch (platform) {
     case 'x':
       return (

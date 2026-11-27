@@ -8,6 +8,8 @@ export const siteConfig = {
   description:
     'MAAD McCANN is a 360° creative agency in Kampala bringing together strategy, creativity, digital and culture to create work that gets people talking and brands moving.',
   ogImage: '/og-image.jpg',
+  /** Contact form endpoint (VITE_CONTACT_ENDPOINT). Empty: the form falls back to a mailto: draft. */
+  contactEndpoint: import.meta.env.VITE_CONTACT_ENDPOINT?.trim() || undefined,
   ogImageAlt:
     'MAAD McCANN: Ideas that move the world, with three Silverback Awards gorilla trophies',
 } as const;

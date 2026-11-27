@@ -250,7 +250,7 @@ export function Header({ settings }: HeaderProps) {
           <div data-header-item className="hidden min-[75rem]:block">
             <Magnetic>
               <Button
-                link={{ label: settings.navCta.label, href: '#footer' }}
+                link={settings.navCta}
                 size="sm"
                 variant={light ? 'pill-dark' : 'pill-light'}
                 className={`px-7 py-2.5 font-bold ${light ? '' : 'text-ink'}`}
@@ -370,7 +370,7 @@ export function Header({ settings }: HeaderProps) {
               className="relative z-10 space-y-6 border-t border-paper/10 px-6 pt-6 pb-8 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:space-y-0 sm:px-10 sm:pb-10 lg:px-16"
             >
               <Button
-                link={{ label: settings.navCta.label, href: '#footer' }}
+                link={settings.navCta}
                 size="md"
                 onClick={() => setMenuOpen(false)}
                 className="w-full justify-center bg-paper text-ink font-bold hover:bg-paper/90 sm:w-auto sm:px-10"

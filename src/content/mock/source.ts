@@ -1,6 +1,7 @@
 import type {
   BlogPage,
   CaseStudyPage,
+  ContactPage,
   CsrPage,
   HomePage,
   PartnersPage,
@@ -10,6 +11,7 @@ import type {
   WorkPage,
 } from '../types';
 import { blog } from '../static/blog';
+import { contact } from '../static/contact';
 import { csr } from '../static/csr';
 import { home } from '../static/home';
 import { partners } from '../static/partners';
@@ -67,6 +69,11 @@ export async function getPartnersPage(): Promise<PartnersPage> {
 export async function getCsrPage(): Promise<CsrPage> {
   await Promise.resolve();
   return structuredClone(csr);
+}
+
+export async function getContactPage(): Promise<ContactPage> {
+  await Promise.resolve();
+  return structuredClone(contact);
 }
 
 export async function getBlogPage(): Promise<BlogPage> {

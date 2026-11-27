@@ -92,8 +92,13 @@ function useArticleMotion(ref: RefObject<HTMLElement | null>) {
       const mm = gsap.matchMedia();
 
       mm.add(MEDIA_QUERIES.reducedMotion, () => {
-        gsap.fromTo([words, hero, photos, pops], { opacity: 0 }, { opacity: 1, duration: DUR.ui });
-        gsap.fromTo(reveals, { opacity: 0 }, { opacity: 1, duration: DUR.ui, delay: A.revealDelay });
+        // One flat list of elements: a nested empty list (no photo row / no lockup) or a missing
+        // hero would reach GSAP as a non-element target and throw, taking the whole article down.
+        const above = [...words, hero, ...photos, ...pops].filter((el): el is HTMLElement => el !== null);
+        if (above.length) gsap.fromTo(above, { opacity: 0 }, { opacity: 1, duration: DUR.ui });
+        if (reveals.length) {
+          gsap.fromTo(reveals, { opacity: 0 }, { opacity: 1, duration: DUR.ui, delay: A.revealDelay });
+        }
       });
 
       mm.add(

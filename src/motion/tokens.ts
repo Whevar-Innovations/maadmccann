@@ -98,6 +98,7 @@ export const HERO_TIMELINE = {
 export const MOTIF_LAB = {
   restOpacity: 0.14,
   bloomPeakOpacity: 0.34,
+  bloomScaleFrom: 0.9, // each doodle grows from this scale about its centre as it blooms
   bloomDistanceDelayFactor: 1.6,
   bloomSettleDelay: 1.5,
   spotOpacity: 0.24,
@@ -253,6 +254,11 @@ export const GALLERY = {
   captionDelay: 0.35, // captions rise after their artwork
 } as const;
 
+/** Site-wide back-to-top button (layout/BackToTop). Fades/rises in with DUR.ui, EASE.soft, DIST.rise. */
+export const BACK_TO_TOP = {
+  showAfterVh: 1, // × viewport height scrolled before the button appears
+} as const;
+
 export const TEAM_INTRO = {
   delay: 0.2,
 } as const;
@@ -283,7 +289,9 @@ export const BIO_PANEL = {
   enterRise: 14,
   enterScale: 0.98,
   enter: 0.45,
-  move: 0.55,
+  /** Switching cards: the panel shrinks away at the old card before opening at the new one. */
+  collapse: 0.16,
+  collapseScale: 0.94,
   itemRise: 8,
   items: 0.45,
   itemStagger: 0.035,
@@ -376,4 +384,26 @@ export const BLOG_ARTICLE = {
   start: 'top 92%',
   photoStart: 'top 92%',
   popStart: 'top 90%',
+} as const;
+
+/** Contact Us: hero motif, services ticker, Get In Touch + form entrance, map reveal. */
+export const CONTACT = {
+  motifOpacity: 0.14, // paper strokes on ink: the design's #292929 lines on near-black (= MOTIF_LAB.restOpacity)
+  subDelay: 0.25,
+  tickerPxPerSec: 70, // services ticker speed (constant, linear)
+  tickerHoverScale: 0.25, // ticker slows to this timeScale under a fine pointer
+  tickerActiveStart: 'top bottom', // the ticker only runs while on screen
+  tickerActiveEnd: 'bottom top',
+  ruleFrom: 0, // KEEP CLOSE rule draws from scaleX 0
+  ruleDur: 0.9,
+  titleAt: 0.15, // title lines rise after the rule starts
+  bodyAt: 0.3,
+  detailsStart: 'top 90%',
+  iconScaleFrom: 0.6, // detail circles pop in
+  detailStagger: 0.1,
+  fieldRise: 24, // px (halved on mobile)
+  fieldStagger: 0.07,
+  mapClipFrom: 'inset(10% 6% 10% 6% round 12px)', // map frame opens out from the centre
+  mapClipTo: 'inset(0% 0% 0% 0% round 12px)',
+  mapScaleFrom: 1.08, // the map settles from a slight zoom as its frame opens
 } as const;

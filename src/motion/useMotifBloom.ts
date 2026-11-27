@@ -77,20 +77,47 @@ export function useMotifBloom({
           if (!motionOk) return;
 
           const tl = gsap.timeline({ delay: skippedLoader ? 0.05 : 0 });
+
+          // The spotlight copy is a <use> of the motif. While the doodles animate, every change to
+          // them makes the browser rebuild that clone (re-parsing all the path data) each frame, so
+          // it is detached during the bloom and attached again once the doodles have settled.
+          const use = bright.querySelector('use');
+          const useHref = use?.getAttribute('href') ?? null;
+          const attachSpotlight = () => {
+            if (use && useHref) use.setAttribute('href', useHref);
+          };
+          const clearPath = (path: SVGPathElement) => {
+            path.removeAttribute('transform');
+            path.style.removeProperty('opacity');
+          };
+
           if (bloom) {
+            use?.removeAttribute('href');
             tl.set(base, { opacity: MOTIF_LAB.bloomPeakOpacity }, 0);
-            tl.from(
-              paths,
-              {
-                opacity: 0,
-                scale: 0.9,
-                svgOrigin: (i: number) => centerOf(i).join(' '),
-                duration: DUR.bloomPath,
-                ease: EASE.out,
-                delay: (i: number) => distOf(i) * MOTIF_LAB.bloomDistanceDelayFactor,
-              },
-              0,
-            );
+            // Each doodle scales from bloomScaleFrom about its precomputed centre and fades in,
+            // delayed by its distance from the focal point. The values are written straight to the
+            // path: GSAP's own SVG transform handling reads every path's bbox and matrix back from
+            // the DOM, forcing a layout per doodle (hundreds in a row) just as the bloom starts.
+            const from = MOTIF_LAB.bloomScaleFrom;
+            let lastStart = 0;
+            paths.forEach((path, i) => {
+              const [cx, cy] = centerOf(i);
+              const state = { t: 0 };
+              const apply = () => {
+                const s = from + (1 - from) * state.t;
+                path.setAttribute('transform', `matrix(${s} 0 0 ${s} ${cx * (1 - s)} ${cy * (1 - s)})`);
+                path.style.opacity = String(state.t);
+              };
+              apply();
+              const start = distOf(i) * MOTIF_LAB.bloomDistanceDelayFactor;
+              lastStart = Math.max(lastStart, start);
+              tl.to(
+                state,
+                { t: 1, duration: DUR.bloomPath, ease: EASE.out, onUpdate: apply, onComplete: () => clearPath(path) },
+                start,
+              );
+            });
+            tl.call(attachSpotlight, undefined, lastStart + DUR.bloomPath);
             tl.to(
               base,
               { opacity: restOpacity, duration: DUR.bloomSettle, ease: EASE.SineInOut },
@@ -101,7 +128,13 @@ export function useMotifBloom({
           }
           onTimeline?.(tl, { isMobile: !!isMobile });
 
-          if (!fine) return undefined;
+          // On revert (unmount, media change) leave the doodles clean and the spotlight attached.
+          const resetMotif = () => {
+            paths.forEach(clearPath);
+            attachSpotlight();
+          };
+
+          if (!fine) return resetMotif;
 
           const mx = gsap.quickTo(bright, '--x', { duration: DUR.spotlight, ease: EASE.soft });
           const my = gsap.quickTo(bright, '--y', { duration: DUR.spotlight, ease: EASE.soft });
@@ -125,6 +158,7 @@ export function useMotifBloom({
             section.removeEventListener('pointermove', onPointerMove);
             section.removeEventListener('pointerenter', onPointerEnter);
             section.removeEventListener('pointerleave', onPointerLeave);
+            resetMotif();
           };
         },
       );
