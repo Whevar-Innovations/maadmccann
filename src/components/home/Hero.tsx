@@ -371,7 +371,7 @@ export function Hero({ hero }: HeroProps) {
         viewBox="983.03 0 936.97 933.88"
         preserveAspectRatio="xMaxYMin meet"
         aria-hidden="true"
-        className="pointer-events-none absolute top-0 right-0 z-10 h-[72%] w-auto max-w-[78%] mix-blend-multiply select-none md:h-[82%] md:max-w-[52%] lg:right-[max(0px,calc((100%-var(--container-hero-stage))/2))] lg:h-[86%] lg:w-(--container-hero-motif) lg:max-w-none lg:overflow-visible"
+        className="pointer-events-none absolute top-0 right-0 z-10 h-[72%] w-auto max-w-[78%] mix-blend-multiply select-none md:h-[82%] md:max-w-[52%] lg:right-[max(0px,calc((100%-var(--container-hero-stage))/2))] lg:h-[86%] lg:w-(--container-hero-motif) lg:max-w-none lg:overflow-visible tall:right-0 tall:h-auto tall:w-(--container-hero-tall-motif) tall:max-w-none"
       >
         <path
           id="mA"
@@ -398,13 +398,13 @@ export function Hero({ hero }: HeroProps) {
       </svg>
 
       {/* Main hero content grid */}
-      <div className="relative z-20 mx-auto mt-auto grid w-full max-w-hero items-center gap-10 px-6 pt-6 pb-4 sm:px-12 md:grid-cols-12 lg:max-w-hero-stage lg:grid-cols-[minmax(0,1fr)_var(--container-hero-trophies)] lg:items-stretch lg:gap-0 lg:pt-10 lg:pr-hero-inset-end lg:pb-hero-gap-b lg:pl-hero-inset">
+      <div className="relative z-20 mx-auto mt-auto grid w-full max-w-hero items-center gap-10 px-6 pt-6 pb-4 sm:px-12 md:grid-cols-12 lg:max-w-hero-stage lg:grid-cols-[minmax(0,1fr)_var(--container-hero-trophies)] lg:items-stretch lg:gap-0 lg:pt-10 lg:pr-hero-inset-end lg:pb-hero-gap-b lg:pl-hero-inset tall:mt-0 tall:max-w-none tall:flex-1 tall:grid-cols-1 tall:content-evenly tall:items-start tall:gap-[5svh] tall:px-10 tall:pt-6 tall:pb-[3svh] tall:lg:px-16">
         {/* Left column: Headline, subheading, VIEW OUR WORK link */}
-        <div className="space-y-6 md:col-span-6 lg:col-span-1 lg:flex lg:flex-col lg:space-y-0 lg:pt-hero-head-t">
+        <div className="space-y-6 md:col-span-6 lg:col-span-1 lg:flex lg:flex-col lg:space-y-0 lg:pt-hero-head-t tall:col-span-1 tall:block tall:space-y-6 tall:pt-0">
           <h1
             id="hero-heading"
             data-hero-headline
-            className="font-display text-[clamp(2.5rem,4.9vw,7.84rem)] leading-[0.94] font-bold tracking-[-0.025em] text-paper uppercase lg:text-hero-stage"
+            className="font-display text-[clamp(2.5rem,4.9vw,7.84rem)] leading-[0.94] font-bold tracking-[-0.025em] text-paper uppercase lg:text-hero-stage tall:text-hero-tall"
           >
             {hero.headlineLines.map((line) => (
               <span key={line} className="block overflow-y-clip py-0.5">
@@ -420,12 +420,12 @@ export function Hero({ hero }: HeroProps) {
 
           <p
             data-hero-subheading
-            className="max-w-[clamp(32rem,26.6667vw,42.6667rem)] text-body font-medium text-paper/85 will-change-transform lg:mt-7 lg:max-w-hero-sub lg:text-hero-stage-sub"
+            className="max-w-[clamp(32rem,26.6667vw,42.6667rem)] text-body font-medium text-paper/85 will-change-transform lg:mt-7 lg:max-w-hero-sub lg:text-hero-stage-sub tall:mt-0 tall:max-w-hero-tall-sub tall:text-hero-tall-sub"
           >
             {hero.subheading}
           </p>
 
-          <div data-hero-cta className="pt-1 will-change-transform lg:mt-auto lg:pt-10">
+          <div data-hero-cta className="pt-1 will-change-transform lg:mt-auto lg:pt-10 tall:mt-0 tall:pt-2">
             <Link
               href={hero.cta.href}
               className="group inline-flex items-center gap-3 text-accent font-semibold tracking-wider text-paper uppercase transition-colors duration-300 hover:text-maroon-200 focus-visible:text-maroon-200"
@@ -453,7 +453,7 @@ export function Hero({ hero }: HeroProps) {
         </div>
 
         {/* Right column: 3 Silverback Awards trophies in triangle formation */}
-        <div data-page-parallax className="flex justify-center md:col-span-6 lg:col-span-1 lg:items-end lg:justify-end">
+        <div data-page-parallax className="flex justify-center md:col-span-6 lg:col-span-1 lg:items-end lg:justify-end tall:col-span-1 tall:w-(--container-hero-tall-trophies) tall:items-center tall:justify-center tall:justify-self-center">
           <AwardsTriangleLoop
             images={hero.awards.map((award) => award.image)}
             play={isHeroReady}
@@ -462,14 +462,16 @@ export function Hero({ hero }: HeroProps) {
         </div>
       </div>
 
-      {/* Oversized background ghost typography TRUTH WELL TOLD */}
+      {/* Oversized background ghost typography TRUTH WELL TOLD. Phones and tablets crop the
+          background to its darkest band here, so the ghost is a faint paper emboss there and the
+          approved dark multiply only on `wide` screens (laptops, desktops, 3:2 landscape tablets). */}
       <div
         aria-hidden="true"
         className="pointer-events-none relative z-10 w-full select-none overflow-hidden text-center"
       >
         <span
           data-hero-ghost
-          className="mx-auto block w-full max-w-ghost text-center font-display text-[clamp(2.8rem,9.5vw,15.2rem)] leading-[0.84] font-bold tracking-[-0.025em] whitespace-nowrap text-crimson-975/40 uppercase mix-blend-multiply will-change-transform lg:text-hero-ghost 2xl:max-w-hero-ghost"
+          className="mx-auto block w-full max-w-ghost text-center font-display text-[clamp(2.8rem,9.5vw,15.2rem)] leading-[0.84] font-bold tracking-[-0.025em] whitespace-nowrap text-ink/25 uppercase wide:text-crimson-975/40 wide:mix-blend-multiply will-change-transform lg:text-hero-ghost 2xl:max-w-hero-ghost"
         >
           {hero.ghostText}
         </span>

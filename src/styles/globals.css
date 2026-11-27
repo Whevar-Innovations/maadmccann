@@ -3,6 +3,13 @@
    Font faces are declared in /public/fonts/fonts.css (linked from index.html). */
 @import 'tailwindcss';
 
+/* Portrait tablets and rotated monitors (iPad mini / Pro in portrait): taller than 4:5 and wider than a
+   phone. The home hero stacks its copy over the trophies here instead of shrinking the 16:9 layout. */
+@custom-variant tall (@media (min-width: 40rem) and (max-aspect-ratio: 4/5));
+/* Laptops, desktops and 3:2 landscape tablets: the hero background's lighter band reaches the
+   TRUTH WELL TOLD ghost, so its dark multiply reads. Squarer and portrait screens get a light emboss. */
+@custom-variant wide (@media (min-width: 64rem) and (min-aspect-ratio: 3/2));
+
 @theme {
   /* ---------- Colour: brand tokens only, the stock palette is removed ---------- */
   --color-*: initial;
@@ -113,6 +120,10 @@
   --spacing-hero-gap-b: calc(2.6042 * var(--hero-u)); /* 50: hero trophy box to TRUTH WELL TOLD */
   --spacing-hero-head-t: calc(3.0208 * var(--hero-u)); /* 58: trophy box top to hero headline */
   --spacing-hero-stage-h: calc(56.25 * var(--hero-u)); /* 1080: hero frame height (caps the section on 4K) */
+  /* Home hero on portrait tablets (tall variant), sized off the viewport width: mini 744 → Pro 13" 1032. */
+  --container-hero-tall-sub: 68vw; /* subheading measure */
+  --container-hero-tall-trophies: min(100%, calc(40svh * 1.15)); /* trophy triangle (1.15:1) ≤ 40% of the height */
+  --container-hero-tall-motif: 88vw; /* A/V motif across the top-right */
 
   /* ---------- Display scale (§6 fluid sizes, verbatim) ----------
      Display maxima sit at 1.333x the 1920 size, so headlines keep growing to a 2560 viewport
@@ -133,6 +144,17 @@
   --text-hero-stage--letter-spacing: -0.02em;
   --text-hero-stage-sub: max(1rem, calc(1.0417 * var(--hero-u))); /* 20px */
   --text-hero-stage-sub--line-height: 1.5;
+  /* Home hero on portrait tablets (tall variant): ~98px on an iPad Pro 13", ~71px on a mini. */
+  --text-hero-tall: 9.5vw;
+  --text-hero-tall--line-height: 0.95;
+  --text-hero-tall--letter-spacing: -0.02em;
+  --text-hero-tall-sub: max(1rem, 2.1vw);
+  --text-hero-tall-sub--line-height: 1.5;
+  /* Mobile/tablet menu drawer links from sm up: scale with the width, capped by the height so all
+     eight links fit a landscape iPad without scrolling (~50px iPad mini, ~67px iPad Pro 13"). */
+  --text-menu: clamp(2.25rem, min(6.5vw, 6svh), 4.5rem);
+  --text-menu--line-height: 1;
+  --text-menu--letter-spacing: -0.02em;
   --text-hero-ghost: calc(9.5 * var(--hero-u)); /* 182.4px: TRUTH WELL TOLD */
   --text-ghost: clamp(4.5rem, 10.65vw, 17.04rem); /* 204.5px, Haas 75 Bold */
   --text-ghost--line-height: 0.95;
