@@ -147,6 +147,14 @@ export type PartnerLogo = ClientLogo & { href?: string };
 export type PartnerSector = { id; label; filterLabel?: string /* shorter pill name */; logos: PartnerLogo[] };
 export type PartnersPage = { seo; hero: { headlineLines; subheading }; intro; filterLabel; allLabel;
   sectors: PartnerSector[]; labels: { announce; announceOne; announceAll; viewCaseStudy } };
+
+// Contact Us (/contact): ticker items are plain strings; socials come from SiteSettings.footer.socials
+export type ContactDetail = { icon: 'location' | 'phone' | 'email' | 'hours'; label; lines: { text; href? }[] };
+export type ContactPage = { seo; hero: { headlineLines; subheading }; services: string[]; servicesLabel;
+  intro: { eyebrow; title; body }; details: ContactDetail[]; followLabel;
+  form: { title; subtitle; fields: { name; email; subject; message }; submitLabel; sendingLabel;
+    successMessage; errorMessage; recipient /* mailto fallback when VITE_CONTACT_ENDPOINT is unset */ };
+  map: { title; embedUrl } };
 ```
 
 ### 5.3 API layer (`src/content/api.ts`)
@@ -163,7 +171,7 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   if (source === 'sanity') return (await import('./sanity/queries')).getSiteSettings();
   return (await import('./static/settings')).settings;
 }
-// Same pattern for every page: getWhatWeDoPage(): WhatWeDoPage, getTeamPage(): TeamPage.
+// Same pattern for every page: getWhatWeDoPage(): WhatWeDoPage, getTeamPage(): TeamPage, getContactPage(): ContactPage.
 // Each fetcher passes its result through an assertXxx() that throws on structural problems
 // (wrong number of featured projects, a missing service section, an empty team section).
 // mock/source.ts exports a structuredClone version of each.

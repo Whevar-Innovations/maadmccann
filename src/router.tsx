@@ -3,6 +3,7 @@ import { RootLayout, rootLoader } from '@/components/layout/RootLayout';
 import { BlogRoute, blogLoader } from '@/routes/blog';
 import { BlogPostError, BlogPostRoute, blogPostLoader } from '@/routes/blog-post';
 import { BootFallback } from '@/routes/BootFallback';
+import { ContactRoute, contactLoader } from '@/routes/contact';
 import { CsrRoute, csrLoader } from '@/routes/csr';
 import { HomeRoute, homeLoader } from '@/routes/home';
 import { RouteError } from '@/routes/RouteError';
@@ -78,6 +79,12 @@ export const router = createBrowserRouter([
         ErrorBoundary: BlogPostError,
         // Articles sit on paper: dark type, two-tone logo, hairline under the bar (blog design).
         handle: { headerTone: 'light', headerRule: true },
+      },
+      {
+        id: 'contact',
+        path: 'contact',
+        loader: contactLoader,
+        Component: ContactRoute,
       },
     ],
   },

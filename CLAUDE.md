@@ -77,7 +77,7 @@ Never weaken the guard to get a build through. Fix the code, or ask.
 7. **Always use `ui/Link` or `ui/Button`** for internal navigation, never a bare `<a>` or
    `RouterLink`. Those components run the page transition (`motion/PageTransition.tsx`).
 8. Navigation labels, hrefs and footer columns live in `content/static/settings.ts`. The
-   remaining planned pages are `/csr`, `/blog`, `/awards` and Talk To Us (`#footer`).
+   remaining planned page is `/awards`. Talk To Us and Let’s Talk link to `/contact`.
 
 ### Styling
 9. **Use theme tokens only.** The stock Tailwind palette, fonts and breakpoints are deliberately

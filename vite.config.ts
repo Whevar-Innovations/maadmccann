@@ -16,6 +16,7 @@ const SITEMAP_ROUTES = [
   '/csr',
   '/blog',
   '/blog/:slug',
+  '/contact',
 ];
 
 /** `:slug` routes are patterns: the sitemap lists one URL per case study / article instead. */

@@ -12,11 +12,11 @@ export const settings: SiteSettings = {
     { label: 'Blog', href: '/blog' },
     { label: 'Awards', href: '/awards' },
   ],
-  navCta: { label: 'Talk To Us', href: '#footer' },
+  navCta: { label: 'Talk To Us', href: '/contact' },
   cta: {
     headlineLines: ['Got something in mind?', 'Let’s make something MAAD.'],
     body: 'Bring us the brief, the challenge or even the “we know something needs to change but we’re not quite sure what.” We’ll take it from there.',
-    button: { label: 'Let’s Talk', href: '#footer' },
+    button: { label: 'Let’s Talk', href: '/contact' },
   },
   footer: {
     navigation: [

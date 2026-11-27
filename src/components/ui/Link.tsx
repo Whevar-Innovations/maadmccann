@@ -34,6 +34,7 @@ const ENABLED_ROUTES = new Set([
   '/csr',
   '/blog',
   '/blog/:slug',
+  '/contact',
 ]);
 
 const patternOf = (route: string) => new RegExp(`^${route.replace(/:[^/]+/g, '[^/]+')}$`);

@@ -28,12 +28,17 @@ export type MotifHeroProps = {
   restOpacity: number;
   /** Extra delay before the subheading rises, after the headline lines. */
   subDelay: number;
+  /**
+   * `crimson` (default): the metallic crimson image, motif as soft-light paper strokes.
+   * `ink`: near-black ground, motif as plain paper strokes at `restOpacity` (Contact Us).
+   */
+  surface?: 'crimson' | 'ink';
 };
 
 /**
  * Banner hero on the metallic crimson image with a page's doodle motif laid on as tone-on-tone
- * strokes (soft-light paper), so the metal's own lighting shows through. Used by Our Work and
- * Our Partners. Motion: the motif blooms or fades in (useMotifBloom) with a cursor spotlight on
+ * strokes (soft-light paper), so the metal's own lighting shows through (or, on the `ink` surface, as plain strokes on near-black). Used by Our Work,
+ * Our Partners, Blog and Contact Us. Motion: the motif blooms or fades in (useMotifBloom) with a cursor spotlight on
  * fine pointers; the headline lines rise and the subheading follows. The motif SVGs carry
  * data-page-parallax, so they settle last when the page slides in.
  */
@@ -45,7 +50,9 @@ export function MotifHero({
   bloom,
   restOpacity,
   subDelay,
+  surface = 'crimson',
 }: MotifHeroProps) {
+  const isInk = surface === 'ink';
   const sectionRef = useRef<HTMLElement | null>(null);
   const baseSvgRef = useRef<SVGSVGElement | null>(null);
   const brightSvgRef = useRef<SVGSVGElement | null>(null);
@@ -107,26 +114,30 @@ export function MotifHero({
     <section
       ref={sectionRef}
       aria-labelledby={headingId}
-      className="relative isolate overflow-hidden bg-crimson-950 pt-36 pb-24 text-center text-paper md:pt-[14vw] md:pb-[9.3vw]"
+      className={`relative isolate overflow-hidden pt-36 pb-24 text-center text-paper md:pt-[14vw] md:pb-[9.3vw] ${isInk ? 'bg-ink' : 'bg-crimson-950'}`}
     >
-      <img
-        src={heroBgSrc}
-        alt=""
-        width={1922}
-        height={1674}
-        fetchPriority="high"
-        decoding="async"
-        className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[50%_15%]"
-      />
+      {isInk ? (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-ink-glow" />
+      ) : (
+        <img
+          src={heroBgSrc}
+          alt=""
+          width={1922}
+          height={1674}
+          fetchPriority="high"
+          decoding="async"
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[50%_15%]"
+        />
+      )}
 
-      {/* Motif: tone-on-tone paper strokes over the metal, hidden until the hero is ready (no flash under the loader). */}
+      {/* Motif: tone-on-tone paper strokes over the metal (or plain strokes on ink), hidden until the hero is ready (no flash under the loader). */}
       <svg
         ref={baseSvgRef}
         data-page-parallax
         viewBox={motif.viewBox}
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
-        className={`${svgClass} text-paper opacity-0 mix-blend-soft-light`}
+        className={`${svgClass} text-paper opacity-0 ${isInk ? '' : 'mix-blend-soft-light'}`}
       >
         <g id={motif.patternId} fillRule="evenodd" fill="currentColor">
           {motif.paths.map((d, i) => (
@@ -143,7 +154,7 @@ export function MotifHero({
         preserveAspectRatio="xMidYMid slice"
         aria-hidden="true"
         style={brightMaskStyle}
-        className={`${svgClass} text-blush opacity-0`}
+        className={`${svgClass} opacity-0 ${isInk ? 'text-paper' : 'text-blush'}`}
       >
         <use href={`#${motif.patternId}`} />
       </svg>
