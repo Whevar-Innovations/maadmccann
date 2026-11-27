@@ -1,32 +1,11 @@
-import type { ImageAsset, PartnerLogo, PartnersPage } from '../types';
-import { img } from './assets';
+import type { PartnerLogo, PartnersPage } from '../types';
+import { logoImage } from './assets';
 
 /**
  * Our Partners (/partners). Copy is transcribed from "MAAD McCANN Website Our Clients".
  * Logos are cropped from that design's artwork (3x render) into src/assets/img/partners/ as
  * {id}-{width}.webp; swap any of them for the brand's official file under the same name.
  */
-
-const files = import.meta.glob<string>('/src/assets/img/partners/*.webp', {
-  eager: true,
-  query: '?url',
-  import: 'default',
-});
-
-/** ImageAsset from every `{id}-{width}.webp` export of a logo (largest as src, all in srcSet). */
-function logoImage(id: string, width: number, height: number, alt: string): ImageAsset {
-  const variants = Object.entries(files)
-    .map(([path, url]) => {
-      const m = path.match(new RegExp(`/partners/${id}-(\\d+)\\.webp$`));
-      return m ? { w: Number(m[1]), url } : null;
-    })
-    .filter((v): v is { w: number; url: string } => v !== null)
-    .sort((a, b) => a.w - b.w);
-  const largest = variants[variants.length - 1];
-  if (!largest) throw new Error(`Missing partner logo export: ${id}`);
-  const srcSet = variants.length > 1 ? variants.map((v) => `${v.url} ${v.w}w`).join(', ') : undefined;
-  return img(largest.url, width, height, alt, srcSet);
-}
 
 const logo = (id: string, name: string, width: number, height: number, href?: string): PartnerLogo => ({
   id,

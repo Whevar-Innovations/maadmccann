@@ -65,7 +65,7 @@ function TwoToneLogo() {
 /**
  * Site header (SPEC §7 #1 & §8.6).
  * - Logo left, 8 nav links centered (disabled per route constraints, home active), white pill "Talk To Us" button right.
- * - Transparent at top, then deep brand maroon (crimson-950, paper on light pages) at 95% after 80px scroll.
+ * - Transparent at top, then black (ink, paper on light pages) at 95% after 80px scroll (client request).
  *   No backdrop blur: re-blurring the motif / photos under the bar every frame stalled the start of each
  *   scroll, and at 95% opacity the bar reads the same without it.
  * - Hover/focus/active links: maroon-200 tint (≈11.5:1 on crimson-950, ≈5.7:1 over the hero; WCAG AA).
@@ -197,7 +197,7 @@ export function Header({ settings }: HeaderProps) {
           scrolledPastThreshold && !menuOpen
             ? light
               ? 'bg-paper/95'
-              : 'bg-crimson-950/95'
+              : 'bg-ink/95'
             : 'bg-transparent'
         } ${rule ? 'border-b border-ink/25' : ''}`}
       >
